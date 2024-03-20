@@ -17,4 +17,9 @@ public class ScalingTests {
         assertEquals(1200, akkha.getScaledHealth());
     }
 
+    @Test
+    public void testShadowHealth() {
+        AkkhaShadow shadow = new AkkhaShadow(300, 2, 0, null);
+        assertEquals(290, shadow.current_health);
+    }
 }

@@ -31,13 +31,51 @@ public class Akkha {
     protected int queuedDamage;
     private final int attack = 100;
     private final int str = 140;
-    private final int def = 80;
+    private final int def;
     private final int offAtt = 115;
     private final int offStr = 30;
     private final int defStab = 60;
     private final int defSlash = 120;
     private final int defCrush = 120;
 
+
+    /**
+     * Terrible hack to override the constructor so that the shadows have a different def...
+     * TODO: use interfaces instead of extending Akkha?
+     * @param invocation
+     * @param partySize
+     * @param pathLevel
+     * @param base_health
+     */
+    public Akkha(int invocation, int partySize, int pathLevel, int base_health) {
+        this.invocation = invocation;
+        this.partySize = partySize;
+        this.pathLevel = pathLevel;
+        this.base_health = base_health;
+        this.def = 30;
+
+        teamScaling = new HashMap<>();
+        teamScaling.put(1, 1.0);
+        teamScaling.put(2, 1.9);
+        teamScaling.put(3, 2.8);
+        teamScaling.put(4, 3.4);
+        teamScaling.put(5, 4.0);
+        teamScaling.put(6, 4.6);
+        teamScaling.put(7, 5.2);
+        teamScaling.put(8, 5.8);
+
+        pathScaling = new HashMap<>();
+        pathScaling.put(0, 1.0);
+        pathScaling.put(1, 1.08);
+        pathScaling.put(2, 1.13);
+        pathScaling.put(3, 1.18);
+        pathScaling.put(4, 1.23);
+        pathScaling.put(5, 1.28);
+        pathScaling.put(6, 1.33);
+
+        this.scaled_health = getScaledHealth();
+        this.current_health = scaled_health;
+    }
 
     public Akkha(int invocation, int partySize, int pathLevel) {
         assert(partySize <= 8 && partySize >= 1);
@@ -46,6 +84,7 @@ public class Akkha {
         this.partySize = partySize;
 
         this.pathLevel = pathLevel;
+        this.def = 80;
         teamScaling = new HashMap<>();
         teamScaling.put(1, 1.0);
         teamScaling.put(2, 1.9);
@@ -103,6 +142,7 @@ public class Akkha {
 
     public void hit(int damage) {
         queuedDamage = Math.max(0, queuedDamage - damage);
+        System.out.println("damage: " + damage);
         current_health -= damage;
     }
 
@@ -112,7 +152,8 @@ public class Akkha {
         final int phase_health = scaled_health / 5;
         // compute what the threshold for the next phase is
         final int next_phase = (current_health / phase_health) * phase_health;
-        if (current_health != scaled_health && (current_health - queuedDamage) <= next_phase) {
+        System.out.println("Akkha: current " + current_health + " queued " + queuedDamage);
+        if (current_health != next_phase && (current_health - queuedDamage) <= next_phase) {
             shouldDraw = true;
             return true;
         }
