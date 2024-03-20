@@ -137,7 +137,8 @@ public class Akkha {
         avgs /= 40d;
         double scale = 1 + avgs;
         double result = xpDrop / scale;
-        return (int) Math.round(result);
+        //System.out.printf("xp drop: %.1f%n", result);
+        return (int) Math.floor(result);
     }
 
     public void hit(int damage) {
