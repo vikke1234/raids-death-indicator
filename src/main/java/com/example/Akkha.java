@@ -126,6 +126,13 @@ public class Akkha {
         return (defStab + defSlash + defCrush) / 3;
     }
 
+    public double getModifier() {
+        double avgs = Math.floor((getAvgLevel() * (getAvgDef() + offStr + offAtt)) / 5120d);
+        avgs /= 40d;
+        double scale = 1 + avgs;
+        return scale;
+    }
+
     /**
      * scales the xp drop according to the
      * <a href="https://oldschool.runescape.wiki/w/Combat#PvM_bonus_experience">wiki</a>
@@ -133,17 +140,24 @@ public class Akkha {
      * @return scaled xp drop
      */
     public int scaleXpDrop(int xpDrop) {
-        double avgs = Math.floor((getAvgLevel() * (getAvgDef() + offStr + offAtt)) / 5120d);
-        avgs /= 40d;
-        double scale = 1 + avgs;
+        double scale = getModifier();
         double result = xpDrop / scale;
-        //System.out.printf("xp drop: %.1f%n", result);
-        return (int) Math.floor(result);
+        double floored = round(result);
+        double Drescaled = round(floored * scale);
+
+        double diff = round((xpDrop - (floored * scale)));
+        if (Drescaled > (floored * scale) || diff > 0.1d) {
+            floored += 1;
+        }
+
+        return (int)floored;
+    }
+    private double round(double xp) {
+        return Math.round(xp * 10d) / 10d;
     }
 
     public void hit(int damage) {
         queuedDamage = Math.max(0, queuedDamage - damage);
-        System.out.println("damage: " + damage);
         current_health -= damage;
     }
 
@@ -153,7 +167,7 @@ public class Akkha {
         final int phase_health = scaled_health / 5;
         // compute what the threshold for the next phase is
         final int next_phase = (current_health / phase_health) * phase_health;
-        System.out.println("Akkha: current " + current_health + " queued " + queuedDamage);
+        //System.out.println("Akkha: current " + current_health + " queued " + queuedDamage);
         if (current_health != next_phase && (current_health - queuedDamage) <= next_phase) {
             shouldDraw = true;
             return true;

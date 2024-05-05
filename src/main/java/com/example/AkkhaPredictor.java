@@ -55,6 +55,9 @@ public class AkkhaPredictor extends Plugin
 	@Inject
 	private ModelOutlineRenderer renderer;
 
+	/**
+	 * Map of current XP amounts in each skill
+	 */
 	private Map<Skill, Integer> previousXps;
 
 	@Getter
@@ -90,11 +93,17 @@ public class AkkhaPredictor extends Plugin
 		Arrays.stream(Skill.values()).forEach(skill -> previousXps.put(skill, client.getSkillExperience(skill)));
 	}
 
+	/**
+	 * @return TOA invocation level
+	 */
 	private int getInvocation() {
-
 		return client.getVarbitValue(Varbits.TOA_RAID_LEVEL);
 	}
 
+	/**
+	 * Fetches the path level from the TOA widget
+	 * @return Path level
+	 */
 	private int getPathLevel() {
 		Widget pathLevelWidget = client.getWidget(481, 45);
 		if (pathLevelWidget == null) {
@@ -103,6 +112,10 @@ public class AkkhaPredictor extends Plugin
 		return Integer.parseInt(pathLevelWidget.getText());
 	}
 
+	/**
+	 * Gets amount of people in the raid, amount makes the enemy health scale with 90%
+	 * @return Amount of people in the raid
+	 */
 	private int getPartySize()
 	{
 		int partySize = 1;
@@ -116,10 +129,9 @@ public class AkkhaPredictor extends Plugin
 
 	@Subscribe
 	protected void onGameStateChanged(GameStateChanged state) {
-		switch (state.getGameState()) {
-			case LOGGED_IN:
-				initXpMap();
-		}
+        if (Objects.requireNonNull(state.getGameState()) == GameState.LOGGED_IN) {
+            initXpMap();
+        }
 	}
 
 	@Subscribe
@@ -134,6 +146,7 @@ public class AkkhaPredictor extends Plugin
 			shadows.clear();
 		}
 	}
+
 	@Subscribe
 	protected void onNpcSpawned(NpcSpawned event) {
 		akkha.setShouldDraw(false);
@@ -183,6 +196,17 @@ public class AkkhaPredictor extends Plugin
 		return Arrays.stream(client.getMapRegions()).anyMatch(region -> region == AKKHA_REGION_ID);
 	}
 
+	private boolean isInToa() {
+		return true;
+	}
+
+	/**
+	 * Processes the xp drop and turns it into how much damage it did. Not entirely accurate due to fractional XP.
+	 * Rounds down so that in case it does get fractional it should not give false positives.
+	 *
+	 * @param skill Skill that xp was received in.
+	 * @param xp Amount of XP that was received.
+	 */
 	private void processXpDrop(Skill skill, int xp) {
 		Player player = Objects.requireNonNull(client.getLocalPlayer());
 		Actor entity = player.getInteracting();
@@ -193,7 +217,7 @@ public class AkkhaPredictor extends Plugin
 		PlayerComposition playerComposition = player.getPlayerComposition();
 		NPC npc = (NPC) entity;
 		int scaled;
-		if (Text.escapeJagex(npc.getName()).equals("Akkha")) {
+		if (Text.escapeJagex(Objects.requireNonNull(npc.getName())).equals("Akkha")) {
 			scaled = akkha.scaleXpDrop(xp);
 		} else {
 			scaled = shadows.get(npc.getIndex()).scaleXpDrop(xp);
@@ -209,6 +233,7 @@ public class AkkhaPredictor extends Plugin
 			case DEFENCE:
 				if (isPoweredStaff && isDefensiveCast) {
 					damage = scaled;
+					System.out.println("Predicted damage: " + damage + ", xp: " + xp + ", scaled: " + scaled + ", modifier: " + akkha.getModifier());
 				}
 				break;
 			case MAGIC:
@@ -237,14 +262,29 @@ public class AkkhaPredictor extends Plugin
 		onEntityDamaged(entityDamaged);
 	}
 
+	/**
+	 * Computes the difference between the updated xp drop and the previous one
+	 * @param skill Skill XP was received in.
+	 * @param xp Updated XP amount.
+	 */
 	private void preProcessXpDrop(Skill skill, int xp) {
+		if (!isInToa()) {
+			isAccurate = false;
+		}
+		if (!isAtAkkha()) {
+			return;
+		}
+
 		int diff = xp - previousXps.getOrDefault(skill, 0);
 		previousXps.put(skill, xp);
 		processXpDrop(skill, diff);
 	}
 
-
-
+	/**
+	 * Queues damage on an entity. If the entity is a shadow, it hides the shadow.
+	 * If the entity is Akkha, it will highlight her.
+	 * @param entityDamaged event
+	 */
 	@Subscribe
 	public void onEntityDamaged(EntityDamaged entityDamaged) {
 		if (!isAtAkkha()) {
@@ -271,20 +311,22 @@ public class AkkhaPredictor extends Plugin
 			akkha.queueDamage(entityDamaged.getDamage());
 		}
 	}
+
 	@Subscribe
 	public void onStatChanged(StatChanged xpDrop) {
-		if (!isAtAkkha()) {
-			return;
-		}
-
 		preProcessXpDrop(xpDrop.getSkill(), xpDrop.getXp());
 	}
 
 	@Subscribe
 	public void onFakeXpDrop(FakeXpDrop xpDrop) {
-		//TODO
+		//TODO hopefully this works. I don't have 200m in magic to find out.
+		processXpDrop(xpDrop.getSkill(), xpDrop.getXp());
 	}
 
+	/**
+	 * Removes the hit from queued damage.
+	 * @param hit hitsplat
+	 */
 	@Subscribe
 	public void onHitsplatApplied(HitsplatApplied hit) {
 		if (!isAtAkkha()) {
@@ -293,6 +335,7 @@ public class AkkhaPredictor extends Plugin
 
 		if (Objects.equals(hit.getActor().getName(), "Akkha")) {
 			akkha.hit(hit.getHitsplat().getAmount());
+			System.out.println("Actual damage dealt: " + hit.getHitsplat().getAmount());
 		} else {
 			if (hit.getActor() instanceof NPC &&
 					Text.escapeJagex(Objects.requireNonNull(hit.getActor().getName())).equals("Akkha's Shadow")) {

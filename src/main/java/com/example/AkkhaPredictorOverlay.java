@@ -1,20 +1,15 @@
 package com.example;
 
-import lombok.RequiredArgsConstructor;
 import net.runelite.api.Client;
 import net.runelite.api.NPC;
-import net.runelite.client.game.NpcUtil;
 import net.runelite.client.ui.overlay.Overlay;
 import net.runelite.client.ui.overlay.OverlayPosition;
 import net.runelite.client.ui.overlay.outline.ModelOutlineRenderer;
 
 import javax.inject.Inject;
 import java.awt.*;
-import java.util.List;
-import java.util.Map;
 import java.util.Objects;
 import java.util.Optional;
-import java.util.stream.Collectors;
 
 public class AkkhaPredictorOverlay extends Overlay {
     private final AkkhaPredictor plugin;
@@ -37,8 +32,8 @@ public class AkkhaPredictorOverlay extends Overlay {
             return null;
         }
         if (akkha.isShouldDraw() && akkha.isCanPhase()) {
-            Optional<NPC> client_akkha = client.getNpcs().stream().filter(npc -> Objects.equals(npc.getName(), "Akkha")).findFirst();
-            client_akkha.ifPresent(npc -> renderPoly(graphics, Color.BLUE, 4, Color.BLUE, npc.getConvexHull()));
+            Optional<NPC> clientAkkha = client.getNpcs().stream().filter(npc -> Objects.equals(npc.getName(), "Akkha")).findFirst();
+            clientAkkha.ifPresent(npc -> renderPoly(graphics, Color.BLUE, 4, Color.BLUE, npc.getConvexHull()));
         }
 
         return null;
