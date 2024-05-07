@@ -3,6 +3,7 @@ package com.example;
 import com.example.utils.PredictionTree;
 import lombok.AllArgsConstructor;
 import lombok.RequiredArgsConstructor;
+import net.runelite.api.Player;
 import net.runelite.api.Skill;
 import org.apache.commons.lang3.NotImplementedException;
 
@@ -25,38 +26,6 @@ public class Predictor {
     public Predictor(double scaling) {
         root = PredictionTree.createRoot();
         this.scaling = scaling;
-    }
-
-    public Predictor(int hit, int xp, double scaling) {
-        possible = new ArrayList<>();
-        for (int i = 0; i < 100; i++) {
-            possible.add((int)Math.floor(i * 10 * scaling));
-        }
-
-        this.scaling = scaling;
-        available = new HashSet<>();
-        fraction = -1;
-        int true_xp = (int)(hit * 10 * scaling);
-        int start;
-        int end;
-
-        if ((true_xp / 10) != xp) {
-            // if we got bonus xp the fraction must be between 0 and the fractional drop we got
-            start = 0;
-            end = getLastDigit(true_xp);
-        } else {
-            start = getLastDigit(true_xp);
-            end = 10;
-        }
-
-        if (start == end) {
-            end = 10;
-        }
-        // We initialize the set with all possible fractions
-        for (int i = start; i < end; i++) {
-            available.add(i);
-        }
-        System.out.println("initial predictions: " + available + "start: " + start + " end: " + end + " hit: " + hit + " xp: " + xp + " actual: " + true_xp);
     }
 
     @AllArgsConstructor
@@ -137,41 +106,17 @@ public class Predictor {
         return xp % 10;
     }
 
-    public boolean computeFraction(int xp) {
-
-        return false;
-    }
-
-    public boolean computeFraction(int hit, int xp) {
-        // We will use fixed precision integers
-        int scaled = (int) (hit * 10 * scaling);
-        int frac = getLastDigit(scaled);
-
-        if (fraction != -1) {
-            // Track using variable due to simpler usage
-            System.out.println("Damage: " + hit + " xp: " + xp + " Actual xp: " + scaled + " Frac: " + frac);
-            fraction = (fraction + frac) % 10;
-            return true;
-        }
-
-        boolean bonusXp = (scaled / 10) < xp;
-        available = available.stream().map(n -> (n + frac) % 10).collect(Collectors.toSet());
-        if (bonusXp) {
-            available = available.stream().filter(n -> n < frac).collect(Collectors.toSet());
-        }
-        if (isAccurate()) {
-            fraction = available.stream().findFirst().get(); // Can't throw, exactly 1 element in it.
-        }
-        System.out.println("Damage: " + hit + " xp: " + xp + " Actual xp: " + scaled + " Frac: " + available + " BXP: " + bonusXp);
-        return isAccurate();
-    }
     public boolean isAccurate() {
         return root.getFrac() != -1;
     }
 
+    public int treePredict(int xp, Player player, Skill skill) {
+        return treePredict(xp);
+    }
+
     public int treePredict(int xp) {
-        // TODO unhardcode this
         int frac = root.getFrac();
+        // TODO unhardcode maxhit
         root.insertInto(xp, scaling, 84);
         Hit hit = findHit(xp, scaling, 84);
 
@@ -188,33 +133,5 @@ public class Predictor {
 
         // fall back to safe bet
         return hit.hit-1;
-    }
-
-    public int predictHit(int xp) {
-        if (true) throw new NotImplementedException("error");
-        int predicted = (int) (xp / scaling);
-        int rescaledXp = (int) (predicted * scaling);
-        int minimumXpExact = 0;
-
-        int i;
-        for (i = 1; i < 100; i++) {
-            int testedXp = (int) (i * 10 * scaling);
-            if (testedXp / 10 > xp) {
-                i--;
-                break;
-            }
-            if ((testedXp + fraction) / 10 == xp) {
-                break;
-            }
-        }
-
-        int minimumXp = minimumXpExact / 10;
-        System.out.println("\nPredicted damage: " + predicted + " xp: " + xp + " rescaled xp: " + rescaledXp + " Minimum xp: " + minimumXpExact + " minimum hit: " + (int) (minimumXp / scaling) + " Frac: "+ fraction + " Scaling: " + scaling);
-        System.out.println("New: " + i + " xp: " + ((int)(i * 10 * scaling)));
-        return 0;
-    }
-
-    private double round(double xp) {
-        return Math.round(xp * 10d) / 10d;
     }
 }
