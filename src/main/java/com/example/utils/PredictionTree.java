@@ -86,20 +86,20 @@ public class PredictionTree {
         return node;
     }
 
-    public void insertInto(int xp, double scaling, int maxHit) {
+    public void insertInto(int xp, double scaling, Predictor.Properties properties) {
 
-        Predictor.Hit hit = Predictor.findHit(xp, scaling, maxHit);
+        Predictor.Hit hit = Predictor.findHit(xp, scaling, properties);
 
         List<PredictionTree> leaves = getLeaves(this);
         int precise;
-        System.out.println("XP: " + xp + " hit: "+ hit.hit + " leaves: " + leaves.size() + " true xp(-1): " + Predictor.computePrecise(hit.hit-1, scaling, Skill.DEFENCE) / 10d + " true xp: " + Predictor.computePrecise(hit.hit, scaling, Skill.DEFENCE) / 10d);
+        System.out.println("XP: " + xp + " hit: "+ hit.hit + " leaves: " + leaves.size() + " true xp(-1): " + Predictor.computePrecise(hit.hit-1, scaling, properties) / 10d + " true xp: " + Predictor.computePrecise(hit.hit, scaling, properties) / 10d);
         System.out.println("bxp: " + hit.bxp + " pbxp: " + hit.possibleBxp);
         for(PredictionTree leaf : leaves) {
             Set<Integer> avail = leaf.available;
             System.out.println("Current guesses: " + avail);
             assert (!avail.isEmpty()); // should never be empty, something is wrong
-            int phigh = Predictor.computePrecise(hit.hit, scaling, Skill.DEFENCE);
-            int plow = Predictor.computePrecise(hit.hit-1, scaling, Skill.DEFENCE);
+            int phigh = Predictor.computePrecise(hit.hit, scaling, properties);
+            int plow = Predictor.computePrecise(hit.hit-1, scaling, properties);
             int high = phigh / 10;
             int low = plow / 10;
 
@@ -109,10 +109,10 @@ public class PredictionTree {
                 // But now we have what we believe is the fraction, so we check;
                 // lets say that the fraction is 9.
                 // 20.6 + 9 = 21, we go over the drop so it has to be 19.2
-                precise = Predictor.computePrecise(hit.hit, scaling, Skill.DEFENCE);
+                precise = Predictor.computePrecise(hit.hit, scaling, properties);
                 boolean correct = (getFrac(leaf) + precise) / 10 == xp;
                 if (!correct) {
-                    precise = Predictor.computePrecise(hit.hit-1, scaling, Skill.DEFENCE);
+                    precise = Predictor.computePrecise(hit.hit-1, scaling, properties);
                 }
 
                 if ((precise + getFrac(leaf)) / 10 != xp) {
@@ -150,7 +150,6 @@ public class PredictionTree {
             }
             leaf.dead = leaf.bxp == null && leaf.nobxp == null;
         }
-        System.out.println();
     }
 
 

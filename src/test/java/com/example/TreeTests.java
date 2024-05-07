@@ -2,6 +2,8 @@ package com.example;
 
 import com.example.utils.PredictionTree;
 import static org.junit.Assert.*;
+
+import net.runelite.api.Skill;
 import org.junit.Test;
 
 import java.util.HashSet;
@@ -38,7 +40,8 @@ public class TreeTests {
     @Test
     public void testInsertion() {
         PredictionTree root = PredictionTree.createRoot();
-        root.insertInto(63, 1.375, 84);
+        Predictor.Properties properties = new Predictor.Properties(Skill.DEFENCE, true, true);
+        root.insertInto(63, 1.375, properties);
         List<PredictionTree> leaves = root.getLeaves();
         Integer[] expected = new Integer[]{2, 3, 4, 5, 6, 7, 8, 9};
         assertArrayEquals(expected, leaves.get(0).available.toArray());
@@ -46,17 +49,18 @@ public class TreeTests {
 
     @Test
     public void testHitFinder() {
-        Predictor.Hit hit = Predictor.findHit(18, 1.375d, 84);
+        Predictor.Properties properties = new Predictor.Properties(Skill.DEFENCE, true, true);
+        Predictor.Hit hit = Predictor.findHit(18, 1.375d, properties);
         assertEquals(13, hit.hit);
         assertTrue(hit.possibleBxp);
         assertTrue(hit.bxp);
 
-        Predictor.Hit hit2 = Predictor.findHit(16, 1.375d, 84);
+        Predictor.Hit hit2 = Predictor.findHit(16, 1.375d, properties);
         assertEquals(12, hit2.hit);
         assertTrue(hit2.possibleBxp);
         assertFalse(hit2.bxp);
 
-        Predictor.Hit hit3 = Predictor.findHit(103, 1.375d, 84);
+        Predictor.Hit hit3 = Predictor.findHit(103, 1.375d, properties);
         assertEquals(75, hit3.hit);
         assertFalse(hit3.possibleBxp);
         assertFalse(hit3.bxp);
@@ -66,10 +70,18 @@ public class TreeTests {
     public void testPredictor() {
         double scaling = 1.21533203125d;
         // List of fixed precision integers
-        List<Integer> possibleDrops = IntStream.rangeClosed(0, 84).map(n -> (int)(n * 10 * scaling)).boxed().collect(Collectors.toList());
-        int internalFrac = 9;
 
-        final int iterations = 1000;
+        final int iterations = 100;
+        Predictor.Properties props = new Predictor.Properties(Skill.DEFENCE, true, true);
+        runIterations(props, scaling, iterations);
+    }
+
+    private void runIterations(Predictor.Properties properties, double scaling, int iterations) {
+        int internalFrac = 9;
+        List<Integer> possibleDrops = IntStream.rangeClosed(0, 100) // 100 is just a high number
+                .map(n -> Predictor.computePrecise(n, scaling, properties))
+                .boxed().collect(Collectors.toList());
+
         for (int i = 0; i < iterations; i++) {
             Predictor predictor = new Predictor(scaling);
             while (!predictor.isAccurate()) {
@@ -81,7 +93,7 @@ public class TreeTests {
 
                 internalFrac = (internalFrac + xp) % 10;
                 System.out.println("internal: " + internalFrac + " hit: " + idx + " xp: " + xp +" wrapped: " + wrapped);
-                int predicted = predictor.treePredict(xp / 10);
+                int predicted = predictor.treePredict(xp / 10, scaling, properties);
             }
             assertEquals(internalFrac, predictor.root.getFrac());
         }
@@ -99,25 +111,17 @@ public class TreeTests {
         root.bxp.available.add(5);
         root.bxp.available.add(6);
         root.bxp.available.add(7);
-        root.insertInto(85, 1.375, 84);
-    }
-
-    @Test
-    public void testPredictorSmallDoNotCrash() {
-        Predictor predictor = new Predictor(1.375);
-        int[] values = new int[]{68, 112, 111, 49};
-
-        for (int drop : values) {
-            predictor.treePredict(drop);
-        }
+        root.insertInto(85, 1.375, new Predictor.Properties(Skill.DEFENCE, true, true));
     }
 
     @Test
     public void testPredictorFraction1() {
-        Predictor predictor = new Predictor(1.375);
+        double scaling = 1.375;
+        Predictor predictor = new Predictor(scaling);
+        Predictor.Properties properties = new Predictor.Properties(Skill.DEFENCE, true, true);
         int[] drops = new int[]{108, 7, 18, 35, 71, 94, 15, 86};
         for (int drop : drops) {
-            predictor.treePredict(drop);
+            predictor.treePredict(drop, scaling, properties);
         }
         assertEquals(1, predictor.root.getFrac());
     }

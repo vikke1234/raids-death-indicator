@@ -2,15 +2,14 @@ package com.example;
 
 import com.example.utils.PredictionTree;
 import lombok.AllArgsConstructor;
+import lombok.NonNull;
 import lombok.RequiredArgsConstructor;
+import net.runelite.api.ItemID;
 import net.runelite.api.Player;
 import net.runelite.api.Skill;
 import org.apache.commons.lang3.NotImplementedException;
 
-import java.util.ArrayList;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Set;
+import java.util.*;
 import java.util.stream.Collectors;
 
 /**
@@ -22,6 +21,25 @@ public class Predictor {
     int fraction;
     List<Integer> possible;
     PredictionTree root;
+
+    private static final Set<Integer> POWERED_STAVES = new HashSet<>(Arrays.asList(
+            ItemID.SANGUINESTI_STAFF,
+            ItemID.TRIDENT_OF_THE_SEAS_FULL,
+            ItemID.TRIDENT_OF_THE_SEAS,
+            ItemID.TRIDENT_OF_THE_SWAMP,
+            ItemID.TRIDENT_OF_THE_SWAMP_E,
+            ItemID.HOLY_SANGUINESTI_STAFF,
+            ItemID.TUMEKENS_SHADOW,
+            ItemID.CORRUPTED_TUMEKENS_SHADOW
+    ));
+
+    @AllArgsConstructor
+    public static class Properties {
+        Skill skill;
+        boolean isDefensive;
+        boolean isPoweredStaff;
+        // TODO: add scaling here?
+    }
 
     public Predictor(double scaling) {
         root = PredictionTree.createRoot();
@@ -47,15 +65,16 @@ public class Predictor {
      * Finds the hit that most closely represents the xp drop.
      * @param xp
      * @param scaling
-     * @param maxHit
+     * @param properties
      * @return
      */
-    public static Hit findHit(int xp, double scaling, int maxHit) {
+    public static Hit findHit(int xp, double scaling, Properties properties) {
         boolean possibleBxp = false;
         boolean bxp = false;
         int hit;
-        for (hit = 0; hit <= maxHit; hit++) {
-            int drop = computeDrop(hit, scaling, Skill.DEFENCE);
+        // 100 is a high number, will cover all the possible hits
+        for (hit = 0; hit <= 100; hit++) {
+            int drop = computeDrop(hit, scaling, properties);
             if (drop > xp) {
                 hit--;
                 bxp = true;
@@ -66,7 +85,7 @@ public class Predictor {
                 break;
             }
 
-            int precise = computePrecise(hit, scaling, Skill.DEFENCE);
+            int precise = computePrecise(hit, scaling, properties);
             possibleBxp = (drop + 1) == xp && precise % 10 != 0;
         }
 
@@ -79,13 +98,27 @@ public class Predictor {
      *
      * @param hit Damage dealt
      * @param scaling Scaling to apply to the drop
-     * @param skill Skill that the xp was received in
+     * @param props Skill that the xp was received in
      * @return A fixed length integer for how much xp was received.
      */
-    public static int computePrecise(int hit, double scaling, Skill skill) {
-        switch (skill) {
+    public static int computePrecise(int hit, double scaling, Properties props) {
+        switch (props.skill) {
             case DEFENCE:
-                return (int) (hit * 10 * scaling);
+                if (props.isPoweredStaff && props.isDefensive) {
+                    return (int) (hit * 10 * scaling);
+                } else {
+                    // you receive 4xp per damage with melee
+                    return (int) (hit * 10 * 4 * scaling);
+                }
+            case MAGIC:
+                if (props.isPoweredStaff && !props.isDefensive) {
+                    return (int) (hit * 2 * 10 * scaling); // TODO
+                }
+                break;
+            case ATTACK:
+            case STRENGTH:
+            case RANGED:
+                return (int) (hit * 10 * 4 * scaling);
         }
         return 0;
     }
@@ -98,8 +131,8 @@ public class Predictor {
      * @param skill Skill that the xp was received in.
      * @return An integer that has been rounded down to represent the xp.
      */
-    public static int computeDrop(int hit, double scaling, Skill skill) {
-        return computePrecise(hit, scaling, skill) / 10;
+    public static int computeDrop(int hit, double scaling, Properties properties) {
+        return computePrecise(hit, scaling, properties) / 10;
     }
 
     private int getLastDigit(int xp) {
@@ -110,19 +143,19 @@ public class Predictor {
         return root.getFrac() != -1;
     }
 
-    public int treePredict(int xp, Player player, Skill skill) {
-        return treePredict(xp);
-    }
+    public int treePredict(int xp, double scaling, @NonNull Properties props) {
+        if (props.skill == Skill.MAGIC && props.isDefensive) {
+            return 0;
+        }
 
-    public int treePredict(int xp) {
         int frac = root.getFrac();
         // TODO unhardcode maxhit
-        root.insertInto(xp, scaling, 84);
-        Hit hit = findHit(xp, scaling, 84);
+        root.insertInto(xp, scaling, props);
+        Hit hit = findHit(xp, scaling, props);
 
         if (frac != -1) {
-            int high = computePrecise(hit.hit, scaling, Skill.DEFENCE);
-            int low = computePrecise(hit.hit-1, scaling, Skill.DEFENCE);
+            int high = computePrecise(hit.hit, scaling, props);
+            int low = computePrecise(hit.hit-1, scaling, props);
             if ((high + frac) / 10 == xp) {
                 return hit.hit;
             }
