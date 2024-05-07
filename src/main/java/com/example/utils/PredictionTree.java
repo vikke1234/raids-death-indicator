@@ -144,7 +144,7 @@ public class PredictionTree {
             if (low == xp) {
                 leaf.nobxp = createNoBxp(avail, plow);
                 System.out.println("Creating nbxp low (" + plow / 10d + ") " + leaf.nobxp);
-            } else if (low + 1 == xp) {
+            } else if (low != 0 && low + 1 == xp) {
                 leaf.bxp = createBxp(avail, plow);
                 System.out.println("Creating bxp low (" + plow / 10d + ") " + leaf.bxp);
             }
