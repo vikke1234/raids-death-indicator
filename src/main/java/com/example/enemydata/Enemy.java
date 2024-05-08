@@ -27,6 +27,9 @@ public abstract class Enemy implements IEnemy {
         enemies.put(NpcID.AKKHA_11796, Akkha::new);
 
         enemies.put(NpcID.AKKHAS_SHADOW, AkkhaShadow::new);
+        enemies.put(NpcID.BABA, Baba::new);
+        enemies.put(NpcID.BABA_11779, Baba::new);
+        enemies.put(NpcID.BABA_11780, Baba::new);
     }
 
     Enemy(NPC npc, int invocation, int partySize, int pathLevel,
