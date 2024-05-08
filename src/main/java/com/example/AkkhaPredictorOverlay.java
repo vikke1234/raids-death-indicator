@@ -1,7 +1,10 @@
 package com.example;
 
+import com.example.enemydata.Akkha;
+import com.example.enemydata.Enemy;
 import net.runelite.api.Client;
 import net.runelite.api.NPC;
+import net.runelite.api.Skill;
 import net.runelite.client.ui.overlay.Overlay;
 import net.runelite.client.ui.overlay.OverlayPosition;
 import net.runelite.client.ui.overlay.outline.ModelOutlineRenderer;
@@ -26,18 +29,29 @@ public class AkkhaPredictorOverlay extends Overlay {
 
     @Override
     public Dimension render(Graphics2D graphics) {
-        Akkha akkha = plugin.getAkkha();
+        var enemies = plugin.getActiveEnemies();
 
-        if (akkha == null) {
-            return null;
-        }
-        if (akkha.isShouldDraw() && akkha.isCanPhase()) {
-            Optional<NPC> clientAkkha = client.getNpcs().stream().filter(npc -> Objects.equals(npc.getName(), "Akkha")).findFirst();
-            clientAkkha.ifPresent(npc -> renderPoly(graphics, Color.BLUE, 4, Color.BLUE, npc.getConvexHull()));
+        for (Enemy enemy : enemies.values()) {
+            if (enemy.shouldHighlight()) {
+                renderPoly(graphics, Color.BLUE, 4, Color.BLUE, enemy.getNpc().getConvexHull());
+            }
         }
 
+        Skill []skills = new Skill[]{Skill.ATTACK, Skill.STRENGTH, Skill.DEFENCE, Skill.MAGIC, Skill.RANGED};
+        int start = 140;
+        for (Skill skill : skills) {
+            if (plugin.getPredictor().isAccurate(skill)) {
+                graphics.setColor(Color.green);
+                graphics.fillRect(30, start, 10, 10);
+            } else {
+                graphics.setColor(Color.red);
+                graphics.fillRect(30, start, 10, 10);
+            }
+            start += 20;
+        }
         return null;
     }
+
     private void renderPoly(Graphics2D graphics, Color borderColor, float borderWidth, Color fillColor, Shape polygon)
     {
         if (polygon != null)

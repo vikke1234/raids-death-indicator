@@ -93,11 +93,11 @@ public class PredictionTree {
 
         List<PredictionTree> leaves = getLeaves(this);
         int precise;
-        System.out.println("XP(" + properties.skill.getName() + "): " + xp + " hit: "+ hit.hit + " leaves: " + leaves.size() + " true xp(-1): " + Predictor.computePrecise(hit.hit-1, scaling, properties) / 10d + " true xp: " + Predictor.computePrecise(hit.hit, scaling, properties) / 10d);
-        System.out.println("---");
+        //System.out.println("XP(" + properties.skill.getName() + "): " + xp + " hit: "+ hit.hit + " leaves: " + leaves.size() + " true xp(-1): " + Predictor.computePrecise(hit.hit-1, scaling, properties) / 10d + " true xp: " + Predictor.computePrecise(hit.hit, scaling, properties) / 10d);
+        //System.out.println("---");
         for(PredictionTree leaf : leaves) {
             Set<Integer> avail = leaf.available;
-            System.out.println("Current guesses: " + avail);
+            //System.out.println("Current guesses: " + avail);
             assert (!avail.isEmpty()); // should never be empty, something is wrong
             int phigh = Predictor.computePrecise(hit.hit, scaling, properties);
             int plow = Predictor.computePrecise(hit.hit-1, scaling, properties);
@@ -118,7 +118,7 @@ public class PredictionTree {
 
                 if ((precise + getFrac(leaf)) / 10 != xp) {
                     leaf.dead = true;
-                    System.out.println("dead leaf");
+                    //System.out.println("dead leaf");
                     continue;
                 }
                 final int finalFrac = precise % 10;
@@ -126,7 +126,7 @@ public class PredictionTree {
                         .map(n -> (n + finalFrac) % 10)
                         .collect(Collectors.toSet());
 
-                System.out.println("Frac: " + leaf);
+                //System.out.println("Frac: " + leaf);
 
                 continue;
             }
@@ -135,19 +135,19 @@ public class PredictionTree {
             // branch on the higher hit
             if (high == xp) {
                 leaf.nobxp = createNoBxp(avail, phigh);
-                System.out.println("Creating nbxp high (" + phigh / 10d +") " + leaf.nobxp);
+                //System.out.println("Creating nbxp high (" + phigh / 10d +") " + leaf.nobxp);
             } else if (high + 1 == xp) {
                 leaf.bxp = createBxp(avail, phigh);
-                System.out.println("Creating bxp high (" + phigh / 10d +") " + leaf.bxp);
+                //System.out.println("Creating bxp high (" + phigh / 10d +") " + leaf.bxp);
             }
 
             // branch on the lower hit
             if (low == xp) {
                 leaf.nobxp = createNoBxp(avail, plow);
-                System.out.println("Creating nbxp low (" + plow / 10d + ") " + leaf.nobxp);
+                //System.out.println("Creating nbxp low (" + plow / 10d + ") " + leaf.nobxp);
             } else if (low != 0 && low + 1 == xp) {
                 leaf.bxp = createBxp(avail, plow);
-                System.out.println("Creating bxp low (" + plow / 10d + ") " + leaf.bxp);
+                //System.out.println("Creating bxp low (" + plow / 10d + ") " + leaf.bxp);
             }
             leaf.dead = leaf.bxp == null && leaf.nobxp == null;
         }

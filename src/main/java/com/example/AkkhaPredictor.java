@@ -1,5 +1,8 @@
 package com.example;
 
+import com.example.enemydata.Enemy;
+import com.example.events.EntityDamaged;
+import com.example.utils.TriFunction;
 import com.google.inject.Provides;
 import javax.inject.Inject;
 
@@ -18,12 +21,8 @@ import net.runelite.client.party.WSClient;
 import net.runelite.client.plugins.Plugin;
 import net.runelite.client.plugins.PluginDescriptor;
 import net.runelite.client.ui.overlay.OverlayManager;
-import net.runelite.client.ui.overlay.outline.ModelOutlineRenderer;
-import net.runelite.client.util.Text;
 
 import java.util.*;
-import java.util.List;
-import java.util.stream.Collectors;
 
 @Slf4j
 @PluginDescriptor(
@@ -52,8 +51,6 @@ public class AkkhaPredictor extends Plugin
 	@Inject
 	private WSClient wsClient;
 
-	@Inject
-	private ModelOutlineRenderer renderer;
 
 	/**
 	 * Map of current XP amounts in each skill
@@ -61,13 +58,10 @@ public class AkkhaPredictor extends Plugin
 	private Map<Skill, Integer> previousXps;
 
 	@Getter
-	private Akkha akkha;
+	private final Map<Integer, Enemy> activeEnemies = new HashMap<>();
 
-	/**
-	 * NPC Index -> Shadow
-	 */
 	@Getter
-	private final Map<Integer, AkkhaShadow> shadows = new HashMap<>();
+	private final Predictor predictor = new Predictor();
 
 	private static final Set<Integer> POWERED_STAVES = new HashSet<>(Arrays.asList(
 			ItemID.SANGUINESTI_STAFF,
@@ -136,30 +130,23 @@ public class AkkhaPredictor extends Plugin
 
 	@Subscribe
 	protected void onNpcDespawned(NpcDespawned event) {
-		String name = event.getNpc().getName();
-		if (name == null) {
-			return;
-		}
-
-		if (Objects.equals(Text.escapeJagex(name), "Akkha's Shadow")) {
-			akkha.setCanPhase(true);
-			shadows.clear();
+        activeEnemies.remove(event.getNpc().getIndex());
+		for (Enemy enemy : activeEnemies.values()) {
+			enemy.nearbyDied(event.getNpc());
 		}
 	}
 
 	@Subscribe
 	protected void onNpcSpawned(NpcSpawned event) {
-		akkha.setShouldDraw(false);
-		akkha.setCanPhase(false);
-		String name = event.getNpc().getName();
-		if (name == null) {
+		NPC npc = event.getNpc();
+		TriFunction<NPC, Integer, Integer, Integer, Enemy> constructor = Enemy.enemies.getOrDefault(npc.getId(), null);
+		if (constructor == null) {
 			return;
 		}
 
-        if (Objects.equals(Text.escapeJagex(name), "Akkha's Shadow")) {
-			AkkhaShadow shadow = new AkkhaShadow(getInvocation(), getPartySize(), getPathLevel(), event.getNpc());
-			shadows.put(event.getNpc().getIndex(), shadow);
-		}
+		Enemy enemy = constructor.apply(npc, getInvocation(), getPartySize(), getPathLevel());
+
+		activeEnemies.put(npc.getIndex(), enemy);
 	}
 
 	/**
@@ -172,17 +159,15 @@ public class AkkhaPredictor extends Plugin
 		if (event.getGroupId() != InterfaceID.TOA_RAID) {
 			return;
 		}
-		List<NPC> npcs = client.getNpcs().stream()
-				.filter(entity -> Objects.equals(entity.getName(), "Akkha"))
-				.collect(Collectors.toList());
-		int pathLevel = getPathLevel();
 		int invo = getInvocation();
+		int pathLevel = getPathLevel();
 		int partySize = getPartySize();
 		if (pathLevel < 0 || invo < 0 || partySize <= 0) {
 			return;
 		}
-
-		akkha = new Akkha(invo, partySize, pathLevel);
+		for (Enemy enemy : activeEnemies.values()) {
+			enemy.fixupStats(invo, partySize, pathLevel);
+		}
 	}
 
 	@Override
@@ -208,6 +193,10 @@ public class AkkhaPredictor extends Plugin
 	 * @param xp Amount of XP that was received.
 	 */
 	private void processXpDrop(Skill skill, int xp) {
+		if (skill == Skill.HITPOINTS) {
+			return;
+		}
+
 		Player player = Objects.requireNonNull(client.getLocalPlayer());
 		Actor entity = player.getInteracting();
 		if (!(entity instanceof NPC) || !isAtAkkha()) {
@@ -216,33 +205,35 @@ public class AkkhaPredictor extends Plugin
 
 		PlayerComposition playerComposition = player.getPlayerComposition();
 		NPC npc = (NPC) entity;
-		int scaled;
-		if (Text.escapeJagex(Objects.requireNonNull(npc.getName())).equals("Akkha")) {
-			scaled = akkha.scaleXpDrop(xp);
+		Enemy enemy;
+		if (activeEnemies.containsKey(npc.getIndex())) {
+			enemy = activeEnemies.get(npc.getIndex());
 		} else {
-			scaled = shadows.get(npc.getIndex()).scaleXpDrop(xp);
+			// Construct a new enemy
+			enemy = Enemy.enemies.get(npc.getId()).apply(npc, getInvocation(), getPartySize(), getPathLevel());
+			activeEnemies.put(npc.getIndex(), enemy);
 		}
+
 		int attackStyle = client.getVarpValue(VarPlayer.ATTACK_STYLE);
 		int weapon = playerComposition.getEquipmentId(KitType.WEAPON);
 
 		boolean isDefensiveCast = attackStyle == 3;
 		boolean isPoweredStaff = POWERED_STAVES.contains(weapon);
-
-		int damage = 0;
-		switch (skill) {
-			case DEFENCE:
-				if (isPoweredStaff && isDefensiveCast) {
-					damage = scaled;
-					System.out.println("Predicted damage: " + damage + ", xp: " + xp + ", scaled: " + scaled + ", modifier: " + akkha.getModifier());
-				}
-				break;
-			case MAGIC:
-				if (isPoweredStaff && !isDefensiveCast) {
-					damage = (int) ((double) scaled / 2.0D);
-				}
-				break;
+		Predictor.Properties props = new Predictor.Properties(skill, isDefensiveCast, isPoweredStaff);
+		double scaling = enemy.getModifier();
+		if ((skill == Skill.RANGED || skill == Skill.MAGIC) && isDefensiveCast) {
+			// Ignore in order to not double hit, insert the drop into
+			// the tree in order to track the fraction
+			predictor.insertInto(xp, scaling, props);
+			return;
 		}
 
+		int damage = predictor.treePredict(xp, scaling, props);
+		assert (damage >= 0);
+
+		if (damage > 0) {
+			System.out.println("Predicted: " + damage);
+		}
 		sendDamage(player, damage);
 	}
 
@@ -268,9 +259,6 @@ public class AkkhaPredictor extends Plugin
 	 * @param xp Updated XP amount.
 	 */
 	private void preProcessXpDrop(Skill skill, int xp) {
-		if (!isInToa()) {
-			isAccurate = false;
-		}
 		if (!isAtAkkha()) {
 			return;
 		}
@@ -300,16 +288,9 @@ public class AkkhaPredictor extends Plugin
 		}
 
 		Integer npcIndex = entityDamaged.getNpcIndex();;
-		if (shadows.containsKey(npcIndex)) {
-			AkkhaShadow shadow = shadows.get(npcIndex);
-			boolean isDead = shadow.queueDamage(entityDamaged.getDamage());
-			if (isDead) {
-				Optional<NPC> client_shadow = client.getNpcs().stream().filter(npc -> npc.getIndex() == npcIndex).findFirst();
-				client_shadow.ifPresent(s -> s.setDead(true));
-			}
-		} else {
-			akkha.queueDamage(entityDamaged.getDamage());
-		}
+		Enemy enemy = activeEnemies.getOrDefault(npcIndex, null);
+		assert (enemy != null);
+		enemy.queueDamage(entityDamaged.getDamage());
 	}
 
 	@Subscribe
@@ -332,17 +313,15 @@ public class AkkhaPredictor extends Plugin
 		if (!isAtAkkha()) {
 			return;
 		}
-
-		if (Objects.equals(hit.getActor().getName(), "Akkha")) {
-			akkha.hit(hit.getHitsplat().getAmount());
-			System.out.println("Actual damage dealt: " + hit.getHitsplat().getAmount());
-		} else {
-			if (hit.getActor() instanceof NPC &&
-					Text.escapeJagex(Objects.requireNonNull(hit.getActor().getName())).equals("Akkha's Shadow")) {
-				NPC npc = (NPC) hit.getActor();
-				AkkhaShadow shadow = shadows.get(npc.getIndex());
-				shadow.hit(hit.getHitsplat().getAmount());
+		Actor actor = hit.getActor();
+		if (actor instanceof NPC) {
+			NPC npc = (NPC) actor;
+			Enemy enemy = activeEnemies.getOrDefault(npc.getIndex(), null);
+			if (enemy == null) {
+				System.out.println("Unknown target");
+				return;
 			}
+			enemy.hit(hit.getHitsplat().getAmount());
 		}
 	}
 
