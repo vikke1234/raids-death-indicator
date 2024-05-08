@@ -84,7 +84,7 @@ public class TreeTests {
 
         for (int i = 0; i < iterations; i++) {
             Predictor predictor = new Predictor(scaling);
-            while (!predictor.isAccurate()) {
+            while (!predictor.isAccurate(Skill.DEFENCE)) {
                 int idx = ThreadLocalRandom.current().nextInt(0, 84);
                 //int idx = hits[i++];
                 int xp = possibleDrops.get(idx);
@@ -95,7 +95,7 @@ public class TreeTests {
                 System.out.println("internal: " + internalFrac + " hit: " + idx + " xp: " + xp +" wrapped: " + wrapped);
                 int predicted = predictor.treePredict(xp / 10, scaling, properties);
             }
-            assertEquals(internalFrac, predictor.root.getFrac());
+            assertEquals(internalFrac, predictor.roots.get(Skill.DEFENCE).getFrac());
         }
     }
 
@@ -123,6 +123,6 @@ public class TreeTests {
         for (int drop : drops) {
             predictor.treePredict(drop, scaling, properties);
         }
-        assertEquals(1, predictor.root.getFrac());
+        assertEquals(1, predictor.roots.get(Skill.DEFENCE).getFrac());
     }
 }

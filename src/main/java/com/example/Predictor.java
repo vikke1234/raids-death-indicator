@@ -3,11 +3,8 @@ package com.example;
 import com.example.utils.PredictionTree;
 import lombok.AllArgsConstructor;
 import lombok.NonNull;
-import lombok.RequiredArgsConstructor;
 import net.runelite.api.ItemID;
-import net.runelite.api.Player;
 import net.runelite.api.Skill;
-import org.apache.commons.lang3.NotImplementedException;
 
 import java.util.*;
 import java.util.stream.Collectors;
@@ -19,7 +16,7 @@ public class Predictor {
     Set<Integer> available;
     int fraction;
     List<Integer> possible;
-    PredictionTree root;
+    Map<Skill, PredictionTree> roots;
 
     private static final Set<Integer> POWERED_STAVES = new HashSet<>(Arrays.asList(
             ItemID.SANGUINESTI_STAFF,
@@ -41,12 +38,12 @@ public class Predictor {
     }
 
     public Predictor() {
-        root = PredictionTree.createRoot();
+        roots = new HashMap<>();
     }
 
     @Deprecated
     public Predictor(double scaling) {
-        root = PredictionTree.createRoot();
+        roots = new HashMap<>();
     }
 
     @AllArgsConstructor
@@ -145,11 +142,24 @@ public class Predictor {
         return xp % 10;
     }
 
-    public boolean isAccurate() {
-        return root.getFrac() != -1;
+    public boolean isAccurate(Skill skill) {
+        PredictionTree root = roots.getOrDefault(skill, null);
+        return root != null && roots.get(skill).getFrac() != -1;
+    }
+
+    public void insertInto(int xp, double scaling, @NonNull Properties props) {
+        if (!roots.containsKey(props.skill)) {
+            roots.put(props.skill, PredictionTree.createRoot());
+        }
+        PredictionTree root = roots.get(props.skill);
+        root.insertInto(xp, scaling, props);
     }
 
     public int treePredict(int xp, double scaling, @NonNull Properties props) {
+        if (!roots.containsKey(props.skill)) {
+            roots.put(props.skill, PredictionTree.createRoot());
+        }
+        PredictionTree root = roots.get(props.skill);
         int frac = root.getFrac();
         // TODO unhardcode maxhit
         root.insertInto(xp, scaling, props);
