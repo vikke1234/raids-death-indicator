@@ -17,7 +17,6 @@ import java.util.stream.Collectors;
  */
 public class Predictor {
     Set<Integer> available;
-    double scaling;
     int fraction;
     List<Integer> possible;
     PredictionTree root;
@@ -35,15 +34,19 @@ public class Predictor {
 
     @AllArgsConstructor
     public static class Properties {
-        Skill skill;
-        boolean isDefensive;
-        boolean isPoweredStaff;
+        public Skill skill;
+        public boolean isDefensive;
+        public boolean isPoweredStaff;
         // TODO: add scaling here?
     }
 
+    public Predictor() {
+        root = PredictionTree.createRoot();
+    }
+
+    @Deprecated
     public Predictor(double scaling) {
         root = PredictionTree.createRoot();
-        this.scaling = scaling;
     }
 
     @AllArgsConstructor
@@ -114,6 +117,9 @@ public class Predictor {
                 if (props.isPoweredStaff && !props.isDefensive) {
                     return (int) (hit * 2 * 10 * scaling); // TODO
                 }
+                if (props.isPoweredStaff) {
+                    return (int) (hit * 10 * 1.33d * scaling);
+                }
                 break;
             case ATTACK:
             case STRENGTH:
@@ -128,7 +134,7 @@ public class Predictor {
      *
      * @param hit Damage dealt
      * @param scaling Scaling to apply to the drop
-     * @param skill Skill that the xp was received in.
+     * @param properties Properties of the xp drop
      * @return An integer that has been rounded down to represent the xp.
      */
     public static int computeDrop(int hit, double scaling, Properties properties) {
@@ -144,10 +150,6 @@ public class Predictor {
     }
 
     public int treePredict(int xp, double scaling, @NonNull Properties props) {
-        if (props.skill == Skill.MAGIC && props.isDefensive) {
-            return 0;
-        }
-
         int frac = root.getFrac();
         // TODO unhardcode maxhit
         root.insertInto(xp, scaling, props);
@@ -165,6 +167,6 @@ public class Predictor {
         }
 
         // fall back to safe bet
-        return hit.hit-1;
+        return Math.max(hit.hit-1, 0);
     }
 }

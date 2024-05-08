@@ -9,21 +9,24 @@ import java.util.stream.Collectors;
 import java.util.stream.IntStream;
 
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertTrue;
 
 public class PredictorTests {
 
     private int calibrate(Predictor predictor, List<Integer> possibleDrops, double scaling, Predictor.Properties properties, int internalFrac) {
         while (!predictor.isAccurate()) {
-            int idx = ThreadLocalRandom.current().nextInt(0, 84);
-            //int idx = hits[i++];
-            int xp = possibleDrops.get(idx);
+            int hit = ThreadLocalRandom.current().nextInt(0, 84);
+            //int hit = hits[i++];
+            int xp = possibleDrops.get(hit);
             boolean wrapped = ((xp % 10) + internalFrac) >= 10;
             xp += wrapped ? 10 : 0;
 
             internalFrac = (internalFrac + xp) % 10;
-            System.out.println("internal: " + internalFrac + " hit: " + idx + " xp: " + xp +" wrapped: " + wrapped);
+            System.out.println("internal: " + internalFrac + " hit: " + hit + " xp: " + xp +" wrapped: " + wrapped);
             // We don't care about uncalibrated hits
-            predictor.treePredict(xp / 10, scaling, properties);
+            int predicted = predictor.treePredict(xp / 10, scaling, properties);
+            // Make sure that when calibrating, we won't estimate higher
+            assertTrue(predicted <= hit);
         }
         return internalFrac;
     }
@@ -56,7 +59,7 @@ public class PredictorTests {
     public void testPredictor() {
         double scaling = 1.21533203125d;
         int internalFrac = 9;
-        int iterations = 100;
+        int iterations = 1000;
         Predictor.Properties properties;
         properties = new Predictor.Properties(Skill.DEFENCE, true, true);
         runTest(properties, iterations, scaling, internalFrac);

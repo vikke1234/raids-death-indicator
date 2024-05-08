@@ -48,7 +48,7 @@ public class PredictionTree {
 
     public int getFrac() {
         List<PredictionTree> leaves = getLeaves(this);
-        if (leaves.size() > 1) {
+        if (leaves.isEmpty()) {
             return -1;
         }
         PredictionTree leaf = leaves.get(0);
@@ -87,13 +87,14 @@ public class PredictionTree {
     }
 
     public void insertInto(int xp, double scaling, Predictor.Properties properties) {
-
+        if (xp == 0) {
+            return;
+        }
         Predictor.Hit hit = Predictor.findHit(xp, scaling, properties);
 
         List<PredictionTree> leaves = getLeaves(this);
         int precise;
-        System.out.println("XP: " + xp + " hit: "+ hit.hit + " leaves: " + leaves.size() + " true xp(-1): " + Predictor.computePrecise(hit.hit-1, scaling, properties) / 10d + " true xp: " + Predictor.computePrecise(hit.hit, scaling, properties) / 10d);
-        System.out.println("bxp: " + hit.bxp + " pbxp: " + hit.possibleBxp);
+        System.out.println("XP(" + properties.skill.getName() + "): " + xp + " hit: "+ hit.hit + " leaves: " + leaves.size() + " true xp(-1): " + Predictor.computePrecise(hit.hit-1, scaling, properties) / 10d + " true xp: " + Predictor.computePrecise(hit.hit, scaling, properties) / 10d);
         for(PredictionTree leaf : leaves) {
             Set<Integer> avail = leaf.available;
             System.out.println("Current guesses: " + avail);
