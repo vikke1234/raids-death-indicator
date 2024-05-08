@@ -83,7 +83,7 @@ public class TreeTests {
                 .boxed().collect(Collectors.toList());
 
         for (int i = 0; i < iterations; i++) {
-            Predictor predictor = new Predictor(scaling);
+            Predictor predictor = new Predictor();
             while (!predictor.isAccurate(Skill.DEFENCE)) {
                 int idx = ThreadLocalRandom.current().nextInt(0, 84);
                 //int idx = hits[i++];
@@ -117,7 +117,7 @@ public class TreeTests {
     @Test
     public void testPredictorFraction1() {
         double scaling = 1.375;
-        Predictor predictor = new Predictor(scaling);
+        Predictor predictor = new Predictor();
         Predictor.Properties properties = new Predictor.Properties(Skill.DEFENCE, true, true);
         int[] drops = new int[]{108, 7, 18, 35, 71, 94, 15, 86};
         for (int drop : drops) {

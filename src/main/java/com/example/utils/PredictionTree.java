@@ -1,7 +1,6 @@
 package com.example.utils;
 
 import com.example.Predictor;
-import net.runelite.api.Skill;
 
 import java.util.*;
 import java.util.stream.Collectors;

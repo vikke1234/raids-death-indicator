@@ -5,8 +5,6 @@ import lombok.Setter;
 import lombok.experimental.Accessors;
 import net.runelite.api.NPC;
 
-import java.util.Objects;
-
 @Getter
 @Setter
 @Accessors(fluent = true)

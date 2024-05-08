@@ -4,7 +4,6 @@ import net.runelite.api.Skill;
 import org.junit.Test;
 
 import java.util.List;
-import java.util.Properties;
 import java.util.concurrent.ThreadLocalRandom;
 import java.util.stream.Collectors;
 import java.util.stream.IntStream;
@@ -48,7 +47,7 @@ public class PredictorTests {
     }
 
     private void runTest(Predictor.Properties properties, int iterations, double scaling, int internalFrac) {
-        Predictor predictor = new Predictor(scaling);
+        Predictor predictor = new Predictor();
         List<Integer> possibleDrops = IntStream.rangeClosed(0, 100)
                 .map(n -> Predictor.computePrecise(n, scaling, properties))
                 .boxed().collect(Collectors.toList());

@@ -3,31 +3,15 @@ package com.example;
 import com.example.utils.PredictionTree;
 import lombok.AllArgsConstructor;
 import lombok.NonNull;
-import net.runelite.api.ItemID;
 import net.runelite.api.Skill;
 
 import java.util.*;
-import java.util.stream.Collectors;
 
 /**
  * Class for computing the internal fraction in xp.
  */
 public class Predictor {
-    Set<Integer> available;
-    int fraction;
-    List<Integer> possible;
     Map<Skill, PredictionTree> roots;
-
-    private static final Set<Integer> POWERED_STAVES = new HashSet<>(Arrays.asList(
-            ItemID.SANGUINESTI_STAFF,
-            ItemID.TRIDENT_OF_THE_SEAS_FULL,
-            ItemID.TRIDENT_OF_THE_SEAS,
-            ItemID.TRIDENT_OF_THE_SWAMP,
-            ItemID.TRIDENT_OF_THE_SWAMP_E,
-            ItemID.HOLY_SANGUINESTI_STAFF,
-            ItemID.TUMEKENS_SHADOW,
-            ItemID.CORRUPTED_TUMEKENS_SHADOW
-    ));
 
     @AllArgsConstructor
     public static class Properties {
@@ -136,10 +120,6 @@ public class Predictor {
      */
     public static int computeDrop(int hit, double scaling, Properties properties) {
         return computePrecise(hit, scaling, properties) / 10;
-    }
-
-    private int getLastDigit(int xp) {
-        return xp % 10;
     }
 
     public boolean isAccurate(Skill skill) {

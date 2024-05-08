@@ -1,13 +1,9 @@
 package com.example.enemydata;
 
 import lombok.Builder;
-import lombok.RequiredArgsConstructor;
 
 import java.util.HashMap;
 import java.util.Map;
-import java.util.function.BiFunction;
-import java.util.function.Consumer;
-import java.util.function.Function;
 
 @Builder(builderMethodName = "hiddenBuilder")
 public class NPCStats {

@@ -1,9 +1,7 @@
 package com.example;
 
-import com.example.enemydata.Akkha;
 import com.example.enemydata.Enemy;
 import net.runelite.api.Client;
-import net.runelite.api.NPC;
 import net.runelite.api.Skill;
 import net.runelite.client.ui.overlay.Overlay;
 import net.runelite.client.ui.overlay.OverlayPosition;
@@ -11,8 +9,6 @@ import net.runelite.client.ui.overlay.outline.ModelOutlineRenderer;
 
 import javax.inject.Inject;
 import java.awt.*;
-import java.util.Objects;
-import java.util.Optional;
 
 public class AkkhaPredictorOverlay extends Overlay {
     private final AkkhaPredictor plugin;

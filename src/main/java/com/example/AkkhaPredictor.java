@@ -287,7 +287,7 @@ public class AkkhaPredictor extends Plugin
 			}
 		}
 
-		Integer npcIndex = entityDamaged.getNpcIndex();;
+		Integer npcIndex = entityDamaged.getNpcIndex();
 		Enemy enemy = activeEnemies.getOrDefault(npcIndex, null);
 		assert (enemy != null);
 		enemy.queueDamage(entityDamaged.getDamage());
