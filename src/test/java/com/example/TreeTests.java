@@ -6,6 +6,7 @@ import static org.junit.Assert.*;
 import net.runelite.api.Skill;
 import org.junit.Test;
 
+import java.util.Arrays;
 import java.util.HashSet;
 import java.util.List;
 import java.util.concurrent.ThreadLocalRandom;
@@ -81,9 +82,11 @@ public class TreeTests {
         List<Integer> possibleDrops = IntStream.rangeClosed(0, 100) // 100 is just a high number
                 .map(n -> Predictor.computePrecise(n, scaling, properties))
                 .boxed().collect(Collectors.toList());
+        int[] n = new int[iterations];
 
         for (int i = 0; i < iterations; i++) {
             Predictor predictor = new Predictor();
+            int count = 0;
             while (!predictor.isAccurate(Skill.DEFENCE)) {
                 int idx = ThreadLocalRandom.current().nextInt(0, 84);
                 //int idx = hits[i++];
@@ -94,9 +97,17 @@ public class TreeTests {
                 internalFrac = (internalFrac + xp) % 10;
                 System.out.println("internal: " + internalFrac + " hit: " + idx + " xp: " + xp +" wrapped: " + wrapped);
                 int predicted = predictor.treePredict(xp / 10, scaling, properties);
+                count++;
             }
+            n[i] = count;
             assertEquals(internalFrac, predictor.roots.get(Skill.DEFENCE).getFrac());
         }
+        Arrays.sort(n);
+        int sum = 0;
+        for(int i = 0; i < iterations; i++) {
+            sum += n[i];
+        }
+        System.out.println("avg: " + sum / iterations + " median: " + n[iterations / 2]);
     }
 
     @Test
