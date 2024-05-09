@@ -31,6 +31,7 @@ public abstract class Enemy implements IEnemy {
         enemies.put(NpcID.BABA, Baba::new);
         enemies.put(NpcID.BABA_11779, Baba::new);
         enemies.put(NpcID.BABA_11780, Baba::new);
+        enemies.put(NpcID.BABOON, Baboon::new);
 
         enemies.put(NpcID.KEPHRI, Kephri::new);
         enemies.put(NpcID.KEPHRI_11720, Kephri::new);
@@ -39,6 +40,17 @@ public abstract class Enemy implements IEnemy {
 
         enemies.put(NpcID.ZEBAK_11730, Zebak::new);
         enemies.put(NpcID.ZEBAK_11732, Zebak::new);
+
+        enemies.put(NpcID.BABOON_BRAWLER, Brawler::new);
+        enemies.put(NpcID.BABOON_BRAWLER_11712, Brawler::new);
+        enemies.put(NpcID.BABOON_THROWER, Thrower::new);
+        enemies.put(NpcID.BABOON_THROWER_11713, Thrower::new);
+        enemies.put(NpcID.BABOON_MAGE, Mage::new);
+        enemies.put(NpcID.BABOON_MAGE_11714, Mage::new);
+        enemies.put(NpcID.BABOON_THRALL, Thrall::new);
+        enemies.put(NpcID.BABOON_SHAMAN, Shaman::new);
+        enemies.put(NpcID.CURSED_BABOON, Cursed::new);
+        enemies.put(NpcID.VOLATILE_BABOON, Volatile::new);
     }
 
     Enemy(NPC npc, int invocation, int partySize, int pathLevel,
