@@ -29,7 +29,7 @@ public class AkkhaPredictorOverlay extends Overlay {
 
         for (Enemy enemy : enemies.values()) {
             if (enemy.shouldHighlight()) {
-                renderPoly(graphics, Color.BLUE, 4, Color.BLUE, enemy.getNpc().getConvexHull());
+                renderPoly(graphics, null, 0, config.highlightColor(), enemy.getNpc().getConvexHull());
             }
         }
 
