@@ -5,6 +5,8 @@ import lombok.AllArgsConstructor;
 import lombok.NonNull;
 import net.runelite.api.Skill;
 
+import java.math.BigDecimal;
+import java.math.RoundingMode;
 import java.util.*;
 
 /**
@@ -99,7 +101,11 @@ public class Predictor {
                     return (int) (hit * 2 * 10 * scaling); // TODO
                 }
                 if (props.isPoweredStaff) {
-                    return (int) (hit * 10 * 1.33d * scaling);
+                    // We have to use BigDecimal due to floating point errors
+                    BigDecimal damage = new BigDecimal(hit * 10);
+                    BigDecimal mExpMultiplier = BigDecimal.ONE.add(BigDecimal.ONE.divide(BigDecimal.valueOf(3), 100,RoundingMode.HALF_UP));
+                    BigDecimal finalXp = damage.multiply(mExpMultiplier).multiply(BigDecimal.valueOf(scaling));
+                    return (int) finalXp.doubleValue();
                 }
                 break;
             case ATTACK:
@@ -156,6 +162,9 @@ public class Predictor {
             }
         }
 
+        if (computeDrop(hit.hit, scaling, props) == xp) {
+            return hit.hit;
+        }
         // fall back to safe bet
         return Math.max(hit.hit-1, 0);
     }
