@@ -140,4 +140,13 @@ public class PredictorTests {
             assertEquals(hit, predictor.treePredict(dxp / 10, scaling, defxp));
         }
     }
+
+    @Test
+    public void preciseCalcTests() {
+        Predictor.Properties properties = new Predictor.Properties(Skill.MAGIC, true, true);
+        int precise = Predictor.computePrecise(23, 1.125, properties);
+        assertEquals(345, precise);
+        precise = Predictor.computePrecise(10, 1.375, properties);
+        assertEquals(183, precise);
+    }
 }
