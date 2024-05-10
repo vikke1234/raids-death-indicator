@@ -61,7 +61,7 @@ public class AkkhaPredictor extends Plugin
 	private final Map<Integer, Enemy> activeEnemies = new HashMap<>();
 
 	@Getter
-	private final Predictor predictor = new Predictor();
+	private Predictor predictor = new Predictor();
 
 	private static final Set<Integer> POWERED_STAVES = new HashSet<>(Arrays.asList(
 			ItemID.SANGUINESTI_STAFF,
@@ -177,12 +177,29 @@ public class AkkhaPredictor extends Plugin
 	}
 
 	private boolean isAtAkkha() {
-		final int AKKHA_REGION_ID = 14676;
-		return Arrays.stream(client.getMapRegions()).anyMatch(region -> region == AKKHA_REGION_ID);
-	}
+		final int []TOA_REGIONS = {
+				13455, // Lobby
+				14160, // Nexus
 
-	private boolean isInToa() {
-		return true;
+				15698, // Crondis
+				15700, // Zebak
+
+				14162, // Scabaras
+				14164, // Kephri
+
+				15186, // Apmken
+				15188, // Baba
+
+				14674, // Het
+				14676, // Akkha
+
+				15184, // Wardens
+				15696, // Wardens
+
+				14672, // Tomb
+		};
+
+		return Arrays.stream(client.getMapRegions()).anyMatch(current -> Arrays.stream(TOA_REGIONS).anyMatch(reg -> reg == current));
 	}
 
 	/**
@@ -220,6 +237,7 @@ public class AkkhaPredictor extends Plugin
 		boolean isDefensiveCast = attackStyle == 3;
 		boolean isPoweredStaff = POWERED_STAVES.contains(weapon);
 		Predictor.Properties props = new Predictor.Properties(skill, isDefensiveCast, isPoweredStaff);
+		System.out.println();
 		double scaling = enemy.getModifier();
 		if ((skill == Skill.RANGED || skill == Skill.MAGIC) && isDefensiveCast) {
 			// Ignore in order to not double hit, insert the drop into
@@ -227,7 +245,6 @@ public class AkkhaPredictor extends Plugin
 			predictor.insertInto(xp, scaling, props);
 			return;
 		}
-
 		int damage = predictor.treePredict(xp, scaling, props);
 		assert (damage >= 0);
 
@@ -321,7 +338,9 @@ public class AkkhaPredictor extends Plugin
 				System.out.println("Unknown target");
 				return;
 			}
-			enemy.hit(hit.getHitsplat().getAmount());
+			int amount = hit.getHitsplat().getAmount();
+			System.out.println("Damage: " + amount + " " + hit.getActor().getName());
+			enemy.hit(amount);
 		}
 	}
 
