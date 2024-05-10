@@ -7,6 +7,6 @@ public class Shaman extends Enemy {
         super(npc, invocation, partySize, pathLevel,
                 16, 60, 60, 20,
                 25, 0,
-                900, 900, 900);
+                900, 900, 900, true);
     }
 }

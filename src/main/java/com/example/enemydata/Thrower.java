@@ -8,6 +8,6 @@ public class Thrower extends Enemy {
         super(npc, invocation, partySize, pathLevel,
                 npc.getId() == NpcID.BABOON_THROWER ? 4 : 6, 40, 40, 12,
                 20, 0,
-                -50, -50, -50);
+                -50, -50, -50, true);
     }
 }

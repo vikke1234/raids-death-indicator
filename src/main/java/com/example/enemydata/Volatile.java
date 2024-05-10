@@ -7,6 +7,6 @@ public class Volatile extends Enemy {
         super(npc, invocation, partySize, pathLevel,
                 8, 60, 60, 20,
                 25, 0,
-                900, 900, 900);
+                900, 900, 900, true);
     }
 }

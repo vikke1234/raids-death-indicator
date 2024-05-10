@@ -56,14 +56,13 @@ public abstract class Enemy implements IEnemy {
     Enemy(NPC npc, int invocation, int partySize, int pathLevel,
           int baseHealth, int attack, int str, int def,
           int offAtt, int offStr,
-          int defStab, int defSlash, int defCrush
-    ) {
+          int defStab, int defSlash, int defCrush, boolean isPuzzle) {
         assert(partySize <= 8 && partySize >= 1);
         assert((invocation % 5) == 0);
         this.npc = npc;
         if (pathLevel < 0) {
             // Something went wrong with the widget things
-            stats = NPCStats.builder(baseHealth)
+            stats = NPCStats.builder(baseHealth, isPuzzle)
                     .attack(attack)
                     .str(str)
                     .def(def)
@@ -74,7 +73,7 @@ public abstract class Enemy implements IEnemy {
                     .defCrush(defCrush)
                     .build();
         } else {
-            stats = NPCStats.builder(invocation, partySize, pathLevel, baseHealth)
+            stats = NPCStats.builder(invocation, partySize, pathLevel, baseHealth, isPuzzle)
                     .attack(attack)
                     .str(str)
                     .def(def)
@@ -86,9 +85,19 @@ public abstract class Enemy implements IEnemy {
                     .build();
         }
     }
+    Enemy(NPC npc, int invocation, int partySize, int pathLevel,
+          int baseHealth, int attack, int str, int def,
+          int offAtt, int offStr,
+          int defStab, int defSlash, int defCrush
+    ) {
+        this(npc, invocation, partySize, pathLevel,
+                baseHealth, attack, str, def,
+                offAtt, offStr,
+                defStab, defSlash, defCrush, false);
+    }
 
     public double getModifier() {
-        return stats.getModifier();
+        return Math.max(stats.getModifier(), 1.0d);
     }
 
     public void hit(int damage) {

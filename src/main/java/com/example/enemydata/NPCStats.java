@@ -26,6 +26,7 @@ public class NPCStats {
     private final int defStab;
     private final int defSlash;
     private final int defCrush;
+    private final boolean isPuzzle;
 
     private static final Map<Integer, Double> teamScaling;
     private static final Map<Integer, Double> pathScaling;
@@ -52,19 +53,19 @@ public class NPCStats {
         pathScaling.put(6, 1.33);
     }
 
-    public static NPCStatsBuilder builder(int invocation, int partySize, int pathLevel, int baseHealth) {
-        int scaled = getScaledHealth(invocation, partySize, pathLevel, baseHealth);
-        return hiddenBuilder().base_health(baseHealth).scaled_health(scaled).current_health(scaled).invocation(invocation).partySize(partySize).pathLevel(pathLevel);
+    public static NPCStatsBuilder builder(int invocation, int partySize, int pathLevel, int baseHealth, boolean isPuzzle) {
+        int scaled = getScaledHealth(invocation, partySize, pathLevel, baseHealth, isPuzzle);
+        return hiddenBuilder().isPuzzle(isPuzzle).base_health(baseHealth).scaled_health(scaled).current_health(scaled).invocation(invocation).partySize(partySize).pathLevel(pathLevel);
     }
-    public static NPCStatsBuilder builder(int baseHealth) {
-        return hiddenBuilder().base_health(baseHealth);
+    public static NPCStatsBuilder builder(int baseHealth, boolean isPuzzle) {
+        return hiddenBuilder().base_health(baseHealth).isPuzzle(isPuzzle);
     }
 
     public void fixup(int invocation, int partySize, int pathLevel) {
         this.invocation = invocation;
         this.partySize = partySize;
         this.pathLevel = pathLevel;
-        scaled_health = getScaledHealth(invocation, partySize, pathLevel, base_health);
+        scaled_health = getScaledHealth(invocation, partySize, pathLevel, base_health, isPuzzle);
         current_health = scaled_health;
     }
     public double getModifier() {
@@ -75,23 +76,20 @@ public class NPCStats {
     }
 
     public int getScaledHealth() {
-        double scale = (1 + 0.02 * this.invocation / 5);
-        int scaled_health = (int) (base_health * scale * teamScaling.get(partySize) * pathScaling.get(pathLevel));
-
-        // scale to nearest 10
-        scaled_health = (int) (Math.round(scaled_health / 10.0) * 10);
-        return scaled_health;
+        return getScaledHealth(invocation, partySize, pathLevel, base_health, isPuzzle);
     }
 
-    private static int getScaledHealth(int invocation, int partySize, int pathLevel, int base_health) {
-        double scale = (1 + 0.02 * invocation / 5);
+    private static int getScaledHealth(int invocation, int partySize, int pathLevel, int base_health, boolean isPuzzle) {
+        double scale = (1 + 0.004 * invocation);
         double teamScale = teamScaling.get(partySize);
-        double pathScale = pathScaling.get(pathLevel);
-        int scaled_health = (int) (base_health * scale * teamScale * pathScale);
+        double pathScale;
+        if (isPuzzle) {
+            pathScale = 1d;
+        } else {
+             pathScale = pathScaling.get(pathLevel);
+        }
 
-        // scale to nearest 10
-        scaled_health = (int) (Math.round(scaled_health / 10.0) * 10);
-        return scaled_health;
+        return (int) (base_health * scale * teamScale * pathScale);
     }
     private int getAvgLevel() {
         return (attack + str + def + Math.min(getScaledHealth(), 2000)) / 4;
