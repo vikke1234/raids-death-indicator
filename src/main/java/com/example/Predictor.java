@@ -24,11 +24,14 @@ public class Predictor {
         public boolean isDefensive;
         public boolean isPoweredStaff;
         public NPC npc;
+        public double scaling;
 
-        public Properties(Skill skill, boolean isDefensive, boolean isPowered) {
+
+        public Properties(Skill skill, boolean isDefensive, boolean isPowered, double scaling) {
             this.skill = skill;
             this.isDefensive = isDefensive;
             this.isPoweredStaff = isPowered;
+            this.scaling = scaling;
         }
         // TODO: add scaling here?
     }
@@ -61,18 +64,17 @@ public class Predictor {
 
     /**
      * Finds the hit that most closely represents the xp drop.
-     * @param xp
-     * @param scaling
+     * @param xp amount of xp received
      * @param properties
-     * @return
+     * @return Upper bound for the hit.
      */
-    public static Hit findHit(int xp, double scaling, Properties properties) {
+    public static Hit findHit(int xp, Properties properties) {
         boolean possibleBxp = false;
         boolean bxp = false;
         int hit;
         // 100 is a high number, will cover all the possible hits
         for (hit = 0; hit <= 100; hit++) {
-            int drop = computeDrop(hit, scaling, properties);
+            int drop = computeDrop(hit, properties);
             if (drop > xp) {
                 hit--;
                 bxp = true;
@@ -83,7 +85,8 @@ public class Predictor {
                 break;
             }
 
-            int precise = computePrecise(hit, scaling, properties);
+            int precise = computePrecise(hit, properties);
+            // Check if xp + 1 is the real xp
             possibleBxp = (drop + 1) == xp && precise % 10 != 0;
         }
 
@@ -95,31 +98,30 @@ public class Predictor {
      * Computes the precise xp drop as a fixed length integer
      *
      * @param hit Damage dealt
-     * @param scaling Scaling to apply to the drop
      * @param props Skill that the xp was received in
      * @return A fixed length integer for how much xp was received.
      */
-    public static int computePrecise(int hit, double scaling, Properties props) {
+    public static int computePrecise(int hit, Properties props) {
         switch (props.skill) {
             case DEFENCE:
                 if (props.isPoweredStaff && props.isDefensive) {
-                    return (int) (hit * 10 * scaling);
+                    return (int) (hit * 10 * props.scaling);
                 } else {
                     // you receive 4xp per damage with melee
-                    return (int) (hit * 10 * 4 * scaling);
+                    return (int) (hit * 10 * 4 * props.scaling);
                 }
             case MAGIC:
                 if (props.isPoweredStaff && !props.isDefensive) {
-                    return (int) (hit * 2 * 10 * scaling); // TODO
+                    return (int) (hit * 2 * 10 * props.scaling); // TODO
                 }
                 if (props.isPoweredStaff) {
-                    return (int) (hit * 10 * 4 / 3.0d * scaling);
+                    return (int) (hit * 10 * 4 / 3.0d * props.scaling);
                 }
                 break;
             case ATTACK:
             case STRENGTH:
             case RANGED:
-                return (int) (hit * 10 * 4 * scaling);
+                return (int) (hit * 10 * 4 * props.scaling);
         }
         return 0;
     }
@@ -128,12 +130,11 @@ public class Predictor {
      * Computes the xp amount received in the way that OSRS shows it to the user.
      *
      * @param hit Damage dealt
-     * @param scaling Scaling to apply to the drop
      * @param properties Properties of the xp drop
      * @return An integer that has been rounded down to represent the xp.
      */
-    public static int computeDrop(int hit, double scaling, Properties properties) {
-        return computePrecise(hit, scaling, properties) / 10;
+    public static int computeDrop(int hit, Properties properties) {
+        return computePrecise(hit, properties) / 10;
     }
 
     public boolean isAccurate(Skill skill) {
@@ -161,23 +162,23 @@ public class Predictor {
             System.setOut(dummy);
         }
         PredictionTree root = roots.get(props.skill);
-        root.insertInto(xp, scaling, props);
+        root.insertInto(xp, props);
 
         System.setOut(original);
     }
 
-    public int treePredict(int xp, double scaling, @NonNull Properties props) {
+    public int treePredict(int xp, @NonNull Properties props) {
         if (!roots.containsKey(props.skill)) {
             roots.put(props.skill, PredictionTree.createRoot());
         }
         PredictionTree root = roots.get(props.skill);
         int frac = root.getFrac();
-        root.insertInto(xp, scaling, props);
-        Hit hit = findHit(xp, scaling, props);
+        root.insertInto(xp, props);
+        Hit hit = findHit(xp, props);
 
         if (frac != -1) {
-            int high = computePrecise(hit.hit, scaling, props);
-            int low = computePrecise(hit.hit-1, scaling, props);
+            int high = computePrecise(hit.hit, props);
+            int low = computePrecise(hit.hit-1, props);
             if ((high + frac) / 10 == xp) {
                 return hit.hit;
             }

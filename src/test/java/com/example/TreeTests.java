@@ -41,8 +41,8 @@ public class TreeTests {
     @Test
     public void testInsertion() {
         PredictionTree root = PredictionTree.createRoot();
-        Predictor.Properties properties = new Predictor.Properties(Skill.DEFENCE, true, true);
-        root.insertInto(63, 1.375, properties);
+        Predictor.Properties properties = new Predictor.Properties(Skill.DEFENCE, true, true, 1.375d);
+        root.insertInto(63, properties);
         List<PredictionTree> leaves = root.getLeaves();
         Integer[] expected = new Integer[]{2, 3, 4, 5, 6, 7, 8, 9};
         assertArrayEquals(expected, leaves.get(0).available.toArray());
@@ -50,18 +50,18 @@ public class TreeTests {
 
     @Test
     public void testHitFinder() {
-        Predictor.Properties properties = new Predictor.Properties(Skill.DEFENCE, true, true);
-        Predictor.Hit hit = Predictor.findHit(18, 1.375d, properties);
+        Predictor.Properties properties = new Predictor.Properties(Skill.DEFENCE, true, true, 1.375d);
+        Predictor.Hit hit = Predictor.findHit(18, properties);
         assertEquals(13, hit.hit);
         assertTrue(hit.possibleBxp);
         assertTrue(hit.bxp);
 
-        Predictor.Hit hit2 = Predictor.findHit(16, 1.375d, properties);
+        Predictor.Hit hit2 = Predictor.findHit(16, properties);
         assertEquals(12, hit2.hit);
         assertTrue(hit2.possibleBxp);
         assertFalse(hit2.bxp);
 
-        Predictor.Hit hit3 = Predictor.findHit(103, 1.375d, properties);
+        Predictor.Hit hit3 = Predictor.findHit(103, properties);
         assertEquals(75, hit3.hit);
         assertFalse(hit3.possibleBxp);
         assertFalse(hit3.bxp);
@@ -73,14 +73,14 @@ public class TreeTests {
         // List of fixed precision integers
 
         final int iterations = 100;
-        Predictor.Properties props = new Predictor.Properties(Skill.DEFENCE, true, true);
-        runIterations(props, scaling, iterations);
+        Predictor.Properties props = new Predictor.Properties(Skill.DEFENCE, true, true, scaling);
+        runIterations(props, iterations);
     }
 
-    private void runIterations(Predictor.Properties properties, double scaling, int iterations) {
+    private void runIterations(Predictor.Properties properties, int iterations) {
         int internalFrac = 9;
         List<Integer> possibleDrops = IntStream.rangeClosed(0, 100) // 100 is just a high number
-                .map(n -> Predictor.computePrecise(n, scaling, properties))
+                .map(n -> Predictor.computePrecise(n, properties))
                 .boxed().collect(Collectors.toList());
         int[] n = new int[iterations];
 
@@ -96,7 +96,7 @@ public class TreeTests {
 
                 internalFrac = (internalFrac + xp) % 10;
                 System.out.println("internal: " + internalFrac + " hit: " + idx + " xp: " + xp +" wrapped: " + wrapped);
-                int predicted = predictor.treePredict(xp / 10, scaling, properties);
+                int predicted = predictor.treePredict(xp / 10, properties);
                 count++;
             }
             n[i] = count;
@@ -122,17 +122,17 @@ public class TreeTests {
         root.bxp.available.add(5);
         root.bxp.available.add(6);
         root.bxp.available.add(7);
-        root.insertInto(85, 1.375, new Predictor.Properties(Skill.DEFENCE, true, true));
+        root.insertInto(85, new Predictor.Properties(Skill.DEFENCE, true, true, 1.375d));
     }
 
     @Test
     public void testPredictorFraction1() {
         double scaling = 1.375;
         Predictor predictor = new Predictor();
-        Predictor.Properties properties = new Predictor.Properties(Skill.DEFENCE, true, true);
+        Predictor.Properties properties = new Predictor.Properties(Skill.DEFENCE, true, true, scaling);
         int[] drops = new int[]{108, 7, 18, 35, 71, 94, 15, 86};
         for (int drop : drops) {
-            predictor.treePredict(drop, scaling, properties);
+            predictor.treePredict(drop, properties);
         }
         assertEquals(1, predictor.roots.get(Skill.DEFENCE).getFrac());
     }

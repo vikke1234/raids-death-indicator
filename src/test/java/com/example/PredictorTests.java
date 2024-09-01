@@ -13,7 +13,7 @@ import static org.junit.Assert.assertTrue;
 
 public class PredictorTests {
 
-    private int calibrate(Predictor predictor, List<Integer> possibleDrops, double scaling, Predictor.Properties properties, int internalFrac) {
+    private int calibrate(Predictor predictor, List<Integer> possibleDrops, Predictor.Properties properties, int internalFrac) {
         while (!predictor.isAccurate(properties.skill)) {
             int hit = ThreadLocalRandom.current().nextInt(0, 84);
             //int hit = hits[i++];
@@ -24,14 +24,14 @@ public class PredictorTests {
             internalFrac = (internalFrac + xp) % 10;
             System.out.println("internal: " + internalFrac + " hit: " + hit + " xp: " + xp +" wrapped: " + wrapped);
             // We don't care about uncalibrated hits
-            int predicted = predictor.treePredict(xp / 10, scaling, properties);
+            int predicted = predictor.treePredict(xp / 10, properties);
             // Make sure that when calibrating, we won't estimate higher
             assertTrue(predicted <= hit);
         }
         return internalFrac;
     }
 
-    private void runIterations(Predictor predictor, int iterations, List<Integer> possibleDrops, double scaling, Predictor.Properties properties, int internalFrac) {
+    private void runIterations(Predictor predictor, int iterations, List<Integer> possibleDrops, Predictor.Properties properties, int internalFrac) {
         for (int i = 0; i < iterations; i++) {
             int hit = ThreadLocalRandom.current().nextInt(0, 84);
             int xp = possibleDrops.get(hit);
@@ -39,21 +39,21 @@ public class PredictorTests {
             xp += wrapped ? 10 : 0;
 
             internalFrac = (internalFrac + xp) % 10;
-            int predicted = predictor.treePredict(xp / 10, scaling, properties);
+            int predicted = predictor.treePredict(xp / 10, properties);
             System.out.println("internal: " + internalFrac + " hit(" + properties.skill.getName() + "): " + hit + " predicted: " + predicted + " xp: " + xp +" wrapped: " + wrapped);
             System.out.println();
             assertEquals(hit, predicted);
         }
     }
 
-    private void runTest(Predictor.Properties properties, int iterations, double scaling, int internalFrac) {
+    private void runTest(Predictor.Properties properties, int iterations, int internalFrac) {
         Predictor predictor = new Predictor();
         List<Integer> possibleDrops = IntStream.rangeClosed(0, 100)
-                .map(n -> Predictor.computePrecise(n, scaling, properties))
+                .map(n -> Predictor.computePrecise(n, properties))
                 .boxed().collect(Collectors.toList());
-        internalFrac = calibrate(predictor, possibleDrops, scaling, properties, internalFrac);
+        internalFrac = calibrate(predictor, possibleDrops, properties, internalFrac);
 
-        runIterations(predictor, iterations, possibleDrops, scaling, properties, internalFrac);
+        runIterations(predictor, iterations, possibleDrops, properties, internalFrac);
     }
     @Test
     public void testPredictor() {
@@ -61,24 +61,24 @@ public class PredictorTests {
         int internalFrac = 9;
         int iterations = 1000;
         Predictor.Properties properties;
-        properties = new Predictor.Properties(Skill.DEFENCE, true, true);
-        runTest(properties, iterations, scaling, internalFrac);
-        properties = new Predictor.Properties(Skill.STRENGTH, false, false);
-        runTest(properties, iterations, scaling, internalFrac);
-        properties = new Predictor.Properties(Skill.ATTACK, false, false);
-        runTest(properties, iterations, scaling, internalFrac);
-        properties = new Predictor.Properties(Skill.MAGIC, false, true);
-        runTest(properties, iterations, scaling, internalFrac);
+        properties = new Predictor.Properties(Skill.DEFENCE, true, true, scaling);
+        runTest(properties, iterations, internalFrac);
+        properties = new Predictor.Properties(Skill.STRENGTH, false, false, scaling);
+        runTest(properties, iterations, internalFrac);
+        properties = new Predictor.Properties(Skill.ATTACK, false, false, scaling);
+        runTest(properties, iterations, internalFrac);
+        properties = new Predictor.Properties(Skill.MAGIC, false, true, scaling);
+        runTest(properties, iterations, internalFrac);
     }
 
     @Test
     public void testXpCalc() {
-        double scaling = 1.375;
+        double scaling = 1.375d;
         int hit = 10;
-        Predictor.Properties properties = new Predictor.Properties(Skill.MAGIC, true, true);
-        assertEquals(182, Predictor.computePrecise(hit, scaling, properties));
+        Predictor.Properties properties = new Predictor.Properties(Skill.MAGIC, true, true, scaling);
+        assertEquals(183, Predictor.computePrecise(hit, properties));
         properties.skill = Skill.DEFENCE;
-        assertEquals(137, Predictor.computePrecise(hit, scaling, properties));
+        assertEquals(137, Predictor.computePrecise(hit, properties));
     }
 
     @Test
@@ -89,14 +89,14 @@ public class PredictorTests {
         int iterations = 1000;
         Predictor predictor = new Predictor();
 
-        Predictor.Properties magicxp = new Predictor.Properties(Skill.MAGIC, true, true);
-        Predictor.Properties defxp = new Predictor.Properties(Skill.DEFENCE, true, true);
+        Predictor.Properties magicxp = new Predictor.Properties(Skill.MAGIC, true, true, scaling);
+        Predictor.Properties defxp = new Predictor.Properties(Skill.DEFENCE, true, true, scaling);
         List<Integer> validMagic = IntStream.rangeClosed(0, 100)
-                .map(hit -> Predictor.computePrecise(hit, scaling, magicxp))
+                .map(hit -> Predictor.computePrecise(hit, magicxp))
                 .boxed()
                 .collect(Collectors.toList());
         List<Integer> validDef = IntStream.rangeClosed(0, 100)
-                .map(hit -> Predictor.computePrecise(hit, scaling, defxp))
+                .map(hit -> Predictor.computePrecise(hit, defxp))
                 .boxed()
                 .collect(Collectors.toList());
 
@@ -111,8 +111,8 @@ public class PredictorTests {
             dxp += dwrapped ? 10 : 0;
             mfrac = (mfrac + mxp) % 10;
             dfrac = (dfrac + dxp) % 10;
-            int mpredict = predictor.treePredict(mxp / 10, scaling, magicxp);
-            int dpredict = predictor.treePredict(dxp / 10, scaling, defxp);
+            int mpredict = predictor.treePredict(mxp / 10, magicxp);
+            int dpredict = predictor.treePredict(dxp / 10, defxp);
             System.out.println("mfrac: " + mfrac + " dfrac: " + dfrac +
                     " hit: " + hit + " mpredict: " + mpredict + " dpredict: " + dpredict +
                     " mxp(" + mwrapped + "): " + mxp + " dxp(" + dwrapped + "): " + dxp);
@@ -136,17 +136,18 @@ public class PredictorTests {
 
             mfrac = (mfrac + mxp) % 10;
             dfrac = (dfrac + dxp) % 10;
-            assertEquals(hit, predictor.treePredict(mxp / 10, scaling, magicxp));
-            assertEquals(hit, predictor.treePredict(dxp / 10, scaling, defxp));
+            assertEquals(hit, predictor.treePredict(mxp / 10, magicxp));
+            assertEquals(hit, predictor.treePredict(dxp / 10, defxp));
         }
     }
 
     @Test
     public void preciseCalcTests() {
-        Predictor.Properties properties = new Predictor.Properties(Skill.MAGIC, true, true);
-        int precise = Predictor.computePrecise(23, 1.125, properties);
+        double scaling = 1.125d;
+        Predictor.Properties properties = new Predictor.Properties(Skill.MAGIC, true, true, scaling);
+        int precise = Predictor.computePrecise(23, properties);
         assertEquals(345, precise);
-        precise = Predictor.computePrecise(10, 1.375, properties);
-        assertEquals(183, precise);
+        precise = Predictor.computePrecise(10, properties);
+        assertEquals(150, precise);
     }
 }

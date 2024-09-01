@@ -1,6 +1,6 @@
 package com.example;
 
-import com.example.enemydata.*;
+import com.example.enemydata.ampken.*;
 import net.runelite.api.*;
 import net.runelite.api.Point;
 import net.runelite.api.coords.LocalPoint;

@@ -256,16 +256,16 @@ public class AkkhaPredictor extends Plugin
 
 		boolean isDefensiveCast = attackStyle == 3;
 		boolean isPoweredStaff = POWERED_STAVES.contains(weapon);
-		Predictor.Properties props = new Predictor.Properties(skill, isDefensiveCast, isPoweredStaff, npc);
-		System.out.println();
 		double scaling = enemy.getModifier();
+		Predictor.Properties props = new Predictor.Properties(skill, isDefensiveCast, isPoweredStaff, npc, scaling);
+		System.out.println();
 		if ((skill == Skill.RANGED || skill == Skill.MAGIC) && isDefensiveCast) {
 			// Ignore in order to not double hit, insert the drop into
 			// the tree in order to track the fraction
 			predictor.insertInto(xp, scaling, props);
 			return;
 		}
-		int damage = predictor.treePredict(xp, scaling, props);
+		int damage = predictor.treePredict(xp, props);
 		assert (damage >= 0);
 
 		if (damage > 0) {
