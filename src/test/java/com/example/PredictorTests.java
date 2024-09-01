@@ -4,6 +4,7 @@ import net.runelite.api.Skill;
 import org.junit.Test;
 
 import java.util.List;
+import java.util.Properties;
 import java.util.concurrent.ThreadLocalRandom;
 import java.util.stream.Collectors;
 import java.util.stream.IntStream;
@@ -149,5 +150,11 @@ public class PredictorTests {
         assertEquals(345, precise);
         precise = Predictor.computePrecise(10, properties);
         assertEquals(150, precise);
+    }
+
+    @Test
+    public void predictor1() {
+        Predictor predictor = new Predictor();
+
     }
 }

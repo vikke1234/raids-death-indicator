@@ -1,7 +1,11 @@
 package com.example.utils;
 
 import com.example.Predictor;
+import com.google.gson.annotations.SerializedName;
 
+import java.io.BufferedWriter;
+import java.io.FileWriter;
+import java.io.IOException;
 import java.util.*;
 import java.util.stream.Collectors;
 import java.util.stream.IntStream;
@@ -21,7 +25,16 @@ import java.util.stream.IntStream;
  * </p>
  */
 public class PredictionTree {
-    public PredictionTree nobxp, bxp;
+    /**
+     * For debugging purposes
+     */
+    @SerializedName("xp")
+    public int xp;
+    @SerializedName("properties")
+    public Predictor.Properties properties;
+
+    public PredictionTree nobxp;
+    public PredictionTree bxp;
 
     /**
      * Set of active filters for the node
@@ -33,6 +46,10 @@ public class PredictionTree {
      */
     public boolean dead = false;
 
+    /**
+     * Used to create root.
+     */
+    public PredictionTree() { }
     public static PredictionTree createRoot() {
         PredictionTree root = new PredictionTree();
         root.available = IntStream.rangeClosed(0, 9).boxed().collect(Collectors.toSet());
@@ -63,24 +80,29 @@ public class PredictionTree {
         return leaf.available.stream().findFirst().get();
     }
 
-    private PredictionTree createBxp(Set<Integer> avail, int preciseXp) {
+    private PredictionTree(int xp, Predictor.Properties properties) {
+        this.xp = xp;
+        this.properties = properties;
+    }
+
+    private PredictionTree createBxp(Set<Integer> avail, int preciseXp, int xp, Predictor.Properties properties) {
         final int frac = preciseXp % 10;
         Set<Integer> newAvail = avail.stream().filter(n -> n + frac >= 10).map(n -> (n + frac) % 10).collect(Collectors.toSet());
         if (newAvail.isEmpty()) {
             return null;
         }
-        PredictionTree node = new PredictionTree();
+        PredictionTree node = new PredictionTree(xp, properties);
         node.available = newAvail;
         return node;
     }
 
-    private PredictionTree createNoBxp(Set<Integer> avail, int preciseXp) {
+    private PredictionTree createNoBxp(Set<Integer> avail, int preciseXp, int xp, Predictor.Properties properties) {
         final int frac = preciseXp % 10;
         Set<Integer> newAvail = avail.stream().filter(n -> n + frac < 10).map(n -> (n + frac) % 10).collect(Collectors.toSet());
         if (newAvail.isEmpty()) {
             return null;
         }
-        PredictionTree node = new PredictionTree();
+        PredictionTree node = new PredictionTree(xp, properties);
         node.available = newAvail;
         return node;
     }
@@ -142,19 +164,19 @@ public class PredictionTree {
 
             // branch on the higher hit
             if (high == xp) {
-                leaf.nobxp = createNoBxp(avail, phigh);
+                leaf.nobxp = createNoBxp(avail, phigh, xp, properties);
                 System.out.println("Creating nbxp high (" + phigh / 10d +") " + leaf.nobxp);
             } else if (high + 1 == xp) {
-                leaf.bxp = createBxp(avail, phigh);
+                leaf.bxp = createBxp(avail, phigh, xp, properties);
                 System.out.println("Creating bxp high (" + phigh / 10d +") " + leaf.bxp);
             }
 
             // branch on the lower hit
             if (low == xp) {
-                leaf.nobxp = createNoBxp(avail, plow);
+                leaf.nobxp = createNoBxp(avail, plow, xp, properties);
                 System.out.println("Creating nbxp low (" + plow / 10d + ") " + leaf.nobxp);
             } else if (low != 0 && low + 1 == xp) {
-                leaf.bxp = createBxp(avail, plow);
+                leaf.bxp = createBxp(avail, plow, xp, properties);
                 System.out.println("Creating bxp low (" + plow / 10d + ") " + leaf.bxp);
             }
             leaf.dead = leaf.bxp == null && leaf.nobxp == null;
@@ -187,6 +209,42 @@ public class PredictionTree {
             }
         }
         return nodes;
+    }
+
+    private static List<PredictionTree> findDeepestPath(PredictionTree root) {
+        List<PredictionTree> deepestPath = new ArrayList<>();
+        findDeepestPathHelper(root, new ArrayList<>(), deepestPath);
+        return deepestPath;
+    }
+
+    private static void findDeepestPathHelper(PredictionTree node, List<PredictionTree> currentPath, List<PredictionTree> deepestPath) {
+        if (node == null) return;
+
+        currentPath.add(node);
+
+        if (node.nobxp == null && node.bxp == null) {
+            // Leaf node, check if this path is deeper
+            if (currentPath.size() > deepestPath.size()) {
+                deepestPath.clear();
+                deepestPath.addAll(currentPath);
+            }
+        } else {
+            // Recur for both children
+            findDeepestPathHelper(node.nobxp, currentPath, deepestPath);
+            findDeepestPathHelper(node.bxp, currentPath, deepestPath);
+        }
+
+        currentPath.remove(currentPath.size() - 1); // Backtrack
+    }
+
+    // TODO: create a way to autogenerate new cases whenever the predictor fails.
+    public static void createTest(PredictionTree root) {
+        List<PredictionTree> path = findDeepestPath(root);
+
+        try (BufferedWriter writer = new BufferedWriter(new FileWriter("predictiontreetest.java"))) {
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
     }
 
     public List<PredictionTree> getLeaves() {

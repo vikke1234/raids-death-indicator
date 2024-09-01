@@ -20,4 +20,6 @@ public interface AkkhaPredictorConfig extends Config
     default Color highlightColor() {
         return new Color(0x85, 0xC1, 0xFF, 20);
     }
+
+    // TODO: add hidden options to store the fraction
 }
