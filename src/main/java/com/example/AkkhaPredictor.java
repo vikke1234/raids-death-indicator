@@ -51,6 +51,8 @@ public class AkkhaPredictor extends Plugin
 	@Inject
 	private WSClient wsClient;
 
+	private final Set<Skill> validSkills = Set.of(Skill.ATTACK, Skill.STRENGTH, Skill.DEFENCE, Skill.MAGIC, Skill.RANGED);
+
 
 	/**
 	 * Map of current XP amounts in each skill
@@ -228,7 +230,7 @@ public class AkkhaPredictor extends Plugin
 	 * @param xp Amount of XP that was received.
 	 */
 	private void processXpDrop(Skill skill, int xp) {
-		if (skill == Skill.HITPOINTS) {
+		if (!validSkills.contains(skill)) {
 			return;
 		}
 
