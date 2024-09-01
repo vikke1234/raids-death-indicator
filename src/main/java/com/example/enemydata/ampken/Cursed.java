@@ -8,6 +8,6 @@ public class Cursed extends Enemy {
         super(npc, invocation, partySize, pathLevel,
                 10, 60, 60, 20,
                 25, 0,
-                900, 900, 900);
+                900, 900, 900, true);
     }
 }
