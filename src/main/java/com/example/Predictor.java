@@ -3,10 +3,12 @@ package com.example;
 import com.example.utils.PredictionTree;
 import lombok.AllArgsConstructor;
 import lombok.NonNull;
+import net.runelite.api.NPC;
 import net.runelite.api.Skill;
 
-import java.math.BigDecimal;
-import java.math.RoundingMode;
+import java.io.IOException;
+import java.io.OutputStream;
+import java.io.PrintStream;
 import java.util.*;
 
 /**
@@ -14,22 +16,32 @@ import java.util.*;
  */
 public class Predictor {
     Map<Skill, PredictionTree> roots;
+    Set<Skill> logSkills;
 
     @AllArgsConstructor
     public static class Properties {
         public Skill skill;
         public boolean isDefensive;
         public boolean isPoweredStaff;
+        public NPC npc;
+
+        public Properties(Skill skill, boolean isDefensive, boolean isPowered) {
+            this.skill = skill;
+            this.isDefensive = isDefensive;
+            this.isPoweredStaff = isPowered;
+        }
         // TODO: add scaling here?
     }
 
     public Predictor() {
         roots = new HashMap<>();
+        logSkills = new HashSet<>();
+        logSkills.add(Skill.DEFENCE);
     }
 
     @Deprecated
     public Predictor(double scaling) {
-        roots = new HashMap<>();
+        this();
     }
 
     @AllArgsConstructor
@@ -101,11 +113,7 @@ public class Predictor {
                     return (int) (hit * 2 * 10 * scaling); // TODO
                 }
                 if (props.isPoweredStaff) {
-                    // We have to use BigDecimal due to floating point errors
-                    BigDecimal damage = new BigDecimal(hit * 10);
-                    BigDecimal mExpMultiplier = BigDecimal.ONE.add(BigDecimal.ONE.divide(BigDecimal.valueOf(3), 100,RoundingMode.HALF_UP));
-                    BigDecimal finalXp = damage.multiply(mExpMultiplier).multiply(BigDecimal.valueOf(scaling));
-                    return (int) finalXp.doubleValue();
+                    return (int) (hit * 10 * 4 / 3.0d * scaling);
                 }
                 break;
             case ATTACK:
@@ -130,15 +138,32 @@ public class Predictor {
 
     public boolean isAccurate(Skill skill) {
         PredictionTree root = roots.getOrDefault(skill, null);
-        return root != null && roots.get(skill).getFrac() != -1;
+        if (root == null) {
+            return false;
+        }
+        int frac = root.getFrac();
+        return frac != -1;
     }
 
     public void insertInto(int xp, double scaling, @NonNull Properties props) {
         if (!roots.containsKey(props.skill)) {
             roots.put(props.skill, PredictionTree.createRoot());
         }
+        // Disable printing for this skill, TODO: remove for real release
+        PrintStream original = System.out;
+        if (!logSkills.contains(props.skill)) {
+            PrintStream dummy = new PrintStream(new OutputStream() {
+                @Override
+                public void write(int b) throws IOException {
+                    //noop
+                }
+            });
+            System.setOut(dummy);
+        }
         PredictionTree root = roots.get(props.skill);
         root.insertInto(xp, scaling, props);
+
+        System.setOut(original);
     }
 
     public int treePredict(int xp, double scaling, @NonNull Properties props) {
@@ -147,7 +172,6 @@ public class Predictor {
         }
         PredictionTree root = roots.get(props.skill);
         int frac = root.getFrac();
-        // TODO unhardcode maxhit
         root.insertInto(xp, scaling, props);
         Hit hit = findHit(xp, scaling, props);
 
@@ -162,10 +186,9 @@ public class Predictor {
             }
         }
 
-        if (computeDrop(hit.hit, scaling, props) == xp) {
-            return hit.hit;
-        }
-        // fall back to safe bet
-        return Math.max(hit.hit-1, 0);
+        // We have to always take hit-1 because low hits have overlapping xpdrops
+        // it's worse if we say that the mob died and it didn't
+        // TODO: could add some heuristic if the lower drop isn't off by 1
+        return Math.max(hit.hit-1, 1);
     }
 }
