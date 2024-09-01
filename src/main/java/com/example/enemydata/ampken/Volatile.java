@@ -1,5 +1,6 @@
-package com.example.enemydata;
+package com.example.enemydata.ampken;
 
+import com.example.enemydata.Enemy;
 import net.runelite.api.NPC;
 
 public class Volatile extends Enemy {

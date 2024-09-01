@@ -1,5 +1,6 @@
 package com.example.enemydata;
 
+import com.example.enemydata.ampken.*;
 import com.example.utils.TriFunction;
 import lombok.Getter;
 import net.runelite.api.NPC;
@@ -53,7 +54,7 @@ public abstract class Enemy implements IEnemy {
         enemies.put(NpcID.VOLATILE_BABOON, Volatile::new);
     }
 
-    Enemy(NPC npc, int invocation, int partySize, int pathLevel,
+    protected Enemy(NPC npc, int invocation, int partySize, int pathLevel,
           int baseHealth, int attack, int str, int def,
           int offAtt, int offStr,
           int defStab, int defSlash, int defCrush, boolean isPuzzle) {
@@ -85,7 +86,7 @@ public abstract class Enemy implements IEnemy {
                     .build();
         }
     }
-    Enemy(NPC npc, int invocation, int partySize, int pathLevel,
+    protected Enemy(NPC npc, int invocation, int partySize, int pathLevel,
           int baseHealth, int attack, int str, int def,
           int offAtt, int offStr,
           int defStab, int defSlash, int defCrush
