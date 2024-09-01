@@ -10,7 +10,7 @@ import java.util.Map;
 
 public abstract class Enemy implements IEnemy {
     public static Map<Integer, TriFunction<NPC, Integer, Integer, Integer, Enemy>> enemies;
-    final NPCStats stats;
+    public final NPCStats stats;
 
     @Getter
     final NPC npc;

@@ -86,7 +86,7 @@ public class NPCStats {
         if (isPuzzle) {
             pathScale = 1d;
         } else {
-             pathScale = pathScaling.get(pathLevel);
+            pathScale = pathScaling.get(pathLevel);
         }
 
         return (int) (base_health * scale * teamScale * pathScale);
