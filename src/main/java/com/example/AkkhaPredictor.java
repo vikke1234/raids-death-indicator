@@ -121,6 +121,24 @@ public class AkkhaPredictor extends Plugin
 		return partySize;
 	}
 
+	private boolean partyDead() {
+		boolean alldead = false;
+
+		for (int i = Varbits.TOA_MEMBER_0_HEALTH; i <= Varbits.TOA_MEMBER_7_HEALTH; i++) {
+			 alldead |= client.getVarbitValue(i) == 1;
+		}
+
+		return alldead;
+	}
+
+	@Subscribe
+	public void onGameTick(GameTick tick) {
+		if (partyDead()) {
+			// TODO: does this need to be done each tick?
+			activeEnemies.clear();
+		}
+	}
+
 	@Subscribe
 	protected void onGameStateChanged(GameStateChanged state) {
         if (Objects.requireNonNull(state.getGameState()) == GameState.LOGGED_IN) {
@@ -176,7 +194,7 @@ public class AkkhaPredictor extends Plugin
 		previousXps = null;
 	}
 
-	private boolean isAtAkkha() {
+	private boolean isAtToa() {
 		final int []TOA_REGIONS = {
 				13455, // Lobby
 				14160, // Nexus
@@ -216,7 +234,7 @@ public class AkkhaPredictor extends Plugin
 
 		Player player = Objects.requireNonNull(client.getLocalPlayer());
 		Actor entity = player.getInteracting();
-		if (!(entity instanceof NPC) || !isAtAkkha()) {
+		if (!(entity instanceof NPC) || !isAtToa()) {
 			return;
 		}
 
@@ -236,7 +254,7 @@ public class AkkhaPredictor extends Plugin
 
 		boolean isDefensiveCast = attackStyle == 3;
 		boolean isPoweredStaff = POWERED_STAVES.contains(weapon);
-		Predictor.Properties props = new Predictor.Properties(skill, isDefensiveCast, isPoweredStaff);
+		Predictor.Properties props = new Predictor.Properties(skill, isDefensiveCast, isPoweredStaff, npc);
 		System.out.println();
 		double scaling = enemy.getModifier();
 		if ((skill == Skill.RANGED || skill == Skill.MAGIC) && isDefensiveCast) {
@@ -276,7 +294,7 @@ public class AkkhaPredictor extends Plugin
 	 * @param xp Updated XP amount.
 	 */
 	private void preProcessXpDrop(Skill skill, int xp) {
-		if (!isAtAkkha()) {
+		if (!isAtToa()) {
 			return;
 		}
 
@@ -292,7 +310,7 @@ public class AkkhaPredictor extends Plugin
 	 */
 	@Subscribe
 	public void onEntityDamaged(EntityDamaged entityDamaged) {
-		if (!isAtAkkha()) {
+		if (!isAtToa()) {
 			return;
 		}
 
@@ -327,7 +345,7 @@ public class AkkhaPredictor extends Plugin
 	 */
 	@Subscribe
 	public void onHitsplatApplied(HitsplatApplied hit) {
-		if (!isAtAkkha()) {
+		if (!isAtToa()) {
 			return;
 		}
 		Actor actor = hit.getActor();
