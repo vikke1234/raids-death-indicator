@@ -5,8 +5,7 @@ import com.example.enemydata.crondis.Crocodile;
 import com.example.enemydata.crondis.Zebak;
 import com.example.enemydata.het.Akkha;
 import com.example.enemydata.het.AkkhaShadow;
-import com.example.enemydata.scabaras.AgileScarab;
-import com.example.enemydata.scabaras.Kephri;
+import com.example.enemydata.scabaras.*;
 import com.example.enemydata.wardens.*;
 import com.example.utils.TriFunction;
 import lombok.Getter;
@@ -46,6 +45,11 @@ public abstract class Enemy implements IEnemy {
         enemies.put(NpcID.KEPHRI_11721, Kephri::new);
         enemies.put(NpcID.KEPHRI_11722, Kephri::new);
         enemies.put(NpcID.AGILE_SCARAB, AgileScarab::new);
+        enemies.put(NpcID.ARCANE_SCARAB, Arcane::new);
+        enemies.put(NpcID.SCARAB, Scarab::new);
+        enemies.put(NpcID.SOLDIER_SCARAB, Soldier::new);
+        enemies.put(NpcID.SPITTING_SCARAB, Spitter::new);
+        enemies.put(NpcID.SCARAB_SWARM_11723, Swarm::new);
 
         enemies.put(NpcID.ZEBAK_11730, Zebak::new);
         enemies.put(NpcID.ZEBAK_11732, Zebak::new);
