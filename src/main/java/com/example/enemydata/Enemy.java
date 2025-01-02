@@ -67,11 +67,11 @@ public abstract class Enemy implements IEnemy {
         enemies.put(NpcID.VOLATILE_BABOON, Volatile::new);
 
         enemies.put(NpcID.OBELISK_11751, Obelisk::new);
-        //unknown what the difference is between the following two
+        // different overheads -> different ID
         enemies.put(NpcID.ELIDINIS_WARDEN_11753, ElidinisWarden::new);
         enemies.put(NpcID.ELIDINIS_WARDEN_11754, ElidinisWarden::new);
         enemies.put(NpcID.ELIDINIS_WARDEN_11761, ElidinisWarden761::new);
-        //unknown what the difference is between the following two
+        // different overheads -> different ID
         enemies.put(NpcID.TUMEKENS_WARDEN_11756, TumekensWarden::new);
         enemies.put(NpcID.TUMEKENS_WARDEN_11757, TumekensWarden::new);
         enemies.put(NpcID.TUMEKENS_WARDEN_11762, TumekensWarden762::new);
