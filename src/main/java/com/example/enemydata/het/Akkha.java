@@ -1,5 +1,6 @@
-package com.example.enemydata;
+package com.example.enemydata.het;
 
+import com.example.enemydata.Enemy;
 import lombok.Getter;
 import lombok.Setter;
 import lombok.experimental.Accessors;
@@ -8,7 +9,7 @@ import net.runelite.api.NPC;
 @Getter
 @Setter
 @Accessors(fluent = true)
-public class Akkha  extends Enemy  {
+public class Akkha  extends Enemy {
     private boolean canPhase;
     private boolean shouldDraw;
 

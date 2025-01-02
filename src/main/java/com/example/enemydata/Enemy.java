@@ -3,6 +3,8 @@ package com.example.enemydata;
 import com.example.enemydata.ampken.*;
 import com.example.enemydata.crondis.Crocodile;
 import com.example.enemydata.crondis.Zebak;
+import com.example.enemydata.het.Akkha;
+import com.example.enemydata.het.AkkhaShadow;
 import com.example.enemydata.scabaras.AgileScarab;
 import com.example.enemydata.scabaras.Kephri;
 import com.example.utils.TriFunction;
