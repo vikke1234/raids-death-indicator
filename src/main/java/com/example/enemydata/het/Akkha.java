@@ -21,6 +21,7 @@ public class Akkha  extends Enemy {
         canPhase = false;
         // scale to nearest 10
         stats.scaled_health = (int) (Math.round(stats.scaled_health / 10.0) * 10);
+        stats.current_health = stats.scaled_health;
     }
 
     @Override
@@ -31,9 +32,16 @@ public class Akkha  extends Enemy {
         final int phase_health = stats.scaled_health / 5;
         // compute what the threshold for the next phase is
         final int next_phase = (stats.current_health / phase_health) * phase_health;
-        //System.out.println("Akkha: current " + stats.current_health + " queued " + queuedDamage);
+        System.out.println("Akkha: current " + stats.current_health + " queued " + queuedDamage + " next phase: " + next_phase);
         shouldDraw = stats.current_health != next_phase && (stats.current_health - queuedDamage) <= next_phase;
         return shouldDraw;
+    }
+
+    @Override
+    public void fixupStats(int invo, int partySize, int pathLevel) {
+        super.fixupStats(invo, partySize, pathLevel);
+        stats.scaled_health = (int) (Math.round(stats.scaled_health / 10.0) * 10);
+        stats.current_health = stats.scaled_health;
     }
 
     @Override
