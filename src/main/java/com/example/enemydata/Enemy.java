@@ -1,6 +1,8 @@
 package com.example.enemydata;
 
 import com.example.enemydata.ampken.*;
+import com.example.enemydata.crondis.Crocodile;
+import com.example.enemydata.crondis.Zebak;
 import com.example.utils.TriFunction;
 import lombok.Getter;
 import net.runelite.api.NPC;
@@ -52,6 +54,7 @@ public abstract class Enemy implements IEnemy {
         enemies.put(NpcID.BABOON_SHAMAN, Shaman::new);
         enemies.put(NpcID.CURSED_BABOON, Cursed::new);
         enemies.put(NpcID.VOLATILE_BABOON, Volatile::new);
+        enemies.put(NpcID.CROCODILE_11705, Crocodile::new);
     }
 
     protected Enemy(NPC npc, int invocation, int partySize, int pathLevel,

@@ -1,5 +1,6 @@
-package com.example.enemydata;
+package com.example.enemydata.crondis;
 
+import com.example.enemydata.Enemy;
 import net.runelite.api.NPC;
 
 public class Zebak extends Enemy {
