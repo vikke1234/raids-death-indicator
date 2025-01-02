@@ -7,6 +7,7 @@ import com.example.enemydata.het.Akkha;
 import com.example.enemydata.het.AkkhaShadow;
 import com.example.enemydata.scabaras.AgileScarab;
 import com.example.enemydata.scabaras.Kephri;
+import com.example.enemydata.wardens.*;
 import com.example.utils.TriFunction;
 import lombok.Getter;
 import net.runelite.api.NPC;
@@ -60,6 +61,16 @@ public abstract class Enemy implements IEnemy {
         enemies.put(NpcID.BABOON_SHAMAN, Shaman::new);
         enemies.put(NpcID.CURSED_BABOON, Cursed::new);
         enemies.put(NpcID.VOLATILE_BABOON, Volatile::new);
+
+        enemies.put(NpcID.OBELISK_11751, Obelisk::new);
+        //unknown what the difference is between the following two
+        enemies.put(NpcID.ELIDINIS_WARDEN_11753, ElidinisWarden::new);
+        enemies.put(NpcID.ELIDINIS_WARDEN_11754, ElidinisWarden::new);
+        enemies.put(NpcID.ELIDINIS_WARDEN_11761, ElidinisWarden761::new);
+        //unknown what the difference is between the following two
+        enemies.put(NpcID.TUMEKENS_WARDEN_11756, TumekensWarden::new);
+        enemies.put(NpcID.TUMEKENS_WARDEN_11757, TumekensWarden::new);
+        enemies.put(NpcID.TUMEKENS_WARDEN_11762, TumekensWarden762::new);
     }
 
     protected Enemy(NPC npc, int invocation, int partySize, int pathLevel,
