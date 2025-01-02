@@ -20,7 +20,8 @@ import java.util.stream.IntStream;
  * 3. Branch into once or twice, some xp drops are only possible to receive with the "extra" xp
  * 4. Adjust the filters, for example if you have the filters 0-3 and you receive 22 xp,
  *    this means that it has to be a 21.8 drop because the next hit would be 23.0. This means we
- *    can adjust the filters by 8 and remove any value that didn't wrap, so our new filters would be 0-1
+ *    can adjust the filters by 8 and remove any value that didn't wrap, so our new filters would be 8-9
+ *    (previously 0-1)
  * 5. goto 1.
  * </p>
  */
@@ -118,6 +119,7 @@ public class PredictionTree {
         System.out.println("XP(" + properties.skill.getName() + ", " + properties.scaling + "): " + xp + "xp hit: "+ hit.hit +
                 " leaves: " + leaves.size() + " true xp(-1): " + Predictor.computePrecise(hit.hit-1, properties) / 10d +
                 " true xp: " + Predictor.computePrecise(hit.hit, properties) / 10d +
+                " true xp(+1): " + Predictor.computePrecise(hit.hit + 1, properties) / 10d +
                 " target: " + (properties.npc != null ? properties.npc.getName() : ""));
         System.out.println("---");
         if (leaves.isEmpty()) {

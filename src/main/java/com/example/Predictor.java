@@ -96,34 +96,36 @@ public class Predictor {
 
     /**
      * Computes the precise xp drop as a fixed length integer
-     *
+     * <a href="https://oldschool.runescape.wiki/w/Combat#Experience_gain">OSRS Wiki</a>
      * @param hit Damage dealt
      * @param props Skill that the xp was received in
      * @return A fixed length integer for how much xp was received.
      */
     public static int computePrecise(int hit, Properties props) {
+        int scaling = (int) (props.scaling * 1000); // make it an integer that gets scaled down
+        int precise = 0;
         switch (props.skill) {
             case DEFENCE:
                 if (props.isPoweredStaff && props.isDefensive) {
-                    return (int) (hit * 10 * props.scaling);
+                    precise = (int) (hit * 10 * scaling);
                 } else {
                     // you receive 4xp per damage with melee
-                    return (int) (hit * 10 * 4 * props.scaling);
+                    precise = (int) (hit * 10 * 4 * scaling);
                 }
             case MAGIC:
                 if (props.isPoweredStaff && !props.isDefensive) {
-                    return (int) (hit * 2 * 10 * props.scaling); // TODO
+                    precise = (int) (hit * 2 * 10 * scaling);
+                } else if (props.isPoweredStaff) {
+                    precise = (int) (hit * 10 * 4 / 3.0d * scaling);
                 }
-                if (props.isPoweredStaff) {
-                    return (int) (hit * 10 * 4 / 3.0d * props.scaling);
-                }
+                // TODO spells
                 break;
             case ATTACK:
             case STRENGTH:
             case RANGED:
-                return (int) (hit * 10 * 4 * props.scaling);
+                precise = (int) (hit * 10 * 4 * scaling);
         }
-        return 0;
+        return precise / 1000;
     }
 
     /**
@@ -176,9 +178,10 @@ public class Predictor {
         root.insertInto(xp, props);
         Hit hit = findHit(xp, props);
 
+        int high = computePrecise(hit.hit, props);
+        int low = computePrecise(hit.hit-1, props);
+
         if (frac != -1) {
-            int high = computePrecise(hit.hit, props);
-            int low = computePrecise(hit.hit-1, props);
             if ((high + frac) / 10 == xp) {
                 return hit.hit;
             }
@@ -186,10 +189,14 @@ public class Predictor {
                 return hit.hit-1;
             }
         }
+        // if the xp drops do not overlap, check which one matches the given drop, otherwise fall back
+        // to where the low hit is returned.
+        if (high / 10 != low / 10) {
+            return high / 10 == xp ? hit.hit : hit.hit - 1;
+        }
 
         // We have to always take hit-1 because low hits have overlapping xpdrops
         // it's worse if we say that the mob died and it didn't
-        // TODO: could add some heuristic if the lower drop isn't off by 1
         return Math.max(hit.hit-1, 1);
     }
 }

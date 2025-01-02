@@ -153,6 +153,14 @@ public class PredictorTests {
     }
 
     @Test
+    public void preciseCursedBaboonTests() {
+        double scaling = 1.15d;
+        Predictor.Properties properties = new Predictor.Properties(Skill.MAGIC, false, true, scaling);
+        int precise = Predictor.computePrecise(10, properties);
+        assertEquals(230, precise);
+    }
+
+    @Test
     public void predictor1() {
         Predictor predictor = new Predictor();
 
