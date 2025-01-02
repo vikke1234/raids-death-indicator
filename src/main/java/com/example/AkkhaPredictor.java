@@ -51,7 +51,7 @@ public class AkkhaPredictor extends Plugin
 	@Inject
 	private WSClient wsClient;
 
-	private final Set<Skill> validSkills = Set.of(Skill.ATTACK, Skill.STRENGTH, Skill.DEFENCE, Skill.MAGIC, Skill.RANGED);
+	private final Set<Skill> validSkills = Set.of(Skill.HITPOINTS);
 
 
 	/**
@@ -73,7 +73,8 @@ public class AkkhaPredictor extends Plugin
 			ItemID.TRIDENT_OF_THE_SWAMP_E,
 			ItemID.HOLY_SANGUINESTI_STAFF,
 			ItemID.TUMEKENS_SHADOW,
-			ItemID.CORRUPTED_TUMEKENS_SHADOW
+			ItemID.CORRUPTED_TUMEKENS_SHADOW,
+			ItemID.VOIDWAKER
 	));
 
 	@Override
@@ -248,6 +249,9 @@ public class AkkhaPredictor extends Plugin
 		} else {
 			// Construct a new enemy
 			enemy = Enemy.enemies.get(npc.getId()).apply(npc, getInvocation(), getPartySize(), getPathLevel());
+			if (enemy == null) {
+				return;
+			}
 			activeEnemies.put(npc.getIndex(), enemy);
 		}
 
@@ -330,7 +334,7 @@ public class AkkhaPredictor extends Plugin
 		enemy.queueDamage(entityDamaged.getDamage());
 	}
 
-	@Subscribe
+	@Subscribe(priority = -100f)
 	public void onStatChanged(StatChanged xpDrop) {
 		preProcessXpDrop(xpDrop.getSkill(), xpDrop.getXp());
 	}
@@ -355,7 +359,7 @@ public class AkkhaPredictor extends Plugin
 			NPC npc = (NPC) actor;
 			Enemy enemy = activeEnemies.getOrDefault(npc.getIndex(), null);
 			if (enemy == null) {
-				System.out.println("Unknown target");
+				System.out.println("Unknown target: " + npc.getId());
 				return;
 			}
 			int amount = hit.getHitsplat().getAmount();

@@ -105,6 +105,7 @@ public class Predictor {
         int scaling = (int) (props.scaling * 1000); // make it an integer that gets scaled down
         int precise = 0;
         switch (props.skill) {
+            /* TODO: should this be removed in it's entirety?
             case DEFENCE:
                 if (props.isPoweredStaff && props.isDefensive) {
                     precise = (int) (hit * 10 * scaling);
@@ -124,6 +125,12 @@ public class Predictor {
             case STRENGTH:
             case RANGED:
                 precise = (int) (hit * 10 * 4 * scaling);
+                break;
+             */
+
+            case HITPOINTS:
+                precise = (int) (hit * 10 * 4 * scaling / 3);
+                break;
         }
         return precise / 1000;
     }

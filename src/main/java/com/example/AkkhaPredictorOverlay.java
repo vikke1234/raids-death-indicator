@@ -33,7 +33,7 @@ public class AkkhaPredictorOverlay extends Overlay {
             }
         }
 
-        Skill []skills = new Skill[]{Skill.ATTACK, Skill.STRENGTH, Skill.DEFENCE, Skill.MAGIC, Skill.RANGED};
+        Skill []skills = new Skill[]{Skill.HITPOINTS};
         int start = 140;
         for (Skill skill : skills) {
             if (plugin.getPredictor().isAccurate(skill)) {
