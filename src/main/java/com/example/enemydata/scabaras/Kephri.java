@@ -1,5 +1,6 @@
-package com.example.enemydata;
+package com.example.enemydata.scabaras;
 
+import com.example.enemydata.Enemy;
 import net.runelite.api.NPC;
 
 public class Kephri extends Enemy {

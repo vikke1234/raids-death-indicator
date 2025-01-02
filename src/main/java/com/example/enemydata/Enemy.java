@@ -3,6 +3,8 @@ package com.example.enemydata;
 import com.example.enemydata.ampken.*;
 import com.example.enemydata.crondis.Crocodile;
 import com.example.enemydata.crondis.Zebak;
+import com.example.enemydata.scabaras.AgileScarab;
+import com.example.enemydata.scabaras.Kephri;
 import com.example.utils.TriFunction;
 import lombok.Getter;
 import net.runelite.api.NPC;
@@ -40,9 +42,11 @@ public abstract class Enemy implements IEnemy {
         enemies.put(NpcID.KEPHRI_11720, Kephri::new);
         enemies.put(NpcID.KEPHRI_11721, Kephri::new);
         enemies.put(NpcID.KEPHRI_11722, Kephri::new);
+        enemies.put(NpcID.AGILE_SCARAB, AgileScarab::new);
 
         enemies.put(NpcID.ZEBAK_11730, Zebak::new);
         enemies.put(NpcID.ZEBAK_11732, Zebak::new);
+        enemies.put(NpcID.CROCODILE_11705, Crocodile::new);
 
         enemies.put(NpcID.BABOON_BRAWLER, Brawler::new);
         enemies.put(NpcID.BABOON_BRAWLER_11712, Brawler::new);
@@ -54,7 +58,6 @@ public abstract class Enemy implements IEnemy {
         enemies.put(NpcID.BABOON_SHAMAN, Shaman::new);
         enemies.put(NpcID.CURSED_BABOON, Cursed::new);
         enemies.put(NpcID.VOLATILE_BABOON, Volatile::new);
-        enemies.put(NpcID.CROCODILE_11705, Crocodile::new);
     }
 
     protected Enemy(NPC npc, int invocation, int partySize, int pathLevel,
