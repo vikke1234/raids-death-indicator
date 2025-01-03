@@ -43,9 +43,7 @@ public abstract class Enemy implements IEnemy {
         enemies.put(NpcID.BOULDER_11783, Boulder::new);
 
         enemies.put(NpcID.KEPHRI, Kephri::new);
-        enemies.put(NpcID.KEPHRI_11720, Kephri::new);
-        enemies.put(NpcID.KEPHRI_11721, Kephri::new);
-        enemies.put(NpcID.KEPHRI_11722, Kephri::new);
+        enemies.put(NpcID.KEPHRI_11721, Kephri721::new);
         enemies.put(NpcID.AGILE_SCARAB, AgileScarab::new);
         enemies.put(NpcID.ARCANE_SCARAB, Arcane::new);
         enemies.put(NpcID.SCARAB, Scarab::new);
