@@ -1,6 +1,9 @@
 package com.example;
 
 import com.example.enemydata.ampken.*;
+import com.example.enemydata.scabaras.Kephri;
+import com.example.enemydata.scabaras.Kephri721;
+import com.example.enemydata.scabaras.Spitter;
 import net.runelite.api.*;
 import net.runelite.api.Point;
 import net.runelite.api.coords.LocalPoint;
@@ -439,5 +442,23 @@ public class ScalingTests {
         TestNPC volatileNPC = new TestNPC(NpcID.VOLATILE_BABOON);
         Volatile vola = new Volatile(volatileNPC, 515, 1, 2);
         assertEquals(1.175, vola.getModifier(), delta);
+    }
+
+    @Test
+    public void spitterScalingTest() {
+        TestNPC spitterNpc = new TestNPC(NpcID.SPITTING_SCARAB);
+        Spitter spitter = new Spitter(spitterNpc, 305, 1, 0);
+        assertEquals(1.025, spitter.getModifier(), delta);
+
+        TestNPC kephriNpc = new TestNPC(NpcID.KEPHRI);
+        Kephri kephri = new Kephri(kephriNpc, 305, 1, 0);
+        assertEquals(1.075, kephri.getModifier(), delta);
+        assertEquals(330, kephri.stats.getScaledHealth());
+
+        TestNPC kephri721Npc = new TestNPC(NpcID.KEPHRI);
+        Kephri721 kephri721 = new Kephri721(kephri721Npc, 305, 1, 0);
+        assertEquals(180, kephri721.stats.getScaledHealth());
+        assertEquals(1.025, kephri721.getModifier(), delta);
+
     }
 }
