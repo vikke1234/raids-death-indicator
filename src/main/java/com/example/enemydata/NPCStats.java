@@ -76,7 +76,7 @@ public class NPCStats {
     }
 
     public int getScaledHealth() {
-        return getScaledHealth(invocation, partySize, pathLevel, base_health, isPuzzle);
+        return scaled_health;
     }
 
     private static int getScaledHealth(int invocation, int partySize, int pathLevel, int base_health, boolean isPuzzle) {
