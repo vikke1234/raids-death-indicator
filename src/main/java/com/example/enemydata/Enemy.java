@@ -2,6 +2,7 @@ package com.example.enemydata;
 
 import com.example.enemydata.ampken.*;
 import com.example.enemydata.crondis.Crocodile;
+import com.example.enemydata.crondis.Jug;
 import com.example.enemydata.crondis.Zebak;
 import com.example.enemydata.het.Akkha;
 import com.example.enemydata.het.AkkhaShadow;
@@ -54,6 +55,8 @@ public abstract class Enemy implements IEnemy {
         enemies.put(NpcID.ZEBAK_11730, Zebak::new);
         enemies.put(NpcID.ZEBAK_11732, Zebak::new);
         enemies.put(NpcID.CROCODILE_11705, Crocodile::new);
+        enemies.put(NpcID.JUG, Jug::new);
+        enemies.put(NpcID.JUG_11736, Jug::new);
 
         enemies.put(NpcID.BABOON_BRAWLER, Brawler::new);
         enemies.put(NpcID.BABOON_BRAWLER_11712, Brawler::new);
