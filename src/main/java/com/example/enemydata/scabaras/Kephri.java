@@ -11,4 +11,14 @@ public class Kephri extends Enemy {
                 0, 0,
                 60, 300, 100);
     }
+
+    /**
+     * Disable for kephri, no use for it either way. If requested, can try to fix.
+     * @param damage damage dealt
+     * @return false
+     */
+    @Override
+    public boolean queueDamage(int damage) {
+        return false;
+    }
 }

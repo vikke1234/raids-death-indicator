@@ -133,6 +133,12 @@ public abstract class Enemy implements IEnemy {
     public int getQueuedDamage() {
         return stats.queuedDamage;
     }
+
+    /**
+     * Queues damage and counts if the enemy will die to it.
+     * @param damage damage dealt.
+     * @return true if the mob died, false if not.
+     */
     public boolean queueDamage(int damage) {
         boolean died = stats.queueDamage(damage);
         npc.setDead(died);
