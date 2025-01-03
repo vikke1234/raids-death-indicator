@@ -243,6 +243,10 @@ public class AkkhaPredictor extends Plugin
 
 		PlayerComposition playerComposition = player.getPlayerComposition();
 		NPC npc = (NPC) entity;
+		if (npc.getId() == NpcID.SCARAB_SWARM_11723) {
+			// ignore swarms, 1xp per swarm, does not follow "normal" formula
+			return;
+		}
 		Enemy enemy;
 		if (activeEnemies.containsKey(npc.getIndex())) {
 			enemy = activeEnemies.get(npc.getIndex());
