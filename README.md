@@ -6,3 +6,6 @@ TODO
 --
 TOB: maiden crab procs, nylo might come implicitly
 COX: Shamans, maybe melee/mage vangs, definitely olm mage hand and vesp portal, mystics and vasa
+
+Broken: kephri swarms, zebak jugs, kephri eggs (?)
+verify: spitter, arcane, soldier
