@@ -14,11 +14,11 @@ public interface AkkhaPredictorConfig extends Config
     @Alpha
     @ConfigItem(
             keyName = "highlightColor",
-            name = "Highlight color",
+            name = "Akkha Highlight color",
             description = ""
     )
     default Color highlightColor() {
-        return new Color(0x85, 0xC1, 0xFF, 20);
+        return new Color(98, 174, 253, 64);
     }
 
     // TODO: add hidden options to store the fraction

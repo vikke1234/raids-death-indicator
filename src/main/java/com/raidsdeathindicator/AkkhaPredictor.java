@@ -211,7 +211,7 @@ public class AkkhaPredictor extends Plugin
 		previousXps = null;
 	}
 
-	private boolean isAtToa() {
+	public boolean isAtToa() {
 		final int []TOA_REGIONS = {
 				//13455, // Lobby
 				//14160, // Nexus

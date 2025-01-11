@@ -25,6 +25,9 @@ public class AkkhaPredictorOverlay extends Overlay {
 
     @Override
     public Dimension render(Graphics2D graphics) {
+        if (!plugin.isAtToa()) {
+            return null;
+        }
         var enemies = plugin.getActiveEnemies();
 
         for (Enemy enemy : enemies.values()) {
@@ -34,14 +37,14 @@ public class AkkhaPredictorOverlay extends Overlay {
         }
 
         Skill []skills = new Skill[]{Skill.HITPOINTS};
-        int start = 140;
+        int start = 20;
         for (Skill skill : skills) {
             if (plugin.getPredictor().isAccurate(skill)) {
                 graphics.setColor(Color.green);
-                graphics.fillRect(30, start, 10, 10);
+                graphics.fillRect(10, start, 10, 10);
             } else {
                 graphics.setColor(Color.red);
-                graphics.fillRect(30, start, 10, 10);
+                graphics.fillRect(10, start, 10, 10);
             }
             start += 20;
         }
