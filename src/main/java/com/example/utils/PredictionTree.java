@@ -120,7 +120,7 @@ public class PredictionTree {
                 " leaves: " + leaves.size() + " true xp(-1): " + Predictor.computePrecise(hit.hit-1, properties) / 10d +
                 " true xp: " + Predictor.computePrecise(hit.hit, properties) / 10d +
                 " true xp(+1): " + Predictor.computePrecise(hit.hit + 1, properties) / 10d +
-                " target: " + (properties.npc != null ? properties.npc.getName() : ""));
+                " target: " + (properties.npc != null ? properties.npc.getName() + "(idx: " + properties.npc.getIndex() + " ID: " + properties.npc.getId() + ")" : ""));
         System.out.println("---");
         if (leaves.isEmpty()) {
             System.out.println("Leaves are empty");
