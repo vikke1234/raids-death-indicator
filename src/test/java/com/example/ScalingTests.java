@@ -1,6 +1,8 @@
 package com.example;
 
+import com.example.enemydata.Enemy;
 import com.example.enemydata.ampken.*;
+import com.example.enemydata.het.Akkha;
 import com.example.enemydata.scabaras.Kephri;
 import com.example.enemydata.scabaras.Kephri721;
 import com.example.enemydata.scabaras.Spitter;
@@ -459,6 +461,14 @@ public class ScalingTests {
         Kephri721 kephri721 = new Kephri721(kephri721Npc, 305, 1, 0);
         assertEquals(180, kephri721.stats.getScaledHealth());
         assertEquals(1.025, kephri721.getModifier(), delta);
+    }
 
+    @Test
+    public void akkhaScalingTest() {
+        TestNPC akkhaNpc = new TestNPC(NpcID.AKKHA_11790);
+        Enemy akkha = new Akkha(akkhaNpc, 305, 2, 0);
+        assertEquals(1.575, akkha.getModifier(), delta);
+        akkha.fixupStats(305, 2, 0);
+        assertEquals(1.575, akkha.getModifier(), delta);
     }
 }

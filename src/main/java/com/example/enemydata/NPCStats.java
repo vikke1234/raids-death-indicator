@@ -15,6 +15,7 @@ public class NPCStats {
     public int pathLevel;
 
     public final int base_health;
+    // TODO: this may require some rework, akkha for example computes the xp modifier before rounding hp
     public int scaled_health;
     public int current_health;
 
