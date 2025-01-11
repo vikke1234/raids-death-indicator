@@ -202,28 +202,28 @@ public class AkkhaPredictor extends Plugin
 
 	private boolean isAtToa() {
 		final int []TOA_REGIONS = {
-				13455, // Lobby
-				14160, // Nexus
+				//13455, // Lobby
+				//14160, // Nexus
 
-				15698, // Crondis
-				15700, // Zebak
+				//15698, // Crondis
+				//15700, // Zebak
 
-				14162, // Scabaras
-				14164, // Kephri
+				//14162, // Scabaras
+				//14164, // Kephri
 
 				15186, // Apmken
-				15188, // Baba
+				//15188, // Baba
 
-				14674, // Het
+				//14674, // Het
 				14676, // Akkha
 
-				15184, // Wardens
-				15696, // Wardens
+				//15184, // Wardens
+				//15696, // Wardens
 
-				14672, // Tomb
+				//14672, // Tomb
 		};
 
-		return Arrays.stream(client.getMapRegions()).anyMatch(current -> Arrays.stream(TOA_REGIONS).anyMatch(reg -> reg == current));
+		return Arrays.stream(client.getTopLevelWorldView().getMapRegions()).anyMatch(current -> Arrays.stream(TOA_REGIONS).anyMatch(reg -> reg == current));
 	}
 
 	/**
