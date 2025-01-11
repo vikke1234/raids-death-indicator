@@ -151,15 +151,18 @@ public class AkkhaPredictor extends Plugin
 
 	@Subscribe
 	protected void onNpcDespawned(NpcDespawned event) {
+		System.out.println("NPC despawned: " + event.getNpc().getId() + " index: " + event.getNpc().getIndex());
         activeEnemies.remove(event.getNpc().getIndex());
-		for (Enemy enemy : activeEnemies.values()) {
-			enemy.nearbyDied(event.getNpc());
-		}
 	}
 
 	@Subscribe
 	protected void onNpcSpawned(NpcSpawned event) {
+		System.out.println("NPC spawned: " + event.getNpc().getId() + " index: " + event.getNpc().getIndex());
 		NPC npc = event.getNpc();
+		if (activeEnemies.containsKey(npc.getIndex())) {
+			return;
+		}
+
 		TriFunction<NPC, Integer, Integer, Integer, Enemy> constructor = Enemy.enemies.getOrDefault(npc.getId(), null);
 		if (constructor == null) {
 			return;
@@ -359,7 +362,7 @@ public class AkkhaPredictor extends Plugin
 			NPC npc = (NPC) actor;
 			Enemy enemy = activeEnemies.getOrDefault(npc.getIndex(), null);
 			if (enemy == null) {
-				System.out.println("Unknown target: " + npc.getId());
+				System.out.println("Unknown target: " + npc.getId() + " index: " + npc.getIndex());
 				return;
 			}
 			int amount = hit.getHitsplat().getAmount();
