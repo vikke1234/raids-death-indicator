@@ -155,7 +155,6 @@ public class AkkhaPredictor extends Plugin
 	@Subscribe
 	protected void onNpcDespawned(NpcDespawned event) {
 		NPC npc = event.getNpc();
-		System.out.println("NPC despawned: " + event.getNpc().getId() + " index: " + event.getNpc().getIndex());
 		boolean isAkkha = Akkha.isAkkha(npc.getId());
 		boolean isPartyDead = partyDead();
 		if (isAkkha && !isPartyDead) {
@@ -166,7 +165,6 @@ public class AkkhaPredictor extends Plugin
 
 	@Subscribe
 	protected void onNpcSpawned(NpcSpawned event) {
-		System.out.println("NPC spawned: " + event.getNpc().getId() + " index: " + event.getNpc().getIndex());
 		NPC npc = event.getNpc();
 		if (activeEnemies.containsKey(npc.getIndex())) {
 			Enemy enemy = activeEnemies.get(npc.getIndex());
@@ -276,7 +274,6 @@ public class AkkhaPredictor extends Plugin
 		boolean isPoweredStaff = POWERED_STAVES.contains(weapon);
 		double scaling = enemy.getModifier();
 		Predictor.Properties props = new Predictor.Properties(skill, isDefensiveCast, isPoweredStaff, npc, scaling);
-		System.out.println();
 		if ((skill == Skill.RANGED || skill == Skill.MAGIC) && isDefensiveCast) {
 			// Ignore in order to not double hit, insert the drop into
 			// the tree in order to track the fraction
@@ -286,9 +283,6 @@ public class AkkhaPredictor extends Plugin
 		int damage = predictor.treePredict(xp, props);
 		assert (damage >= 0);
 
-		if (damage > 0) {
-			System.out.println("Predicted: " + damage);
-		}
 		sendDamage(player, damage);
 	}
 
@@ -374,12 +368,12 @@ public class AkkhaPredictor extends Plugin
 			NPC npc = (NPC) actor;
 			Enemy enemy = activeEnemies.getOrDefault(npc.getIndex(), null);
 			if (enemy == null) {
-				System.out.println("Unknown target: " + npc.getId() + " index: " + npc.getIndex());
+				log.debug("Unknown target: " + npc.getId() + " index: " + npc.getIndex());
 				return;
 			}
 			int amount = hit.getHitsplat().getAmount();
 			int hp = enemy.hit(amount);
-			System.out.println("Damage: " + amount + " " + hit.getActor().getName() + " (" + hp +")");
+			log.debug("Damage: " + amount + " " + hit.getActor().getName() + " (" + hp +")");
 		}
 	}
 

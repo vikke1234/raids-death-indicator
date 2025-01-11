@@ -2,6 +2,7 @@ package com.raidsdeathindicator.utils;
 
 import com.raidsdeathindicator.Predictor;
 import com.google.gson.annotations.SerializedName;
+import lombok.extern.slf4j.Slf4j;
 
 import java.util.*;
 import java.util.stream.Collectors;
@@ -22,6 +23,7 @@ import java.util.stream.IntStream;
  * 5. goto 1.
  * </p>
  */
+@Slf4j
 public class PredictionTree {
     /**
      * For debugging purposes
@@ -114,20 +116,19 @@ public class PredictionTree {
 
         List<PredictionTree> leaves = getLeaves(this);
 
-        System.out.println("XP(" + properties.skill.getName() + ", " + properties.scaling + "): " + xp + "xp hit: "+ hit.hit +
+        log.debug("XP(" + properties.skill.getName() + ", " + properties.scaling + "): " + xp + "xp hit: "+ hit.hit +
                 " leaves: " + leaves.size() + " true xp(-1): " + Predictor.computePrecise(hit.hit-1, properties) / 10d +
                 " true xp: " + Predictor.computePrecise(hit.hit, properties) / 10d +
                 " true xp(+1): " + Predictor.computePrecise(hit.hit + 1, properties) / 10d +
-                " target: " + (properties.npc != null ? properties.npc.getName() + "(idx: " + properties.npc.getIndex() + " ID: " + properties.npc.getId() + ")" : ""));
-        System.out.println("---");
+                " target: " + (properties.npc != null ? properties.npc.getName() + "(idx: " + properties.npc.getIndex() + " ID: " + properties.npc.getId() + ")" : "") + "\n---");
         if (leaves.isEmpty()) {
-            System.out.println("Leaves are empty");
+            log.debug("Leaves are empty");
         }
 
         int precise;
         for(PredictionTree leaf : leaves) {
             Set<Integer> avail = leaf.available;
-            System.out.println("Current guesses: " + avail);
+            log.debug("Current guesses: " + avail);
             assert (!avail.isEmpty()); // should never be empty, something is wrong
             int phigh = Predictor.computePrecise(hit.hit, properties);
             int plow = Predictor.computePrecise(hit.hit-1, properties);
@@ -148,7 +149,7 @@ public class PredictionTree {
 
                 if ((precise + getFrac(leaf)) / 10 != xp) {
                     leaf.dead = true;
-                    System.out.println("dead leaf");
+                    log.debug("dead leaf");
                     continue;
                 }
                 final int finalFrac = precise % 10;
@@ -156,7 +157,7 @@ public class PredictionTree {
                         .map(n -> (n + finalFrac) % 10)
                         .collect(Collectors.toSet());
 
-                System.out.println("Frac: " + leaf);
+                log.debug("Frac: " + leaf);
 
                 continue;
             }
@@ -165,19 +166,19 @@ public class PredictionTree {
             // branch on the higher hit
             if (high == xp) {
                 leaf.nobxp = createNoBxp(avail, phigh, xp, properties);
-                System.out.println("Creating nbxp high (" + phigh / 10d +") " + leaf.nobxp);
+                log.debug("Creating nbxp high (" + phigh / 10d +") " + leaf.nobxp);
             } else if (high + 1 == xp) {
                 leaf.bxp = createBxp(avail, phigh, xp, properties);
-                System.out.println("Creating bxp high (" + phigh / 10d +") " + leaf.bxp);
+                log.debug("Creating bxp high (" + phigh / 10d +") " + leaf.bxp);
             }
 
             // branch on the lower hit
             if (low == xp) {
                 leaf.nobxp = createNoBxp(avail, plow, xp, properties);
-                System.out.println("Creating nbxp low (" + plow / 10d + ") " + leaf.nobxp);
+                log.debug("Creating nbxp low (" + plow / 10d + ") " + leaf.nobxp);
             } else if (low != 0 && low + 1 == xp) {
                 leaf.bxp = createBxp(avail, plow, xp, properties);
-                System.out.println("Creating bxp low (" + plow / 10d + ") " + leaf.bxp);
+                log.debug("Creating bxp low (" + plow / 10d + ") " + leaf.bxp);
             }
             leaf.dead = leaf.bxp == null && leaf.nobxp == null;
         }

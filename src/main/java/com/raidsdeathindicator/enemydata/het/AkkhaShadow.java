@@ -1,6 +1,7 @@
 package com.raidsdeathindicator.enemydata.het;
 
 import com.raidsdeathindicator.enemydata.Enemy;
+import lombok.extern.slf4j.Slf4j;
 import net.runelite.api.NPC;
 
 public class AkkhaShadow extends Enemy {
@@ -16,14 +17,6 @@ public class AkkhaShadow extends Enemy {
             stats.scaled_health = ((stats.scaled_health + (roundTo / 2)) / roundTo) * roundTo;
             stats.current_health = stats.scaled_health;
         }
-    }
-
-    @Override
-    public boolean queueDamage(int damage) {
-        boolean died = super.queueDamage(damage);
-        int queuedDamage = getQueuedDamage();
-        System.out.println("Shadow current " + stats.current_health + " queued " + queuedDamage);
-        return died;
     }
 
     @Override

@@ -4,9 +4,11 @@ import com.raidsdeathindicator.enemydata.Enemy;
 import lombok.Getter;
 import lombok.Setter;
 import lombok.experimental.Accessors;
+import lombok.extern.slf4j.Slf4j;
 import net.runelite.api.NPC;
 import net.runelite.api.NpcID;
 
+@Slf4j
 @Getter
 @Setter
 @Accessors(fluent = true)
@@ -33,8 +35,9 @@ public class Akkha  extends Enemy {
         final int phase_health = max_health / 5;
         // compute what the threshold for the next phase is
         final int next_phase = (stats.current_health / phase_health) * phase_health;
+        // This causes her to be highlighted a few hits post shadow, can't fix due to veng being able to overkill too
         shouldDraw = stats.current_health != max_health && (stats.current_health - queuedDamage) <= next_phase;
-        System.out.println("Akkha: current " + stats.current_health + " queued " + queuedDamage + " next phase: " + next_phase + " draw: " + shouldDraw);
+        log.debug("Akkha: current " + stats.current_health + " queued " + queuedDamage + " next phase: " + next_phase + " draw: " + shouldDraw);
         return shouldDraw;
     }
 
