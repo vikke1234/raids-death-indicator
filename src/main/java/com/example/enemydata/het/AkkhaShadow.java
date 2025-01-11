@@ -9,6 +9,11 @@ public class AkkhaShadow extends Enemy {
                 70, 100, 140, 30,
                 115, 30,
                 60, 120, 120);
+        if (stats.scaled_health > 100)
+        {
+            final int roundTo = stats.scaled_health > 300 ? 10 : 5;
+            stats.current_health = ((stats.scaled_health + (roundTo / 2)) / roundTo) * roundTo;
+        }
     }
 
     @Override
@@ -17,5 +22,15 @@ public class AkkhaShadow extends Enemy {
         int queuedDamage = getQueuedDamage();
         System.out.println("Shadow current " + stats.current_health + " queued " + queuedDamage);
         return died;
+    }
+
+    @Override
+    public void fixupStats(int invo, int partySize, int pathLevel) {
+        super.fixupStats(invo, partySize, pathLevel);
+        if (stats.scaled_health > 100)
+        {
+            final int roundTo = stats.scaled_health > 300 ? 10 : 5;
+            stats.current_health = ((stats.scaled_health + (roundTo / 2)) / roundTo) * roundTo;
+        }
     }
 }
