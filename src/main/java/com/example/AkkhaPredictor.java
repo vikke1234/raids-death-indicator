@@ -374,6 +374,10 @@ public class AkkhaPredictor extends Plugin
 			int amount = hit.getHitsplat().getAmount();
 			int hp = enemy.hit(amount);
 			log.debug("Damage: " + amount + " " + hit.getActor().getName() + " (" + hp +")");
+
+			if (hp <= 0) {
+				activeEnemies.remove(npc.getIndex());
+			}
 		}
 	}
 
