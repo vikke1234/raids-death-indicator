@@ -1,0 +1,18 @@
+package com.raidsdeathindicator.enemydata.ampken;
+
+import com.raidsdeathindicator.enemydata.Enemy;
+import net.runelite.api.NPC;
+import net.runelite.api.NpcID;
+
+public class Brawler extends Enemy {
+    public Brawler(NPC npc, int invocation, int partySize, int pathLevel) {
+        // For solo 380, this should likely be have a scaling of 1.12?
+        super(npc, invocation, partySize, pathLevel,
+                npc.getId() == NpcID.BABOON_BRAWLER ? 25 : 30, // health
+                npc.getId() == NpcID.BABOON_BRAWLER ? 40 : 60, // att
+                npc.getId() == NpcID.BABOON_BRAWLER ? 40 : 60, // str
+                npc.getId() == NpcID.BABOON_BRAWLER ? 12 : 20, // def
+                npc.getId() == NpcID.BABOON_BRAWLER ? 20 : 25, // offatt
+                0, 900, 900, 900, true);
+    }
+}
