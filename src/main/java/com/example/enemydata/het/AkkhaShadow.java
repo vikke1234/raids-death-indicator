@@ -9,13 +9,13 @@ public class AkkhaShadow extends Enemy {
                 70, 100, 140, 30,
                 115, 30,
                 60, 120, 120);
-            // scale to nearest 10
-            stats.scaled_health = (int) (Math.round(stats.scaled_health / 10.0) * 10);
-            stats.current_health = stats.scaled_health;
     }
 
     @Override
     public boolean queueDamage(int damage) {
-        return super.queueDamage(damage);
+        boolean died = super.queueDamage(damage);
+        int queuedDamage = getQueuedDamage();
+        System.out.println("Shadow current " + stats.current_health + " queued " + queuedDamage);
+        return died;
     }
 }
