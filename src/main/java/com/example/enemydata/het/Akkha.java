@@ -5,6 +5,7 @@ import lombok.Getter;
 import lombok.Setter;
 import lombok.experimental.Accessors;
 import net.runelite.api.NPC;
+import net.runelite.api.NpcID;
 
 @Getter
 @Setter
@@ -45,5 +46,15 @@ public class Akkha  extends Enemy {
     @Override
     public boolean shouldHighlight() {
         return shouldDraw;
+    }
+
+    /**
+     * Check if the npc id is Akkha. This is required due to the memory special making Akkha disappear and
+     * "dies".
+     * @param id NPC id
+     * @return true if it's Akkha, false otherwise
+     */
+    public static boolean isAkkha(int id) {
+        return id == NpcID.AKKHA_11790 || id == NpcID.AKKHA_11791 || id == NpcID.AKKHA_11792 || id == NpcID.AKKHA_11793;
     }
 }

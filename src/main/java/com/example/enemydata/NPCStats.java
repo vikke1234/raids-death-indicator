@@ -102,9 +102,10 @@ public class NPCStats {
         return (defStab + defSlash + defCrush) / 3;
     }
 
-    public void hit(int damage) {
+    public int hit(int damage) {
         queuedDamage = Math.max(0, queuedDamage - damage);
         current_health -= damage;
+        return current_health;
     }
 
     public boolean queueDamage(int damage) {

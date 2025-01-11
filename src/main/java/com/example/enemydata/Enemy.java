@@ -128,8 +128,8 @@ public abstract class Enemy implements IEnemy {
         return Math.max(stats.getModifier(), 1.0d);
     }
 
-    public void hit(int damage) {
-        stats.hit(damage);
+    public int hit(int damage) {
+        return stats.hit(damage);
     }
 
     public int getQueuedDamage() {

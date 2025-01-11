@@ -1,6 +1,7 @@
 package com.example;
 
 import com.example.enemydata.Enemy;
+import com.example.enemydata.het.Akkha;
 import com.example.events.EntityDamaged;
 import com.example.utils.TriFunction;
 import com.google.inject.Provides;
@@ -151,8 +152,12 @@ public class AkkhaPredictor extends Plugin
 
 	@Subscribe
 	protected void onNpcDespawned(NpcDespawned event) {
+		NPC npc = event.getNpc();
 		System.out.println("NPC despawned: " + event.getNpc().getId() + " index: " + event.getNpc().getIndex());
-        activeEnemies.remove(event.getNpc().getIndex());
+		if (Akkha.isAkkha(npc.getId()) && !partyDead()) {
+			return;
+		}
+        activeEnemies.remove(npc.getIndex());
 	}
 
 	@Subscribe
@@ -367,8 +372,8 @@ public class AkkhaPredictor extends Plugin
 				return;
 			}
 			int amount = hit.getHitsplat().getAmount();
-			System.out.println("Damage: " + amount + " " + hit.getActor().getName());
-			enemy.hit(amount);
+			int hp = enemy.hit(amount);
+			System.out.println("Damage: " + amount + " " + hit.getActor().getName() + " (" + hp +")");
 		}
 	}
 
