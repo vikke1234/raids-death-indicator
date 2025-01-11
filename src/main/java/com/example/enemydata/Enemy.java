@@ -154,6 +154,4 @@ public abstract class Enemy implements IEnemy {
         // Should only happen before any npcs actually have been damaged
         stats.fixup(invo, partySize, pathLevel);
     }
-
-    public void nearbyDied(NPC npc) {}
 }
