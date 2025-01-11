@@ -126,13 +126,15 @@ public class AkkhaPredictor extends Plugin
 	}
 
 	private boolean partyDead() {
-		boolean alldead = false;
 
 		for (int i = Varbits.TOA_MEMBER_0_HEALTH; i <= Varbits.TOA_MEMBER_7_HEALTH; i++) {
-			 alldead |= client.getVarbitValue(i) == 1;
+			int value = client.getVarbitValue(i);
+			 if (value != 30 && value != 0) {
+				 return false;
+			 }
 		}
 
-		return alldead;
+		return true;
 	}
 
 	@Subscribe
@@ -154,7 +156,9 @@ public class AkkhaPredictor extends Plugin
 	protected void onNpcDespawned(NpcDespawned event) {
 		NPC npc = event.getNpc();
 		System.out.println("NPC despawned: " + event.getNpc().getId() + " index: " + event.getNpc().getIndex());
-		if (Akkha.isAkkha(npc.getId()) && !partyDead()) {
+		boolean isAkkha = Akkha.isAkkha(npc.getId());
+		boolean isPartyDead = partyDead();
+		if (isAkkha && !isPartyDead) {
 			return;
 		}
         activeEnemies.remove(npc.getIndex());
