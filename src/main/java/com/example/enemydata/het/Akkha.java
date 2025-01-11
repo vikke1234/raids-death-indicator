@@ -19,9 +19,8 @@ public class Akkha  extends Enemy {
                 115, 30,
                 60, 120, 120);
         canPhase = false;
-        // scale to nearest 10
-        stats.scaled_health = (int) (Math.round(stats.scaled_health / 10.0) * 10);
-        stats.current_health = stats.scaled_health;
+        // scale to nearest 10, leave scaled health as is, xp modifier is computed using the "real" hp
+        stats.current_health = (int) (Math.round(stats.scaled_health / 10.0) * 10);
     }
 
     @Override
@@ -29,7 +28,7 @@ public class Akkha  extends Enemy {
         super.queueDamage(damage);
         int queuedDamage = getQueuedDamage();
 
-        final int phase_health = stats.scaled_health / 5;
+        final int phase_health = (int) (Math.round(stats.scaled_health / 10.0) * 10) / 5;
         // compute what the threshold for the next phase is
         final int next_phase = (stats.current_health / phase_health) * phase_health;
         System.out.println("Akkha: current " + stats.current_health + " queued " + queuedDamage + " next phase: " + next_phase);
@@ -40,16 +39,11 @@ public class Akkha  extends Enemy {
     @Override
     public void fixupStats(int invo, int partySize, int pathLevel) {
         super.fixupStats(invo, partySize, pathLevel);
-        stats.scaled_health = (int) (Math.round(stats.scaled_health / 10.0) * 10);
-        stats.current_health = stats.scaled_health;
+        stats.current_health = (int) (Math.round(stats.scaled_health / 10.0) * 10);
     }
 
     @Override
     public boolean shouldHighlight() {
         return shouldDraw;
-    }
-
-    @Override
-    public void nearbyDied(NPC npc) {
     }
 }
