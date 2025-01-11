@@ -354,7 +354,7 @@ public class AkkhaPredictor extends Plugin
 	 */
 	@Subscribe
 	public void onHitsplatApplied(HitsplatApplied hit) {
-		if (!isAtToa() && hit.getHitsplat().getHitsplatType() == HitsplatID.HEAL) {
+		if (!isAtToa() || hit.getHitsplat().getHitsplatType() == HitsplatID.HEAL) {
 			return;
 		}
 		Actor actor = hit.getActor();
