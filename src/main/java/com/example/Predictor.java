@@ -63,6 +63,15 @@ public class Predictor {
     }
 
     /**
+     * Resets all skill prediction trees.
+     */
+    public void reset() {
+        if (!roots.isEmpty()) {
+            roots = new HashMap<>();
+        }
+    }
+
+    /**
      * Finds the hit that most closely represents the xp drop.
      * @param xp amount of xp received
      * @param properties

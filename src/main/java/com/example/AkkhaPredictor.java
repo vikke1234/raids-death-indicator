@@ -304,6 +304,7 @@ public class AkkhaPredictor extends Plugin
 	 */
 	private void preProcessXpDrop(Skill skill, int xp) {
 		if (!isAtToa()) {
+			predictor.reset();
 			return;
 		}
 
