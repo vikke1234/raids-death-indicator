@@ -245,16 +245,6 @@ public class PredictionTree {
         currentPath.remove(currentPath.size() - 1); // Backtrack
     }
 
-    // TODO: create a way to autogenerate new cases whenever the predictor fails.
-    public static void createTest(PredictionTree root) {
-        List<PredictionTree> path = findDeepestPath(root);
-
-        try (BufferedWriter writer = new BufferedWriter(new FileWriter("predictiontreetest.java"))) {
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
-    }
-
     public List<PredictionTree> getLeaves() {
         return PredictionTree.getLeaves(this);
     }
