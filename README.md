@@ -1,10 +1,12 @@
-# Akkha Predictor
-This plugin predicts whether Akkha will phase or not. It's NOT 100% accurate, this is due to fractional xp
-drops. Trust at your own risk.
+# Raids death indicator
+This plugin calculates the internal fraction and uses that to find out what you hit. Marks the NPCs as dead
+if it would be, can be inaccurate when it is not calibrated. Once calibrated it should be accurate.
+
+See [Docs](./docs.md) for how it works.
 
 TODO 
 --
-TOB: maiden crab procs, nylo might come implicitly
+~~TOB: maiden crab procs, nylo might come implicitly~~
 COX: Shamans, maybe melee/mage vangs, definitely olm mage hand and vesp portal, mystics and vasa
 
 Broken: kephri swarms, zebak jugs, kephri eggs (?)
