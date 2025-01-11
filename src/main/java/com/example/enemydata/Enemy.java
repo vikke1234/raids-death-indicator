@@ -10,6 +10,7 @@ import com.example.enemydata.scabaras.*;
 import com.example.enemydata.wardens.*;
 import com.example.utils.TriFunction;
 import lombok.Getter;
+import lombok.Setter;
 import net.runelite.api.NPC;
 import net.runelite.api.NpcID;
 
@@ -21,7 +22,8 @@ public abstract class Enemy implements IEnemy {
     public final NPCStats stats;
 
     @Getter
-    final NPC npc;
+    @Setter
+    NPC npc;
 
     static {
         enemies = new HashMap<>();

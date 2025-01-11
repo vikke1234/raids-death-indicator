@@ -29,11 +29,12 @@ public class Akkha  extends Enemy {
         super.queueDamage(damage);
         int queuedDamage = getQueuedDamage();
 
-        final int phase_health = (int) (Math.round(stats.scaled_health / 10.0) * 10) / 5;
+        final int max_health = (int) (Math.round(stats.scaled_health / 10.0) * 10);
+        final int phase_health = max_health / 5;
         // compute what the threshold for the next phase is
         final int next_phase = (stats.current_health / phase_health) * phase_health;
-        System.out.println("Akkha: current " + stats.current_health + " queued " + queuedDamage + " next phase: " + next_phase);
-        shouldDraw = stats.current_health != next_phase && (stats.current_health - queuedDamage) <= next_phase;
+        shouldDraw = stats.current_health != max_health && (stats.current_health - queuedDamage) <= next_phase;
+        System.out.println("Akkha: current " + stats.current_health + " queued " + queuedDamage + " next phase: " + next_phase + " draw: " + shouldDraw);
         return shouldDraw;
     }
 

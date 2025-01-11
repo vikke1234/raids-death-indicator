@@ -169,6 +169,8 @@ public class AkkhaPredictor extends Plugin
 		System.out.println("NPC spawned: " + event.getNpc().getId() + " index: " + event.getNpc().getIndex());
 		NPC npc = event.getNpc();
 		if (activeEnemies.containsKey(npc.getIndex())) {
+			Enemy enemy = activeEnemies.get(npc.getIndex());
+			enemy.setNpc(npc);
 			return;
 		}
 
