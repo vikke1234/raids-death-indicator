@@ -12,7 +12,9 @@ public class AkkhaShadow extends Enemy {
         if (stats.scaled_health > 100)
         {
             final int roundTo = stats.scaled_health > 300 ? 10 : 5;
-            stats.current_health = ((stats.scaled_health + (roundTo / 2)) / roundTo) * roundTo;
+            // Shadow does not work like akkha, it uses the rounded health in the xp modifier
+            stats.scaled_health = ((stats.scaled_health + (roundTo / 2)) / roundTo) * roundTo;
+            stats.current_health = stats.scaled_health;
         }
     }
 
@@ -30,7 +32,8 @@ public class AkkhaShadow extends Enemy {
         if (stats.scaled_health > 100)
         {
             final int roundTo = stats.scaled_health > 300 ? 10 : 5;
-            stats.current_health = ((stats.scaled_health + (roundTo / 2)) / roundTo) * roundTo;
+            stats.scaled_health = ((stats.scaled_health + (roundTo / 2)) / roundTo) * roundTo;
+            stats.current_health = stats.scaled_health;
         }
     }
 }
