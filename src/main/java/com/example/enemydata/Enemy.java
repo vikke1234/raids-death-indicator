@@ -124,6 +124,7 @@ public abstract class Enemy implements IEnemy {
     }
 
     public double getModifier() {
+        // TODO: verify that it can't be less than 0 (e.g. swarms)
         return Math.max(stats.getModifier(), 1.0d);
     }
 

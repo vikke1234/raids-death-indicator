@@ -155,6 +155,12 @@ public class Predictor {
         return computePrecise(hit, properties) / 10;
     }
 
+    /**
+     * Checks if the tree for a skill is accurate or not. The tree
+     * is accurate if there's only one leaf that is not dead in the tree.
+     * @param skill skill to check
+     * @return true if accurate, false if not
+     */
     public boolean isAccurate(Skill skill) {
         PredictionTree root = roots.getOrDefault(skill, null);
         if (root == null) {
@@ -164,6 +170,13 @@ public class Predictor {
         return frac != -1;
     }
 
+    /**
+     * Inserts an xp node into the prediction tree.
+     *
+     * @param xp amount of xp received
+     * @param scaling scaling of the monster attacked
+     * @param props properties related to attack
+     */
     public void insertInto(int xp, double scaling, @NonNull Properties props) {
         if (!roots.containsKey(props.skill)) {
             roots.put(props.skill, PredictionTree.createRoot());
@@ -185,6 +198,12 @@ public class Predictor {
         System.setOut(original);
     }
 
+    /**
+     * Predicts a hit, if the tree isn't accurate it falls back to primitive methods.
+     * @param xp xp received
+     * @param props properties of the hit
+     * @return expected hit
+     */
     public int treePredict(int xp, @NonNull Properties props) {
         if (!roots.containsKey(props.skill)) {
             roots.put(props.skill, PredictionTree.createRoot());

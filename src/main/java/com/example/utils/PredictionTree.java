@@ -112,6 +112,7 @@ public class PredictionTree {
         if (xp == 0) {
             return;
         }
+        // TODO: should this just be passed into the function?
         Predictor.Hit hit = Predictor.findHit(xp, properties);
 
         List<PredictionTree> leaves = getLeaves(this);
@@ -213,6 +214,11 @@ public class PredictionTree {
         return nodes;
     }
 
+    /**
+     * DFS for the tree.
+     * @param root root of tree
+     * @return list of nodes with no leaves
+     */
     private static List<PredictionTree> findDeepestPath(PredictionTree root) {
         List<PredictionTree> deepestPath = new ArrayList<>();
         findDeepestPathHelper(root, new ArrayList<>(), deepestPath);
