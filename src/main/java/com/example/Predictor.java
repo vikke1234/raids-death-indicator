@@ -39,7 +39,6 @@ public class Predictor {
     public Predictor() {
         roots = new HashMap<>();
         logSkills = new HashSet<>();
-        logSkills.add(Skill.DEFENCE);
     }
 
     @Deprecated
@@ -81,8 +80,10 @@ public class Predictor {
         boolean possibleBxp = false;
         boolean bxp = false;
         int hit;
-        // 100 is a high number, will cover all the possible hits
-        for (hit = 0; hit <= 100; hit++) {
+        // 200 is a high number, will cover all the possible hits,
+        // perhaps one day I'll make it compute the real max hit...
+        // Today is not that day.
+        for (hit = 0; hit <= 200; hit++) {
             int drop = computeDrop(hit, properties);
             if (drop > xp) {
                 hit--;
