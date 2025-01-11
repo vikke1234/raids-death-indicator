@@ -6,9 +6,6 @@ import lombok.NonNull;
 import net.runelite.api.NPC;
 import net.runelite.api.Skill;
 
-import java.io.IOException;
-import java.io.OutputStream;
-import java.io.PrintStream;
 import java.util.*;
 
 /**
@@ -16,7 +13,6 @@ import java.util.*;
  */
 public class Predictor {
     Map<Skill, PredictionTree> roots;
-    Set<Skill> logSkills;
 
     @AllArgsConstructor
     public static class Properties {
@@ -38,7 +34,6 @@ public class Predictor {
 
     public Predictor() {
         roots = new HashMap<>();
-        logSkills = new HashSet<>();
     }
 
     @Deprecated
@@ -182,21 +177,8 @@ public class Predictor {
         if (!roots.containsKey(props.skill)) {
             roots.put(props.skill, PredictionTree.createRoot());
         }
-        // Disable printing for this skill, TODO: remove for real release
-        PrintStream original = System.out;
-        if (!logSkills.contains(props.skill)) {
-            PrintStream dummy = new PrintStream(new OutputStream() {
-                @Override
-                public void write(int b) throws IOException {
-                    //noop
-                }
-            });
-            System.setOut(dummy);
-        }
         PredictionTree root = roots.get(props.skill);
         root.insertInto(xp, props);
-
-        System.setOut(original);
     }
 
     /**
