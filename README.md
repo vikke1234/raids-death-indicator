@@ -11,3 +11,5 @@ COX: Shamans, maybe melee/mage vangs, definitely olm mage hand and vesp portal, 
 
 Broken: kephri swarms, zebak jugs, kephri eggs (?)
 verify: spitter, arcane, soldier
+
+Fix prediction tree based on hitsplat
