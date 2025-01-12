@@ -207,6 +207,8 @@ public class AkkhaPredictor extends Plugin
 	protected void shutDown() throws Exception
 	{
 		previousXps = null;
+		overlayManager.remove(overlay);
+		wsClient.unregisterMessage(EntityDamaged.class);
 	}
 
 	public boolean isAtToa() {
