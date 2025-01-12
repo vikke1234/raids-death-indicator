@@ -36,7 +36,7 @@ public class Akkha  extends Enemy {
         // compute what the threshold for the next phase is
         final int next_phase = (stats.current_health / phase_health) * phase_health;
         // This causes her to be highlighted a few hits post shadow, can't fix due to veng being able to overkill too
-        shouldDraw = stats.current_health != max_health && (stats.current_health - queuedDamage) <= next_phase;
+        shouldDraw = stats.current_health != next_phase && (stats.current_health - queuedDamage) <= next_phase;
         log.debug("Akkha: current " + stats.current_health + " queued " + queuedDamage + " next phase: " + next_phase + " draw: " + shouldDraw);
         return shouldDraw;
     }
