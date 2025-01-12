@@ -11,12 +11,14 @@ import com.example.enemydata.wardens.*;
 import com.example.utils.TriFunction;
 import lombok.Getter;
 import lombok.Setter;
+import lombok.extern.slf4j.Slf4j;
 import net.runelite.api.NPC;
 import net.runelite.api.NpcID;
 
 import java.util.HashMap;
 import java.util.Map;
 
+@Slf4j
 public abstract class Enemy implements IEnemy {
     public static Map<Integer, TriFunction<NPC, Integer, Integer, Integer, Enemy>> enemies;
     public final NPCStats stats;
@@ -130,11 +132,11 @@ public abstract class Enemy implements IEnemy {
         return Math.max(stats.getModifier(), 1.0d);
     }
 
-    public int hit(int damage) {
+    public synchronized int hit(int damage) {
         return stats.hit(damage);
     }
 
-    public int getQueuedDamage() {
+    public synchronized int getQueuedDamage() {
         return stats.queuedDamage;
     }
 
@@ -143,8 +145,11 @@ public abstract class Enemy implements IEnemy {
      * @param damage damage dealt.
      * @return true if the mob died, false if not.
      */
-    public boolean queueDamage(int damage) {
+    public synchronized boolean queueDamage(int damage) {
         boolean died = stats.queueDamage(damage);
+        if (died) {
+            log.info("marking dead");
+        }
         npc.setDead(died);
         return died;
     }
