@@ -172,9 +172,14 @@ public class AkkhaPredictor extends Plugin
 			// Re-sync the health of the enemy (akkha) when it re-appears in case of hits during invuln
 			Widget healthWidget = client.getWidget(ComponentID.HEALTH_HEALTHBAR_TEXT);
 			if (healthWidget != null) {
-				int newHealth = Integer.parseInt(healthWidget.getText().split(" ")[0]);
-				System.out.println("setting hp to: " + newHealth);
-				enemy.setCurrentHealth(newHealth);
+				String hpStr = healthWidget.getText().split(" ")[0];
+				try {
+					int newHealth = Integer.parseInt(hpStr);
+					System.out.println("setting hp to: " + newHealth);
+					enemy.setCurrentHealth(newHealth);
+				} catch(NumberFormatException e) {
+					// noop, probably percentage used
+				}
 			} else {
 				// Roughly correct at least
 				enemy.hit(enemy.getQueuedDamage());
