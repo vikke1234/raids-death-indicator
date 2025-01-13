@@ -177,8 +177,9 @@ public class AkkhaPredictor extends Plugin
 					int newHealth = Integer.parseInt(hpStr);
 					System.out.println("setting hp to: " + newHealth);
 					enemy.setCurrentHealth(newHealth);
+					enemy.setQueuedDamage(0);
 				} catch(NumberFormatException e) {
-					// noop, probably percentage used
+					enemy.hit(enemy.getQueuedDamage());
 				}
 			} else {
 				// Roughly correct at least

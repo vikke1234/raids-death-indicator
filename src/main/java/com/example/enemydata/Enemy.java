@@ -150,6 +150,10 @@ public abstract class Enemy implements IEnemy {
         return stats.queuedDamage;
     }
 
+    public synchronized void setQueuedDamage(int queuedDamage) {
+        stats.queuedDamage = queuedDamage;
+    }
+
     /**
      * Queues damage and counts if the enemy will die to it.
      * @param damage damage dealt.
