@@ -4,9 +4,6 @@ import com.example.Predictor;
 import com.google.gson.annotations.SerializedName;
 import lombok.extern.slf4j.Slf4j;
 
-import java.io.BufferedWriter;
-import java.io.FileWriter;
-import java.io.IOException;
 import java.util.*;
 import java.util.stream.Collectors;
 import java.util.stream.IntStream;
@@ -33,10 +30,13 @@ public class PredictionTree {
      */
     @SerializedName("xp")
     public int xp;
+
+    public int damage;
     @SerializedName("properties")
     public Predictor.Properties properties;
 
     public PredictionTree nobxp;
+
     public PredictionTree bxp;
 
     /**
@@ -86,6 +86,7 @@ public class PredictionTree {
     private PredictionTree(int xp, Predictor.Properties properties) {
         this.xp = xp;
         this.properties = properties;
+        this.damage = 0;
     }
 
     private PredictionTree createBxp(Set<Integer> avail, int preciseXp, int xp, Predictor.Properties properties) {
@@ -119,19 +120,19 @@ public class PredictionTree {
 
         List<PredictionTree> leaves = getLeaves(this);
 
-        log.debug("XP(" + properties.skill.getName() + ", " + properties.scaling + "): " + xp + "xp hit: "+ hit.hit +
+        log.info("XP(" + properties.skill.getName() + ", " + properties.scaling + "): " + xp + "xp hit: "+ hit.hit +
                 " leaves: " + leaves.size() + " true xp(-1): " + Predictor.computePrecise(hit.hit-1, properties) / 10d +
                 " true xp: " + Predictor.computePrecise(hit.hit, properties) / 10d +
                 " true xp(+1): " + Predictor.computePrecise(hit.hit + 1, properties) / 10d +
                 " target: " + (properties.npc != null ? properties.npc.getName() + "(idx: " + properties.npc.getIndex() + " ID: " + properties.npc.getId() + ")" : "") + "\n---");
         if (leaves.isEmpty()) {
-            log.debug("Leaves are empty");
+            log.info("Leaves are empty");
         }
 
         int precise;
         for(PredictionTree leaf : leaves) {
             Set<Integer> avail = leaf.available;
-            log.debug("Current guesses: " + avail);
+            log.info("Current guesses: " + avail);
             assert (!avail.isEmpty()); // should never be empty, something is wrong
             int phigh = Predictor.computePrecise(hit.hit, properties);
             int plow = Predictor.computePrecise(hit.hit-1, properties);
@@ -152,7 +153,7 @@ public class PredictionTree {
 
                 if ((precise + getFrac(leaf)) / 10 != xp) {
                     leaf.dead = true;
-                    log.debug("dead leaf");
+                    log.info("dead leaf");
                     continue;
                 }
                 final int finalFrac = precise % 10;
@@ -160,7 +161,7 @@ public class PredictionTree {
                         .map(n -> (n + finalFrac) % 10)
                         .collect(Collectors.toSet());
 
-                log.debug("Frac: " + leaf);
+                log.info("Frac: " + leaf);
 
                 continue;
             }
@@ -169,19 +170,19 @@ public class PredictionTree {
             // branch on the higher hit
             if (high == xp) {
                 leaf.nobxp = createNoBxp(avail, phigh, xp, properties);
-                log.debug("Creating nbxp high (" + phigh / 10d +") " + leaf.nobxp);
+                log.info("Creating nbxp high (" + phigh / 10d +") " + leaf.nobxp);
             } else if (high + 1 == xp) {
                 leaf.bxp = createBxp(avail, phigh, xp, properties);
-                log.debug("Creating bxp high (" + phigh / 10d +") " + leaf.bxp);
+                log.info("Creating bxp high (" + phigh / 10d +") " + leaf.bxp);
             }
 
             // branch on the lower hit
             if (low == xp) {
                 leaf.nobxp = createNoBxp(avail, plow, xp, properties);
-                log.debug("Creating nbxp low (" + plow / 10d + ") " + leaf.nobxp);
+                log.info("Creating nbxp low (" + plow / 10d + ") " + leaf.nobxp);
             } else if (low != 0 && low + 1 == xp) {
                 leaf.bxp = createBxp(avail, plow, xp, properties);
-                log.debug("Creating bxp low (" + plow / 10d + ") " + leaf.bxp);
+                log.info("Creating bxp low (" + plow / 10d + ") " + leaf.bxp);
             }
             leaf.dead = leaf.bxp == null && leaf.nobxp == null;
         }
@@ -231,7 +232,7 @@ public class PredictionTree {
 
         currentPath.add(node);
 
-        if (node.nobxp == null && node.bxp == null) {
+        if (isLeaf(node)) {
             // Leaf node, check if this path is deeper
             if (currentPath.size() > deepestPath.size()) {
                 deepestPath.clear();
@@ -252,5 +253,13 @@ public class PredictionTree {
 
     public static boolean isLeaf(PredictionTree tree) {
         return tree.nobxp == null && tree.bxp == null && !tree.dead;
+    }
+
+    /**
+     * Places damage dealt into the tree and marks paths that are impossible as dead, additionally fixes fractions.
+     * @param damage
+     */
+    public void retroFit(int damage) {
+
     }
 }

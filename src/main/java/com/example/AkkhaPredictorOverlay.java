@@ -1,7 +1,9 @@
 package com.example;
 
 import com.example.enemydata.Enemy;
+import lombok.extern.slf4j.Slf4j;
 import net.runelite.api.Client;
+import net.runelite.api.NPC;
 import net.runelite.api.Skill;
 import net.runelite.client.ui.overlay.Overlay;
 import net.runelite.client.ui.overlay.OverlayPosition;
@@ -10,6 +12,7 @@ import net.runelite.client.ui.overlay.outline.ModelOutlineRenderer;
 import javax.inject.Inject;
 import java.awt.*;
 
+@Slf4j
 public class AkkhaPredictorOverlay extends Overlay {
     private final AkkhaPredictor plugin;
     private final AkkhaPredictorConfig config;
@@ -32,7 +35,8 @@ public class AkkhaPredictorOverlay extends Overlay {
 
         for (Enemy enemy : enemies.values()) {
             if (enemy.shouldHighlight()) {
-                renderPoly(graphics, null, 0, config.highlightColor(), enemy.getNpc().getConvexHull());
+                NPC npc = enemy.getNpc();
+                renderPoly(graphics, null, 0, config.highlightColor(), npc.getConvexHull());
             }
         }
 

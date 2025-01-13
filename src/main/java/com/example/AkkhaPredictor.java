@@ -362,7 +362,8 @@ public class AkkhaPredictor extends Plugin
 	 */
 	@Subscribe
 	public void onHitsplatApplied(HitsplatApplied hit) {
-		if (!isAtToa() || hit.getHitsplat().getHitsplatType() == HitsplatID.HEAL) {
+		Hitsplat hitsplat = hit.getHitsplat();
+		if (!isAtToa() || (hitsplat.getHitsplatType() == HitsplatID.HEAL && hitsplat.getAmount() > 0)) {
 			return;
 		}
 		Actor actor = hit.getActor();
@@ -370,12 +371,12 @@ public class AkkhaPredictor extends Plugin
 			NPC npc = (NPC) actor;
 			Enemy enemy = activeEnemies.getOrDefault(npc.getIndex(), null);
 			if (enemy == null) {
-				log.debug("Unknown target: " + npc.getId() + " index: " + npc.getIndex());
+				log.info("Unknown target: " + npc.getId() + " index: " + npc.getIndex());
 				return;
 			}
-			int amount = hit.getHitsplat().getAmount();
+			int amount = hitsplat.getAmount();
 			int hp = enemy.hit(amount);
-			log.debug("Damage: " + amount + " " + hit.getActor().getName() + " (" + hp +")");
+			log.info("Damage: " + amount + " " + hit.getActor().getName() + " (" + hp +")");
 
 			if (hp <= 0) {
 				activeEnemies.remove(npc.getIndex());
