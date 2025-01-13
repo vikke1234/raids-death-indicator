@@ -169,6 +169,16 @@ public class AkkhaPredictor extends Plugin
 		if (activeEnemies.containsKey(npc.getIndex())) {
 			Enemy enemy = activeEnemies.get(npc.getIndex());
 			enemy.setNpc(npc);
+			// Re-sync the health of the enemy (akkha) when it re-appears in case of hits during invuln
+			Widget healthWidget = client.getWidget(ComponentID.HEALTH_HEALTHBAR_TEXT);
+			if (healthWidget != null) {
+				int newHealth = Integer.parseInt(healthWidget.getText().split(" ")[0]);
+				System.out.println("setting hp to: " + newHealth);
+				enemy.setCurrentHealth(newHealth);
+			} else {
+				// Roughly correct at least
+				enemy.hit(enemy.getQueuedDamage());
+			}
 			return;
 		}
 
@@ -178,6 +188,7 @@ public class AkkhaPredictor extends Plugin
 		}
 
 		Enemy enemy = constructor.apply(npc, getInvocation(), getPartySize(), getPathLevel());
+		enemy.setClient(client);
 
 		activeEnemies.put(npc.getIndex(), enemy);
 	}
@@ -266,6 +277,7 @@ public class AkkhaPredictor extends Plugin
 			if (enemy == null) {
 				return;
 			}
+			enemy.setClient(client);
 			activeEnemies.put(npc.getIndex(), enemy);
 		}
 
@@ -341,7 +353,6 @@ public class AkkhaPredictor extends Plugin
 
 		Integer npcIndex = entityDamaged.getNpcIndex();
 		Enemy enemy = activeEnemies.getOrDefault(npcIndex, null);
-		assert (enemy != null);
 		enemy.queueDamage(entityDamaged.getDamage());
 	}
 

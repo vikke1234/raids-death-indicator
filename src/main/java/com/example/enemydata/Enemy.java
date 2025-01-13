@@ -12,6 +12,7 @@ import com.example.utils.TriFunction;
 import lombok.Getter;
 import lombok.Setter;
 import lombok.extern.slf4j.Slf4j;
+import net.runelite.api.Client;
 import net.runelite.api.NPC;
 import net.runelite.api.NpcID;
 
@@ -26,6 +27,10 @@ public abstract class Enemy implements IEnemy {
     @Getter
     @Setter
     NPC npc;
+
+    @Setter
+    @Getter
+    Client client;
 
     static {
         enemies = new HashMap<>();
@@ -127,6 +132,11 @@ public abstract class Enemy implements IEnemy {
                 defStab, defSlash, defCrush, false);
     }
 
+    public void setCurrentHealth(int hp) {
+        if (hp >= 0) {
+            stats.current_health = hp;
+        }
+    }
     public double getModifier() {
         // TODO: verify that it can't be less than 0 (e.g. swarms)
         return Math.max(stats.getModifier(), 1.0d);

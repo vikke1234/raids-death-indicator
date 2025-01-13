@@ -5,6 +5,7 @@ import lombok.Builder;
 import java.util.HashMap;
 import java.util.Map;
 
+// TODO: should probably be merged with Enemy, dunno why this is its own class
 @Builder(builderMethodName = "hiddenBuilder")
 public class NPCStats {
 
@@ -56,10 +57,18 @@ public class NPCStats {
 
     public static NPCStatsBuilder builder(int invocation, int partySize, int pathLevel, int baseHealth, boolean isPuzzle) {
         int scaled = getScaledHealth(invocation, partySize, pathLevel, baseHealth, isPuzzle);
-        return hiddenBuilder().isPuzzle(isPuzzle).base_health(baseHealth).scaled_health(scaled).current_health(scaled).invocation(invocation).partySize(partySize).pathLevel(pathLevel);
+        return hiddenBuilder()
+                .isPuzzle(isPuzzle)
+                .base_health(baseHealth)
+                .scaled_health(scaled)
+                .current_health(scaled)
+                .invocation(invocation)
+                .partySize(partySize)
+                .pathLevel(pathLevel)
+                .queuedDamage(0);
     }
     public static NPCStatsBuilder builder(int baseHealth, boolean isPuzzle) {
-        return hiddenBuilder().base_health(baseHealth).isPuzzle(isPuzzle);
+        return hiddenBuilder().base_health(baseHealth).isPuzzle(isPuzzle).queuedDamage(0);
     }
 
     public void fixup(int invocation, int partySize, int pathLevel) {
@@ -103,6 +112,7 @@ public class NPCStats {
     }
 
     public int hit(int damage) {
+        // Thrall damage will "underflow" this, though it's fine.
         queuedDamage = Math.max(0, queuedDamage - damage);
         current_health -= damage;
         return current_health;
