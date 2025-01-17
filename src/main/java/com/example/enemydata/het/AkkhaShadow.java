@@ -16,6 +16,7 @@ public class AkkhaShadow extends Enemy {
             scaled_health = ((scaled_health + (roundTo / 2)) / roundTo) * roundTo;
             current_health = scaled_health;
         }
+        hideOnDeath = false;
     }
 
     @Override
@@ -27,5 +28,11 @@ public class AkkhaShadow extends Enemy {
             scaled_health = ((scaled_health + (roundTo / 2)) / roundTo) * roundTo;
             current_health = scaled_health;
         }
+    }
+
+    @Override
+    public synchronized boolean queueDamage(int damage) {
+        shouldDraw = super.queueDamage(damage);
+        return shouldDraw;
     }
 }

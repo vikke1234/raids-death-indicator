@@ -24,6 +24,7 @@ public abstract class Enemy implements IEnemy {
     public static Map<Integer, TriFunction<NPC, Integer, Integer, Integer, Enemy>> enemies;
     public int queuedDamage;
     public boolean shouldDraw;
+    protected boolean hideOnDeath;
 
     public int invocation;
     public int partySize;
@@ -143,6 +144,9 @@ public abstract class Enemy implements IEnemy {
             this.invocation = invocation;
             this.partySize = partySize;
             this.pathLevel = pathLevel;
+            this.scaled_health = getScaledHealth(invocation, partySize,
+                    pathLevel, baseHealth, isPuzzle);
+            this.current_health = this.scaled_health;
         }
 
         this.base_health = baseHealth;
@@ -156,6 +160,8 @@ public abstract class Enemy implements IEnemy {
         this.defCrush = defCrush;
         this.isPuzzle = isPuzzle;
         this.shouldDraw = false;
+        this.hideOnDeath = true;
+        this.queuedDamage = 0;
     }
     protected Enemy(NPC npc, int invocation, int partySize, int pathLevel,
           int baseHealth, int attack, int str, int def,
@@ -196,12 +202,15 @@ public abstract class Enemy implements IEnemy {
     public synchronized boolean queueDamage(int damage) {
         queuedDamage += damage;
         boolean died = queuedDamage >= current_health;
-        npc.setDead(died);
+        if (died)
+            System.out.println("marking died");
+
+        npc.setDead(died && hideOnDeath);
         return died;
     }
 
     public boolean shouldHighlight() {
-        return false;
+        return shouldDraw;
     }
 
     public void fixupStats(int invocation, int partySize, int pathLevel) {
@@ -216,7 +225,7 @@ public abstract class Enemy implements IEnemy {
     public double getModifier() {
         double avgs = Math.floor((getAvgLevel() * (getAvgDef() + offStr + offAtt)) / 5120d);
         avgs /= 40d;
-        return 1 + avgs;
+        return Math.max(1.0d, 1 + avgs);
     }
 
     public int getScaledHealth() {

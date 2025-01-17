@@ -23,6 +23,7 @@ public class Akkha  extends Enemy {
         canPhase = false;
         // scale to nearest 10, leave scaled health as is, xp modifier is computed using the "real" hp
         current_health = (int) (Math.round(scaled_health / 10.0) * 10);
+        hideOnDeath = false;
     }
 
     @Override
@@ -44,11 +45,6 @@ public class Akkha  extends Enemy {
     public void fixupStats(int invo, int partySize, int pathLevel) {
         super.fixupStats(invo, partySize, pathLevel);
         current_health = (int) (Math.round(scaled_health / 10.0) * 10);
-    }
-
-    @Override
-    public boolean shouldHighlight() {
-        return shouldDraw;
     }
 
     /**
