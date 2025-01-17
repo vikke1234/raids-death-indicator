@@ -10,15 +10,15 @@ public class Kephri extends Enemy {
                 150, 0, 0, 80,
                 0, 0,
                 60, 300, 100);
-        stats.scaled_health = (int) (Math.round(stats.scaled_health / 10.0) * 10);
-        stats.current_health = stats.scaled_health;
+        scaled_health = (int) (Math.round(scaled_health / 10.0) * 10);
+        current_health = scaled_health;
     }
 
     @Override
     public void fixupStats(int invo, int partySize, int pathLevel) {
         super.fixupStats(invo, partySize, pathLevel);
-        stats.scaled_health = (int) (Math.round(stats.scaled_health / 10.0) * 10);
-        stats.current_health = stats.scaled_health;
+        scaled_health = (int) (Math.round(scaled_health / 10.0) * 10);
+        current_health = scaled_health;
     }
 
     /**

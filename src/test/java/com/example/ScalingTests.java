@@ -410,7 +410,7 @@ public class ScalingTests {
     public void testMageScaling() {
         TestNPC npc = new TestNPC(NpcID.BABOON_MAGE);
         Mage mage = new Mage(npc, 515, 1, 2);
-        assertEquals(12, mage.stats.getScaledHealth());
+        assertEquals(12, mage.getScaledHealth());
         assertEquals(1.1, mage.getModifier(), delta);
         npc = new TestNPC(NpcID.BABOON_MAGE_11714);
         mage = new Mage(npc, 515, 1, 2);
@@ -455,11 +455,11 @@ public class ScalingTests {
         TestNPC kephriNpc = new TestNPC(NpcID.KEPHRI);
         Kephri kephri = new Kephri(kephriNpc, 305, 1, 0);
         assertEquals(1.075, kephri.getModifier(), delta);
-        assertEquals(330, kephri.stats.getScaledHealth());
+        assertEquals(330, kephri.getScaledHealth());
 
         TestNPC kephri721Npc = new TestNPC(NpcID.KEPHRI);
         Kephri721 kephri721 = new Kephri721(kephri721Npc, 305, 1, 0);
-        assertEquals(180, kephri721.stats.getScaledHealth());
+        assertEquals(180, kephri721.getScaledHealth());
         assertEquals(1.025, kephri721.getModifier(), delta);
     }
 

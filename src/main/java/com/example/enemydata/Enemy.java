@@ -22,7 +22,30 @@ import java.util.Map;
 @Slf4j
 public abstract class Enemy implements IEnemy {
     public static Map<Integer, TriFunction<NPC, Integer, Integer, Integer, Enemy>> enemies;
-    public final NPCStats stats;
+    public int queuedDamage;
+    public boolean shouldDraw;
+
+    public int invocation;
+    public int partySize;
+    public int pathLevel;
+
+    public final int base_health;
+    // TODO: this may require some rework, akkha for example computes the xp modifier before rounding hp
+    public int scaled_health;
+    public int current_health;
+
+    private final int attack;
+    private final int str;
+    private final int def;
+    private final int offAtt;
+    private final int offStr;
+    private final int defStab;
+    private final int defSlash;
+    private final int defCrush;
+    private final boolean isPuzzle;
+
+    private static final Map<Integer, Double> teamScaling;
+    private static final Map<Integer, Double> pathScaling;
 
     @Getter
     @Setter
@@ -33,6 +56,25 @@ public abstract class Enemy implements IEnemy {
     Client client;
 
     static {
+        teamScaling = new HashMap<>();
+        teamScaling.put(1, 1.0);
+        teamScaling.put(2, 1.9);
+        teamScaling.put(3, 2.8);
+        teamScaling.put(4, 3.4);
+        teamScaling.put(5, 4.0);
+        teamScaling.put(6, 4.6);
+        teamScaling.put(7, 5.2);
+        teamScaling.put(8, 5.8);
+
+        pathScaling = new HashMap<>();
+        pathScaling.put(0, 1.0);
+        pathScaling.put(1, 1.08);
+        pathScaling.put(2, 1.13);
+        pathScaling.put(3, 1.18);
+        pathScaling.put(4, 1.23);
+        pathScaling.put(5, 1.28);
+        pathScaling.put(6, 1.33);
+
         enemies = new HashMap<>();
         enemies.put(NpcID.AKKHA, Akkha::new);
         enemies.put(NpcID.AKKHA_11790, Akkha::new);
@@ -96,30 +138,24 @@ public abstract class Enemy implements IEnemy {
         assert(partySize <= 8 && partySize >= 1);
         assert((invocation % 5) == 0);
         this.npc = npc;
-        if (pathLevel < 0) {
-            // Something went wrong with the widget things
-            stats = NPCStats.builder(baseHealth, isPuzzle)
-                    .attack(attack)
-                    .str(str)
-                    .def(def)
-                    .offAtt(offAtt)
-                    .offStr(offStr)
-                    .defStab(defStab)
-                    .defSlash(defSlash)
-                    .defCrush(defCrush)
-                    .build();
-        } else {
-            stats = NPCStats.builder(invocation, partySize, pathLevel, baseHealth, isPuzzle)
-                    .attack(attack)
-                    .str(str)
-                    .def(def)
-                    .offAtt(offAtt)
-                    .offStr(offStr)
-                    .defStab(defStab)
-                    .defSlash(defSlash)
-                    .defCrush(defCrush)
-                    .build();
+
+        if (pathLevel >= 0) {
+            this.invocation = invocation;
+            this.partySize = partySize;
+            this.pathLevel = pathLevel;
         }
+
+        this.base_health = baseHealth;
+        this.attack = attack;
+        this.str = str;
+        this.def = def;
+        this.offAtt = offAtt;
+        this.offStr = offStr;
+        this.defStab = defStab;
+        this.defSlash = defSlash;
+        this.defCrush = defCrush;
+        this.isPuzzle = isPuzzle;
+        this.shouldDraw = false;
     }
     protected Enemy(NPC npc, int invocation, int partySize, int pathLevel,
           int baseHealth, int attack, int str, int def,
@@ -134,24 +170,22 @@ public abstract class Enemy implements IEnemy {
 
     public void setCurrentHealth(int hp) {
         if (hp >= 0) {
-            stats.current_health = hp;
+            current_health = hp;
         }
-    }
-    public double getModifier() {
-        // TODO: verify that it can't be less than 0 (e.g. swarms)
-        return Math.max(stats.getModifier(), 1.0d);
     }
 
     public synchronized int hit(int damage) {
-        return stats.hit(damage);
+        queuedDamage = Math.max(0, queuedDamage - damage);
+        current_health -= damage;
+        return current_health;
     }
 
     public synchronized int getQueuedDamage() {
-        return stats.queuedDamage;
+        return queuedDamage;
     }
 
     public synchronized void setQueuedDamage(int queuedDamage) {
-        stats.queuedDamage = queuedDamage;
+        this.queuedDamage = queuedDamage;
     }
 
     /**
@@ -160,7 +194,8 @@ public abstract class Enemy implements IEnemy {
      * @return true if the mob died, false if not.
      */
     public synchronized boolean queueDamage(int damage) {
-        boolean died = stats.queueDamage(damage);
+        queuedDamage += damage;
+        boolean died = queuedDamage >= current_health;
         if (died) {
             log.info("marking dead");
         }
@@ -174,6 +209,44 @@ public abstract class Enemy implements IEnemy {
 
     public void fixupStats(int invo, int partySize, int pathLevel) {
         // Should only happen before any npcs actually have been damaged
-        stats.fixup(invo, partySize, pathLevel);
+        this.invocation = invocation;
+        this.partySize = partySize;
+        this.pathLevel = pathLevel;
+        scaled_health = getScaledHealth(invocation, partySize, pathLevel, base_health, isPuzzle);
+        current_health = scaled_health;
     }
+
+    public double getModifier() {
+        double avgs = Math.floor((getAvgLevel() * (getAvgDef() + offStr + offAtt)) / 5120d);
+        avgs /= 40d;
+        double scale = 1 + avgs;
+        return scale;
+    }
+
+    public int getScaledHealth() {
+        return scaled_health;
+    }
+
+    private static int getScaledHealth(int invocation, int partySize, int pathLevel, int base_health, boolean isPuzzle) {
+        double scale = (1 + 0.004 * invocation);
+        double teamScale = teamScaling.get(partySize);
+        double pathScale;
+        if (isPuzzle) {
+            pathScale = 1d;
+            teamScale = 1d;
+            scale = 1d;
+        } else {
+            pathScale = pathScaling.get(pathLevel);
+        }
+
+        return (int) (base_health * scale * teamScale * pathScale);
+    }
+    private int getAvgLevel() {
+        return (attack + str + def + Math.min(getScaledHealth(), 2000)) / 4;
+    }
+
+    private int getAvgDef() {
+        return (defStab + defSlash + defCrush) / 3;
+    }
+
 }

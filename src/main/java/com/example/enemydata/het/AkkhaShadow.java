@@ -9,23 +9,23 @@ public class AkkhaShadow extends Enemy {
                 70, 100, 140, 30,
                 115, 30,
                 60, 120, 120);
-        if (stats.scaled_health > 100)
+        if (scaled_health > 100)
         {
-            final int roundTo = stats.scaled_health > 300 ? 10 : 5;
+            final int roundTo = scaled_health > 300 ? 10 : 5;
             // Shadow does not work like akkha, it uses the rounded health in the xp modifier
-            stats.scaled_health = ((stats.scaled_health + (roundTo / 2)) / roundTo) * roundTo;
-            stats.current_health = stats.scaled_health;
+            scaled_health = ((scaled_health + (roundTo / 2)) / roundTo) * roundTo;
+            current_health = scaled_health;
         }
     }
 
     @Override
     public void fixupStats(int invo, int partySize, int pathLevel) {
         super.fixupStats(invo, partySize, pathLevel);
-        if (stats.scaled_health > 100)
+        if (scaled_health > 100)
         {
-            final int roundTo = stats.scaled_health > 300 ? 10 : 5;
-            stats.scaled_health = ((stats.scaled_health + (roundTo / 2)) / roundTo) * roundTo;
-            stats.current_health = stats.scaled_health;
+            final int roundTo = scaled_health > 300 ? 10 : 5;
+            scaled_health = ((scaled_health + (roundTo / 2)) / roundTo) * roundTo;
+            current_health = scaled_health;
         }
     }
 }

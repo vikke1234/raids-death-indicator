@@ -14,7 +14,6 @@ import net.runelite.api.NpcID;
 @Accessors(fluent = true)
 public class Akkha  extends Enemy {
     private boolean canPhase;
-    private boolean shouldDraw;
 
     public Akkha(NPC npc, int invocation, int partySize, int pathLevel) {
         super(npc, invocation, partySize, pathLevel,
@@ -23,7 +22,7 @@ public class Akkha  extends Enemy {
                 60, 120, 120);
         canPhase = false;
         // scale to nearest 10, leave scaled health as is, xp modifier is computed using the "real" hp
-        stats.current_health = (int) (Math.round(stats.scaled_health / 10.0) * 10);
+        current_health = (int) (Math.round(scaled_health / 10.0) * 10);
     }
 
     @Override
@@ -31,20 +30,20 @@ public class Akkha  extends Enemy {
         super.queueDamage(damage);
         int queuedDamage = getQueuedDamage();
 
-        final int max_health = (int) (Math.round(stats.scaled_health / 10.0) * 10);
+        final int max_health = (int) (Math.round(scaled_health / 10.0) * 10);
         final int phase_health = max_health / 5;
         // compute what the threshold for the next phase is
-        final int next_phase = (stats.current_health / phase_health) * phase_health;
+        final int next_phase = (current_health / phase_health) * phase_health;
         // This causes her to be highlighted a few hits post shadow, can't fix due to veng being able to overkill too
-        shouldDraw = stats.current_health != next_phase && (stats.current_health - queuedDamage) <= next_phase;
-        log.info("Akkha: current " + stats.current_health + " queued " + queuedDamage + " next phase: " + next_phase + " draw: " + shouldDraw);
+        shouldDraw = current_health != next_phase && (current_health - queuedDamage) <= next_phase;
+        log.info("Akkha: current " + current_health + " queued " + queuedDamage + " next phase: " + next_phase + " draw: " + shouldDraw);
         return shouldDraw;
     }
 
     @Override
     public void fixupStats(int invo, int partySize, int pathLevel) {
         super.fixupStats(invo, partySize, pathLevel);
-        stats.current_health = (int) (Math.round(stats.scaled_health / 10.0) * 10);
+        current_health = (int) (Math.round(scaled_health / 10.0) * 10);
     }
 
     @Override
