@@ -388,12 +388,12 @@ public class AkkhaPredictor extends Plugin
 			NPC npc = (NPC) actor;
 			Enemy enemy = activeEnemies.getOrDefault(npc.getIndex(), null);
 			if (enemy == null) {
-				log.info("Unknown target: " + npc.getId() + " index: " + npc.getIndex());
+				//log.info("Unknown target: " + npc.getId() + " index: " + npc.getIndex());
 				return;
 			}
 			int amount = hitsplat.getAmount();
 			int hp = enemy.hit(amount);
-			log.info("Damage: " + amount + " " + hit.getActor().getName() + " (" + hp +")");
+			//log.info("Damage: " + amount + " " + hit.getActor().getName() + " (" + hp +")");
 
 			if (hp <= 0) {
 				activeEnemies.remove(npc.getIndex());

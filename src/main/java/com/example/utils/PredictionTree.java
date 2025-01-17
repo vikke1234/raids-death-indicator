@@ -120,11 +120,11 @@ public class PredictionTree {
 
         List<PredictionTree> leaves = getLeaves(this);
 
-        log.info("XP(" + properties.skill.getName() + ", " + properties.scaling + "): " + xp + "xp hit: "+ hit.hit +
-                " leaves: " + leaves.size() + " true xp(-1): " + Predictor.computePrecise(hit.hit-1, properties) / 10d +
-                " true xp: " + Predictor.computePrecise(hit.hit, properties) / 10d +
-                " true xp(+1): " + Predictor.computePrecise(hit.hit + 1, properties) / 10d +
-                " target: " + (properties.npc != null ? properties.npc.getName() + "(idx: " + properties.npc.getIndex() + " ID: " + properties.npc.getId() + ")" : "") + "\n---");
+        //log.info("XP(" + properties.skill.getName() + ", " + properties.scaling + "): " + xp + "xp hit: "+ hit.hit +
+        //        " leaves: " + leaves.size() + " true xp(-1): " + Predictor.computePrecise(hit.hit-1, properties) / 10d +
+        //        " true xp: " + Predictor.computePrecise(hit.hit, properties) / 10d +
+        //        " true xp(+1): " + Predictor.computePrecise(hit.hit + 1, properties) / 10d +
+        //        " target: " + (properties.npc != null ? properties.npc.getName() + "(idx: " + properties.npc.getIndex() + " ID: " + properties.npc.getId() + ")" : "") + "\n---");
         if (leaves.isEmpty()) {
             log.info("Leaves are empty");
         }
@@ -132,7 +132,7 @@ public class PredictionTree {
         int precise;
         for(PredictionTree leaf : leaves) {
             Set<Integer> avail = leaf.available;
-            log.info("Current guesses: " + avail);
+            //log.info("Current guesses: " + avail);
             assert (!avail.isEmpty()); // should never be empty, something is wrong
             int phigh = Predictor.computePrecise(hit.hit, properties);
             int plow = Predictor.computePrecise(hit.hit-1, properties);
@@ -153,7 +153,7 @@ public class PredictionTree {
 
                 if ((precise + getFrac(leaf)) / 10 != xp) {
                     leaf.dead = true;
-                    log.info("dead leaf");
+                    //log.info("dead leaf");
                     continue;
                 }
                 final int finalFrac = precise % 10;
@@ -161,7 +161,7 @@ public class PredictionTree {
                         .map(n -> (n + finalFrac) % 10)
                         .collect(Collectors.toSet());
 
-                log.info("Frac: " + leaf);
+                //log.info("Frac: " + leaf);
 
                 continue;
             }
@@ -170,19 +170,19 @@ public class PredictionTree {
             // branch on the higher hit
             if (high == xp) {
                 leaf.nobxp = createNoBxp(avail, phigh, xp, properties);
-                log.info("Creating nbxp high (" + phigh / 10d +") " + leaf.nobxp);
+                //log.info("Creating nbxp high (" + phigh / 10d +") " + leaf.nobxp);
             } else if (high + 1 == xp) {
                 leaf.bxp = createBxp(avail, phigh, xp, properties);
-                log.info("Creating bxp high (" + phigh / 10d +") " + leaf.bxp);
+                //log.info("Creating bxp high (" + phigh / 10d +") " + leaf.bxp);
             }
 
             // branch on the lower hit
             if (low == xp) {
                 leaf.nobxp = createNoBxp(avail, plow, xp, properties);
-                log.info("Creating nbxp low (" + plow / 10d + ") " + leaf.nobxp);
+                //log.info("Creating nbxp low (" + plow / 10d + ") " + leaf.nobxp);
             } else if (low != 0 && low + 1 == xp) {
                 leaf.bxp = createBxp(avail, plow, xp, properties);
-                log.info("Creating bxp low (" + plow / 10d + ") " + leaf.bxp);
+                //log.info("Creating bxp low (" + plow / 10d + ") " + leaf.bxp);
             }
             leaf.dead = leaf.bxp == null && leaf.nobxp == null;
         }

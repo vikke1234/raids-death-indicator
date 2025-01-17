@@ -196,9 +196,6 @@ public abstract class Enemy implements IEnemy {
     public synchronized boolean queueDamage(int damage) {
         queuedDamage += damage;
         boolean died = queuedDamage >= current_health;
-        if (died) {
-            log.info("marking dead");
-        }
         npc.setDead(died);
         return died;
     }
@@ -207,7 +204,7 @@ public abstract class Enemy implements IEnemy {
         return false;
     }
 
-    public void fixupStats(int invo, int partySize, int pathLevel) {
+    public void fixupStats(int invocation, int partySize, int pathLevel) {
         // Should only happen before any npcs actually have been damaged
         this.invocation = invocation;
         this.partySize = partySize;
@@ -219,8 +216,7 @@ public abstract class Enemy implements IEnemy {
     public double getModifier() {
         double avgs = Math.floor((getAvgLevel() * (getAvgDef() + offStr + offAtt)) / 5120d);
         avgs /= 40d;
-        double scale = 1 + avgs;
-        return scale;
+        return 1 + avgs;
     }
 
     public int getScaledHealth() {
