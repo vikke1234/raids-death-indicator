@@ -27,7 +27,7 @@ import java.util.*;
 
 @Slf4j
 @PluginDescriptor(
-	name = "Akkha Predictor"
+	name = "Raid Death Indicator"
 )
 public class AkkhaPredictor extends Plugin
 {

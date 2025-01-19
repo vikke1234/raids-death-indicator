@@ -7,14 +7,13 @@ import net.runelite.client.config.ConfigItem;
 
 import java.awt.*;
 
-@ConfigGroup("akkha-predictor")
+@ConfigGroup("raid-death-indicator")
 public interface AkkhaPredictorConfig extends Config
 {
-	// TODO: make this customizable?
     @Alpha
     @ConfigItem(
             keyName = "highlightColor",
-            name = "Akkha Highlight color",
+            name = "Highlight color",
             description = ""
     )
     default Color highlightColor() {
