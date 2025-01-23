@@ -202,8 +202,6 @@ public abstract class Enemy implements IEnemy {
     public synchronized boolean queueDamage(int damage) {
         queuedDamage += damage;
         boolean died = queuedDamage >= current_health;
-        if (died)
-            System.out.println("marking died");
 
         npc.setDead(died && hideOnDeath);
         return died;

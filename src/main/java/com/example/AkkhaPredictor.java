@@ -175,7 +175,6 @@ public class AkkhaPredictor extends Plugin
 				String hpStr = healthWidget.getText().split(" ")[0];
 				try {
 					int newHealth = Integer.parseInt(hpStr);
-					System.out.println("setting hp to: " + newHealth);
 					enemy.setCurrentHealth(newHealth);
 					enemy.setQueuedDamage(0);
 				} catch(NumberFormatException e) {
