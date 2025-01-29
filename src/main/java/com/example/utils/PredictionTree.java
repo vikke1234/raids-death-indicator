@@ -126,7 +126,7 @@ public class PredictionTree {
         //        " true xp(+1): " + Predictor.computePrecise(hit.hit + 1, properties) / 10d +
         //        " target: " + (properties.npc != null ? properties.npc.getName() + "(idx: " + properties.npc.getIndex() + " ID: " + properties.npc.getId() + ")" : "") + "\n---");
         if (leaves.isEmpty()) {
-            log.info("Leaves are empty");
+            log.debug("Leaves are empty");
         }
 
         int precise;
@@ -218,6 +218,7 @@ public class PredictionTree {
 
     /**
      * DFS for the tree.
+     * TODO: should this be removed, seems to only have been used for the automatic test generatio that was removed.
      * @param root root of tree
      * @return list of nodes with no leaves
      */
