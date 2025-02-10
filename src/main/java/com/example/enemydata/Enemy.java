@@ -183,6 +183,7 @@ public abstract class Enemy implements IEnemy {
     public synchronized int hit(int damage) {
         queuedDamage = Math.max(0, queuedDamage - damage);
         current_health -= damage;
+        System.out.println("Current health: " + current_health);
         return current_health;
     }
 
