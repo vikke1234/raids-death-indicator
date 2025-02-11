@@ -18,10 +18,12 @@ import net.runelite.api.NpcID;
 
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Set;
 
 @Slf4j
 public abstract class Enemy implements IEnemy {
-    public static Map<Integer, TriFunction<NPC, Integer, Integer, Integer, Enemy>> enemies;
+    public static final Map<Integer, TriFunction<NPC, Integer, Integer, Integer, Enemy>> enemies;
+    public static final Set<Integer> blacklist = Set.of(NpcID.SCARAB_SWARM_11723, NpcID.JUG, NpcID.JUG_11736);
     public int queuedDamage;
     public boolean shouldDraw;
     protected boolean hideOnDeath;
@@ -103,13 +105,13 @@ public abstract class Enemy implements IEnemy {
         enemies.put(NpcID.SCARAB, Scarab::new);
         enemies.put(NpcID.SOLDIER_SCARAB, Soldier::new);
         enemies.put(NpcID.SPITTING_SCARAB, Spitter::new);
-        enemies.put(NpcID.SCARAB_SWARM_11723, Swarm::new);
+        // enemies.put(NpcID.SCARAB_SWARM_11723, Swarm::new);
 
         enemies.put(NpcID.ZEBAK_11730, Zebak::new);
         enemies.put(NpcID.ZEBAK_11732, Zebak::new);
         enemies.put(NpcID.CROCODILE_11705, Crocodile::new);
-        enemies.put(NpcID.JUG, Jug::new);
-        enemies.put(NpcID.JUG_11736, Jug::new);
+        // enemies.put(NpcID.JUG, Jug::new);
+        // enemies.put(NpcID.JUG_11736, Jug::new);
 
         enemies.put(NpcID.BABOON_BRAWLER, Brawler::new);
         enemies.put(NpcID.BABOON_BRAWLER_11712, Brawler::new);

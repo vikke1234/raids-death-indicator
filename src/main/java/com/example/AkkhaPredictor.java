@@ -233,7 +233,7 @@ public class AkkhaPredictor extends Plugin
 				//15700, // Zebak
 
 				//14162, // Scabaras
-				//14164, // Kephri
+				14164, // Kephri
 
 				15186, // Apmken
 				//15188, // Baba
@@ -386,7 +386,7 @@ public class AkkhaPredictor extends Plugin
 		enemy.queueDamage(entityDamaged.getDamage());
 	}
 
-	@Subscribe(priority = -100f)
+	@Subscribe
 	public void onStatChanged(StatChanged xpDrop) {
 		preProcessXpDrop(xpDrop.getSkill(), xpDrop.getXp());
 	}
@@ -422,6 +422,22 @@ public class AkkhaPredictor extends Plugin
 			if (hp <= 0) {
 				activeEnemies.remove(npc.getIndex());
 			}
+		}
+	}
+
+	@Subscribe(priority = -100f)
+	public void onInteractingChanged(InteractingChanged ev) {
+		if (!(ev.getTarget() instanceof NPC)) {
+			return;
+		}
+
+		NPC npc = (NPC) ev.getTarget();
+
+		// Reset the predictor if swarms/jugs are clicked on,
+		// they do not work the same way as normal NPCs for xp gained.
+		// TODO could be improved further to detect if you've attacked, though that may be too annoying to implement
+		if (Enemy.blacklist.contains(npc.getId())) {
+			predictor.reset();
 		}
 	}
 
