@@ -33,6 +33,7 @@ public abstract class Enemy implements IEnemy {
     public final int base_health;
     // TODO: this may require some rework, akkha for example computes the xp modifier before rounding hp
     public int scaled_health;
+    @Getter
     public int current_health;
 
     private final int attack;

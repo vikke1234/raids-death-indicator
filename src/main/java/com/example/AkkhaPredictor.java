@@ -25,6 +25,7 @@ import net.runelite.client.plugins.PluginDescriptor;
 import net.runelite.client.ui.overlay.OverlayManager;
 
 import java.util.*;
+import java.util.stream.Collectors;
 
 @Slf4j
 @PluginDescriptor(
@@ -78,6 +79,10 @@ public class AkkhaPredictor extends Plugin
 			ItemID.CORRUPTED_TUMEKENS_SHADOW,
 			ItemID.VOIDWAKER
 	));
+	private static final Set<Integer> CHINCHOMPAS = Set.of(
+			ItemID.CHINCHOMPA,
+			ItemID.BLACK_CHINCHOMPA,
+			ItemID.RED_CHINCHOMPA);
 
 	@Override
 	protected void startUp() throws Exception
@@ -283,6 +288,7 @@ public class AkkhaPredictor extends Plugin
 
 		boolean isDefensiveCast = attackStyle == 3;
 		boolean isPoweredStaff = POWERED_STAVES.contains(weapon);
+		boolean isChinchompa = CHINCHOMPAS.contains(weapon);
 		double scaling = enemy.getModifier();
 		Predictor.Properties props = new Predictor.Properties(skill, isDefensiveCast, isPoweredStaff, npc, scaling);
 		if ((skill == Skill.RANGED || skill == Skill.MAGIC) && isDefensiveCast) {
@@ -293,8 +299,35 @@ public class AkkhaPredictor extends Plugin
 		}
 		int damage = predictor.treePredict(xp, props);
 		assert (damage >= 0);
+		if (isChinchompa) {
+			// TODO: barrage? prio: low, tldr: check for barrage animation
+			handleAoe(props, damage);
+		} else {
+			sendDamage(player, damage);
+		}
+	}
 
-		sendDamage(player, damage);
+	private void handleAoe(Predictor.Properties properties, int damage) {
+		NPC npc = properties.npc;
+		List<Enemy> nearby = activeEnemies.values().stream()
+				.filter(enemy -> npc.getWorldLocation().distanceTo(enemy.getNpc().getWorldLocation()) <= 1)
+				.collect(Collectors.toList());
+
+		final int clumpHp = nearby.stream().mapToInt(Enemy::getCurrent_health).sum();
+		if (damage >= clumpHp) {
+			sendClumpDamage(nearby);
+		}
+	}
+
+	private void sendClumpDamage(List<Enemy> enemies) {
+		for (Enemy enemy : enemies) {
+			final int npcIndex = enemy.getNpc().getIndex();
+			final EntityDamaged ev = new EntityDamaged(npcIndex, enemy.getCurrent_health());
+			if (party.isInParty()) {
+				clientThread.invokeLater(() -> party.send(ev));
+			}
+			onEntityDamaged(ev);
+		}
 	}
 
 	private void sendDamage(Player player, int damage) {
