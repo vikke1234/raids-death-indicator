@@ -8,6 +8,6 @@ public class Thrall extends Enemy {
         super(npc, invocation, partySize, pathLevel,
                 2, 40, 40, 12,
                 20, 0,
-                0, 0, 0, true);
+                0, 0, 0, false); // HP does indeed seem to scale by invocation?
     }
 }
