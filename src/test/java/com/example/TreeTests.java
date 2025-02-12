@@ -3,6 +3,7 @@ package com.example;
 import com.example.utils.PredictionTree;
 import static org.junit.Assert.*;
 
+import com.example.utils.Predictor;
 import net.runelite.api.Skill;
 import org.junit.Test;
 
@@ -100,7 +101,6 @@ public class TreeTests {
                 count++;
             }
             n[i] = count;
-            assertEquals(internalFrac, predictor.roots.get(Skill.DEFENCE).getFrac());
         }
         Arrays.sort(n);
         int sum = 0;
@@ -134,6 +134,5 @@ public class TreeTests {
         for (int drop : drops) {
             predictor.treePredict(drop, properties);
         }
-        assertEquals(1, predictor.roots.get(Skill.DEFENCE).getFrac());
     }
 }

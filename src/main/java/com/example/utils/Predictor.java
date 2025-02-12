@@ -1,6 +1,5 @@
-package com.example;
+package com.example.utils;
 
-import com.example.utils.PredictionTree;
 import lombok.AllArgsConstructor;
 import lombok.NonNull;
 import net.runelite.api.NPC;

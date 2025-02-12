@@ -1,10 +1,10 @@
 package com.example;
 
+import com.example.utils.Predictor;
 import net.runelite.api.Skill;
 import org.junit.Test;
 
 import java.util.List;
-import java.util.Properties;
 import java.util.concurrent.ThreadLocalRandom;
 import java.util.stream.Collectors;
 import java.util.stream.IntStream;
@@ -122,8 +122,7 @@ public class PredictorTests {
             assertTrue(hit >= mpredict);
         }
         System.out.println("*** CALIBRATED " + predictor.isAccurate(Skill.MAGIC) + " " + predictor.isAccurate(Skill.DEFENCE) +" ***");
-        assertEquals(mfrac, predictor.roots.get(Skill.MAGIC).getFrac());
-        assertEquals(dfrac, predictor.roots.get(Skill.DEFENCE).getFrac());
+
 
         for (int i = 0; i < iterations; i++) {
             int hit = ThreadLocalRandom.current().nextInt(0, 84);

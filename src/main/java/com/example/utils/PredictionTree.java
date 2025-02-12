@@ -1,6 +1,5 @@
 package com.example.utils;
 
-import com.example.Predictor;
 import com.google.gson.annotations.SerializedName;
 import lombok.extern.slf4j.Slf4j;
 

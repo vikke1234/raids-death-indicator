@@ -3,6 +3,7 @@ package com.example;
 import com.example.enemydata.Enemy;
 import com.example.enemydata.het.Akkha;
 import com.example.events.EntityDamaged;
+import com.example.utils.Predictor;
 import com.example.utils.TriFunction;
 import com.google.inject.Provides;
 import javax.inject.Inject;
