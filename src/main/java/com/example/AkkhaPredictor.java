@@ -62,6 +62,7 @@ public class AkkhaPredictor extends Plugin
 	 */
 	private Map<Skill, Integer> previousXps;
 
+	// key: npc index, value: enemy
 	@Getter
 	private final Map<Integer, Enemy> activeEnemies = new HashMap<>();
 
@@ -233,7 +234,7 @@ public class AkkhaPredictor extends Plugin
 				//15700, // Zebak
 
 				//14162, // Scabaras
-				//14164, // Kephri
+				14164, // Kephri
 
 				15186, // Apmken
 				//15188, // Baba
@@ -283,6 +284,14 @@ public class AkkhaPredictor extends Plugin
 			activeEnemies.put(npc.getIndex(), enemy);
 		}
 
+		if (Enemy.blacklist.contains(npc.getId())) {
+			return; // We handle these in animation changed
+		}
+
+		if (predictor.isDead(skill)) {
+			predictor.reset();
+		}
+
 		int attackStyle = client.getVarpValue(VarPlayer.ATTACK_STYLE);
 		int weapon = playerComposition.getEquipmentId(KitType.WEAPON);
 
@@ -290,11 +299,11 @@ public class AkkhaPredictor extends Plugin
 		boolean isPoweredStaff = POWERED_STAVES.contains(weapon);
 		boolean isChinchompa = CHINCHOMPAS.contains(weapon);
 		double scaling = enemy.getModifier();
-		Predictor.Properties props = new Predictor.Properties(skill, isDefensiveCast, isPoweredStaff, npc, scaling);
+		Predictor.Properties props = new Predictor.Properties(skill, isDefensiveCast, isPoweredStaff, npc, scaling, 1.0d);
 		if ((skill == Skill.RANGED || skill == Skill.MAGIC) && isDefensiveCast) {
 			// Ignore in order to not double hit, insert the drop into
 			// the tree in order to track the fraction
-			predictor.insertInto(xp, scaling, props);
+			predictor.insertInto(xp, props);
 			return;
 		}
 		int damage = predictor.treePredict(xp, props);
@@ -425,6 +434,55 @@ public class AkkhaPredictor extends Plugin
 		}
 	}
 
+	@Subscribe
+	public void onProjectileMoved(ProjectileMoved ev) {
+		int proj = ev.getProjectile().getId();
+		final int CHINCHOMPA_ID = 908;
+		final int DART_ID = 229;
+
+		//System.out.println("projectile: " + proj);
+	}
+
+	@Subscribe
+	public void onAnimationChanged(AnimationChanged ev) {
+		int anim = ev.getActor().getAnimation();
+
+		if (anim < 0) {
+			return;
+		}
+
+		final int CHINCHOMPA_ANIMATION = 7618;
+		final int BLOWPIPE_ANIMATION = 5061;
+
+		var player = client.getLocalPlayer();
+		//if (player.equals(ev.getActor()))
+			//System.out.println("animation: " + anim);
+
+		if (player.getInteracting() instanceof NPC) {
+			return;
+		}
+		NPC npc = (NPC) player.getInteracting();
+		if (npc == null || !Enemy.blacklist.contains(npc.getId())) {
+			return; // normal enemy, rely on xp amounts
+		}
+
+		Enemy enemy = activeEnemies.get(npc.getIndex());
+		int attackStyle = client.getVarpValue(VarPlayer.ATTACK_STYLE);
+		int weapon = player.getPlayerComposition().getEquipmentId(KitType.WEAPON);
+
+		boolean isDefensiveCast = attackStyle == 3;
+		boolean isPoweredStaff = POWERED_STAVES.contains(weapon);
+		boolean isChinchompa = CHINCHOMPAS.contains(weapon);
+		double scaling = enemy.getModifier();
+		Predictor.Properties props = new Predictor.Properties(
+				Skill.HITPOINTS, isDefensiveCast, isPoweredStaff, npc, scaling, enemy.negativeScaling);
+
+		if (enemy.instakill) {
+			int precise = Predictor.computePrecise(enemy.base_health, props);
+			System.out.println("precise: " + precise);
+			predictor.insertInto(precise, props);
+		}
+	}
 
 	@Provides
 	AkkhaPredictorConfig provideConfig(ConfigManager configManager)

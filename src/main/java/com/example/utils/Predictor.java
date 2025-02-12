@@ -2,6 +2,7 @@ package com.example.utils;
 
 import lombok.AllArgsConstructor;
 import lombok.NonNull;
+import lombok.RequiredArgsConstructor;
 import net.runelite.api.NPC;
 import net.runelite.api.Skill;
 
@@ -20,6 +21,7 @@ public class Predictor {
         public boolean isPoweredStaff;
         public NPC npc;
         public double scaling;
+        public double negativeScaling;
 
 
         public Properties(Skill skill, boolean isDefensive, boolean isPowered, double scaling) {
@@ -106,7 +108,9 @@ public class Predictor {
      * @return A fixed length integer for how much xp was received.
      */
     public static int computePrecise(int hit, Properties props) {
-        int scaling = (int) (props.scaling * 1000); // make it an integer that gets scaled down
+        int scale = 1000;
+        int scaling = (int) (props.scaling * scale); // make it an integer that gets scaled down
+        int negativeScaling = (int) (props.negativeScaling * scale);
         int precise = 0;
         switch (props.skill) {
             /* TODO: should this be removed in it's entirety?
@@ -133,10 +137,10 @@ public class Predictor {
              */
 
             case HITPOINTS:
-                precise = (int) (hit * 10 * 4 * scaling / 3);
+                precise = (int) ((hit * 10 * 4 * scaling / 3) * negativeScaling);
                 break;
         }
-        return precise / 1000;
+        return precise / scale;
     }
 
     /**
@@ -178,10 +182,9 @@ public class Predictor {
      * Inserts an xp node into the prediction tree.
      *
      * @param xp amount of xp received
-     * @param scaling scaling of the monster attacked
      * @param props properties related to attack
      */
-    public void insertInto(int xp, double scaling, @NonNull Properties props) {
+    public void insertInto(int xp, @NonNull Properties props) {
         if (!roots.containsKey(props.skill)) {
             roots.put(props.skill, PredictionTree.createRoot());
         }

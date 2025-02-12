@@ -6,6 +6,7 @@ import com.example.enemydata.het.Akkha;
 import com.example.enemydata.scabaras.Kephri;
 import com.example.enemydata.scabaras.Kephri721;
 import com.example.enemydata.scabaras.Spitter;
+import com.example.enemydata.scabaras.Swarm;
 import net.runelite.api.*;
 import net.runelite.api.Point;
 import net.runelite.api.coords.LocalPoint;
@@ -396,6 +397,14 @@ class TestNPC implements NPC {
 }
 public class ScalingTests {
     private static final float delta = 0.00000001F;
+
+    @Test
+    public void testSwarmScaling() {
+        TestNPC npc = new TestNPC(NpcID.SCARAB_SWARM_11723);
+        Swarm swarm = new Swarm(npc, 1000, 1, 4);
+        assertEquals(1.0, swarm.getModifier(), delta);
+
+    }
     @Test
     public void testThrowerScaling() {
         TestNPC npc = new TestNPC(NpcID.BABOON_THROWER);

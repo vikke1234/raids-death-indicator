@@ -9,6 +9,7 @@ public class Jug extends Enemy {
         super(npc, invocation, partySize, pathLevel,
                 5, 0, 0, 0,
                 0, 0,
-                0, 0, 0);
+                0, 0, 0, true);
+        instakill = true;
     }
 }

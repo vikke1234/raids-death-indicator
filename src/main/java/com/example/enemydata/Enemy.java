@@ -18,13 +18,17 @@ import net.runelite.api.NpcID;
 
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Set;
 
 @Slf4j
 public abstract class Enemy implements IEnemy {
     public static Map<Integer, TriFunction<NPC, Integer, Integer, Integer, Enemy>> enemies;
+    public static final Set<Integer> blacklist = Set.of(NpcID.SCARAB_SWARM_11723, NpcID.JUG, NpcID.JUG_11736);
     public int queuedDamage;
     public boolean shouldDraw;
     protected boolean hideOnDeath;
+    public boolean instakill;
+    public double negativeScaling;
 
     public int invocation;
     public int partySize;
@@ -163,6 +167,8 @@ public abstract class Enemy implements IEnemy {
         this.shouldDraw = false;
         this.hideOnDeath = true;
         this.queuedDamage = 0;
+        this.instakill = false;
+        this.negativeScaling = 1.0d;
     }
     protected Enemy(NPC npc, int invocation, int partySize, int pathLevel,
           int baseHealth, int attack, int str, int def,

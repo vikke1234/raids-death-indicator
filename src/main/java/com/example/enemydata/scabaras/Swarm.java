@@ -8,6 +8,8 @@ public class Swarm extends Enemy {
         super(npc, invocation, partySize, pathLevel,
                 10, 1, 1, 0,
                 0, 0,
-                -100, -100, -100);
+                -100, -100, -100, true);
+        instakill = true;
+        negativeScaling = 0.00225;
     }
 }

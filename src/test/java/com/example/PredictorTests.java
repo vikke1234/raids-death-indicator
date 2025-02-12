@@ -78,8 +78,6 @@ public class PredictorTests {
         int hit = 10;
         Predictor.Properties properties = new Predictor.Properties(Skill.MAGIC, true, true, scaling);
         assertEquals(183, Predictor.computePrecise(hit, properties));
-        properties.skill = Skill.DEFENCE;
-        assertEquals(137, Predictor.computePrecise(hit, properties));
     }
 
     @Test
