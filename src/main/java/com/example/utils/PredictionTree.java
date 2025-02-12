@@ -68,7 +68,7 @@ public class PredictionTree {
         List<PredictionTree> leaves = getLeaves(this);
         if (leaves.size() != 1) {
             // Should always be possible to determine
-            return -1;
+            return -2;
         }
 
         PredictionTree leaf = leaves.get(0);

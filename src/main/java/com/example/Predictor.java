@@ -163,7 +163,16 @@ public class Predictor {
             return false;
         }
         int frac = root.getFrac();
-        return frac != -1;
+        return frac >= 0;
+    }
+
+    public boolean isDead(Skill skill) {
+        PredictionTree root = roots.getOrDefault(skill, null);
+        if (root == null) {
+            return false;
+        }
+        int frac = root.getFrac();
+        return frac == -2;
     }
 
     /**

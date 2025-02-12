@@ -46,6 +46,9 @@ public class AkkhaPredictorOverlay extends Overlay {
             if (plugin.getPredictor().isAccurate(skill)) {
                 graphics.setColor(Color.green);
                 graphics.fillRect(10, start, 10, 10);
+            } else if (plugin.getPredictor().isDead(skill)) {
+                graphics.setColor(Color.pink);
+                graphics.fillRect(10, start, 10, 10);
             } else {
                 graphics.setColor(Color.red);
                 graphics.fillRect(10, start, 10, 10);
