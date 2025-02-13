@@ -1,11 +1,11 @@
 package com.example;
 
 import com.example.enemydata.Enemy;
-import com.example.enemydata.ampken.*;
-import com.example.enemydata.het.Akkha;
-import com.example.enemydata.scabaras.Kephri;
-import com.example.enemydata.scabaras.Kephri721;
-import com.example.enemydata.scabaras.Spitter;
+import com.example.enemydata.toa.ampken.*;
+import com.example.enemydata.toa.het.Akkha;
+import com.example.enemydata.toa.scabaras.Kephri;
+import com.example.enemydata.toa.scabaras.Kephri721;
+import com.example.enemydata.toa.scabaras.Spitter;
 import net.runelite.api.*;
 import net.runelite.api.Point;
 import net.runelite.api.coords.LocalPoint;
