@@ -1,13 +1,12 @@
 package com.example.enemydata;
 
-import com.example.enemydata.ampken.*;
-import com.example.enemydata.crondis.Crocodile;
-import com.example.enemydata.crondis.Jug;
-import com.example.enemydata.crondis.Zebak;
-import com.example.enemydata.het.Akkha;
-import com.example.enemydata.het.AkkhaShadow;
-import com.example.enemydata.scabaras.*;
-import com.example.enemydata.wardens.*;
+import com.example.enemydata.toa.ampken.*;
+import com.example.enemydata.toa.crondis.Crocodile;
+import com.example.enemydata.toa.crondis.Zebak;
+import com.example.enemydata.toa.het.Akkha;
+import com.example.enemydata.toa.het.AkkhaShadow;
+import com.example.enemydata.toa.scabaras.*;
+import com.example.enemydata.toa.wardens.*;
 import com.example.utils.TriFunction;
 import lombok.Getter;
 import lombok.Setter;
