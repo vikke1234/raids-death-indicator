@@ -427,7 +427,12 @@ public class AkkhaPredictor extends Plugin
 
 	@Subscribe(priority = -100f)
 	public void onInteractingChanged(InteractingChanged ev) {
-		if (!(ev.getTarget() instanceof NPC)) {
+		if (ev.getTarget() == null || !(ev.getTarget() instanceof NPC)) {
+			return;
+		}
+
+		Player localPlayer = client.getLocalPlayer();
+		if (!localPlayer.equals(ev.getSource())) {
 			return;
 		}
 
