@@ -59,9 +59,7 @@ public class Predictor {
      * Resets all skill prediction trees.
      */
     public void reset() {
-        if (!roots.isEmpty()) {
-            roots = new HashMap<>();
-        }
+        roots = new HashMap<>();
     }
 
     /**
