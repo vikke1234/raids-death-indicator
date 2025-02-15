@@ -107,7 +107,7 @@ public class Predictor {
         int scaling = (int) (props.scaling * 1000); // make it an integer that gets scaled down
         int precise = 0;
         switch (props.skill) {
-            /* TODO: should this be removed in it's entirety?
+            // TODO: should this be removed in it's entirety?
             case DEFENCE:
                 if (props.isPoweredStaff && props.isDefensive) {
                     precise = (int) (hit * 10 * scaling);
@@ -115,6 +115,7 @@ public class Predictor {
                     // you receive 4xp per damage with melee
                     precise = (int) (hit * 10 * 4 * scaling);
                 }
+                break;
             case MAGIC:
                 if (props.isPoweredStaff && !props.isDefensive) {
                     precise = (int) (hit * 2 * 10 * scaling);
@@ -128,7 +129,6 @@ public class Predictor {
             case RANGED:
                 precise = (int) (hit * 10 * 4 * scaling);
                 break;
-             */
 
             case HITPOINTS:
                 precise = (int) (hit * 10 * 4 * scaling / 3);

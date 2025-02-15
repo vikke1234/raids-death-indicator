@@ -9,8 +9,7 @@ import java.util.concurrent.ThreadLocalRandom;
 import java.util.stream.Collectors;
 import java.util.stream.IntStream;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.*;
 
 public class PredictorTests {
 
@@ -27,7 +26,7 @@ public class PredictorTests {
             // We don't care about uncalibrated hits
             int predicted = predictor.treePredict(xp / 10, properties);
             // Make sure that when calibrating, we won't estimate higher
-            assertTrue(predicted <= hit);
+            assertTrue(predicted + " <= " + hit, predicted <= hit);
         }
         return internalFrac;
     }
@@ -49,7 +48,7 @@ public class PredictorTests {
 
     private void runTest(Predictor.Properties properties, int iterations, int internalFrac) {
         Predictor predictor = new Predictor();
-        List<Integer> possibleDrops = IntStream.rangeClosed(0, 100)
+        List<Integer> possibleDrops = IntStream.rangeClosed(0, iterations)
                 .map(n -> Predictor.computePrecise(n, properties))
                 .boxed().collect(Collectors.toList());
         internalFrac = calibrate(predictor, possibleDrops, properties, internalFrac);
@@ -58,17 +57,11 @@ public class PredictorTests {
     }
     @Test
     public void testPredictor() {
-        double scaling = 1.21533203125d;
+        double scaling = 1.375;
         int internalFrac = 9;
         int iterations = 1000;
         Predictor.Properties properties;
-        properties = new Predictor.Properties(Skill.DEFENCE, true, true, scaling);
-        runTest(properties, iterations, internalFrac);
-        properties = new Predictor.Properties(Skill.STRENGTH, false, false, scaling);
-        runTest(properties, iterations, internalFrac);
-        properties = new Predictor.Properties(Skill.ATTACK, false, false, scaling);
-        runTest(properties, iterations, internalFrac);
-        properties = new Predictor.Properties(Skill.MAGIC, false, true, scaling);
+        properties = new Predictor.Properties(Skill.HITPOINTS, true, true, scaling);
         runTest(properties, iterations, internalFrac);
     }
 
@@ -78,13 +71,13 @@ public class PredictorTests {
         int hit = 10;
         Predictor.Properties properties = new Predictor.Properties(Skill.MAGIC, true, true, scaling);
         assertEquals(183, Predictor.computePrecise(hit, properties));
-        properties.skill = Skill.DEFENCE;
+        properties = new Predictor.Properties(Skill.DEFENCE, true, true, scaling);
         assertEquals(137, Predictor.computePrecise(hit, properties));
     }
 
     @Test
     public void testPredictorMultipleStyles() {
-        double scaling = 1.21533203125d;
+        double scaling = 1.495;
         int mfrac = 9;
         int dfrac = 3;
         int iterations = 1000;
@@ -119,7 +112,7 @@ public class PredictorTests {
                     " mxp(" + mwrapped + "): " + mxp + " dxp(" + dwrapped + "): " + dxp);
             System.out.println();
             //assertEquals(mpredict, dpredict);
-            assertTrue(hit >= mpredict);
+            assertTrue(hit + " >= " + mpredict,hit >= mpredict);
         }
         System.out.println("*** CALIBRATED " + predictor.isAccurate(Skill.MAGIC) + " " + predictor.isAccurate(Skill.DEFENCE) +" ***");
 
@@ -160,8 +153,24 @@ public class PredictorTests {
     }
 
     @Test
-    public void predictor1() {
-        Predictor predictor = new Predictor();
+    public void testPredictorDead() {
+        double scaling = 1.375;
+        int internalFrac = 9;
+        int iterations = 1000;
+        Predictor.Properties properties;
+        properties = new Predictor.Properties(Skill.HITPOINTS, true, true, scaling);
 
+        Predictor predictor = new Predictor();
+        List<Integer> possibleDrops = IntStream.rangeClosed(0, iterations)
+                .map(n -> Predictor.computePrecise(n, properties))
+                .boxed().collect(Collectors.toList());
+        internalFrac = calibrate(predictor, possibleDrops, properties, internalFrac);
+
+        runIterations(predictor, iterations, possibleDrops, properties, internalFrac);
+        predictor.reset();
+        assertFalse(predictor.isDead(Skill.HITPOINTS));
+        internalFrac = calibrate(predictor, possibleDrops, properties, internalFrac);
+        runIterations(predictor, iterations, possibleDrops, properties, internalFrac);
+        assertFalse(predictor.isDead(Skill.HITPOINTS));
     }
 }

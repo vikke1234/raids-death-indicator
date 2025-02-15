@@ -270,12 +270,20 @@ public class AkkhaPredictor extends Plugin
 
 		PlayerComposition playerComposition = player.getPlayerComposition();
 		NPC npc = (NPC) entity;
+		int id = npc.getId();
+
+		if (Enemy.blacklist.contains(id)) {
+			predictor.reset();
+			// We actually always receive range xp, perhaps this can be used to
+			// calculate the magic xp, as you seem to always receive .3 xp from swarms
+			return;
+		}
+
 		Enemy enemy;
 		if (activeEnemies.containsKey(npc.getIndex())) {
 			enemy = activeEnemies.get(npc.getIndex());
 		} else {
 			// Construct a new enemy
-			int id = npc.getId();
 			enemy = Enemy.enemies.get(id).apply(npc, getInvocation(), getPartySize(), getPathLevel());
 			if (enemy == null) {
 				return;
@@ -425,28 +433,6 @@ public class AkkhaPredictor extends Plugin
 			}
 		}
 	}
-
-	@Subscribe(priority = -100f)
-	public void onInteractingChanged(InteractingChanged ev) {
-		if (ev.getTarget() == null || !(ev.getTarget() instanceof NPC)) {
-			return;
-		}
-
-		Player localPlayer = client.getLocalPlayer();
-		if (!localPlayer.equals(ev.getSource())) {
-			return;
-		}
-
-		NPC npc = (NPC) ev.getTarget();
-
-		// Reset the predictor if swarms/jugs are clicked on,
-		// they do not work the same way as normal NPCs for xp gained.
-		// TODO could be improved further to detect if you've attacked, though that may be too annoying to implement
-		if (Enemy.blacklist.contains(npc.getId())) {
-			predictor.reset();
-		}
-	}
-
 
 	@Provides
 	AkkhaPredictorConfig provideConfig(ConfigManager configManager)
