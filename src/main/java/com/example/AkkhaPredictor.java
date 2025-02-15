@@ -238,7 +238,7 @@ public class AkkhaPredictor extends Plugin
 				15186, // Apmken
 				//15188, // Baba
 
-				//14674, // Het
+				14674, // Het
 				14676, // Akkha
 
 				//15184, // Wardens
@@ -275,7 +275,8 @@ public class AkkhaPredictor extends Plugin
 			enemy = activeEnemies.get(npc.getIndex());
 		} else {
 			// Construct a new enemy
-			enemy = Enemy.enemies.get(npc.getId()).apply(npc, getInvocation(), getPartySize(), getPathLevel());
+			int id = npc.getId();
+			enemy = Enemy.enemies.get(id).apply(npc, getInvocation(), getPartySize(), getPathLevel());
 			if (enemy == null) {
 				return;
 			}
