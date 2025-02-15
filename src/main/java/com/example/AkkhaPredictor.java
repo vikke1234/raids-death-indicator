@@ -1,6 +1,7 @@
 package com.example;
 
 import com.example.enemydata.Enemy;
+import com.example.enemydata.toa.ToaEnemy;
 import com.example.enemydata.toa.het.Akkha;
 import com.example.events.EntityDamaged;
 import com.example.utils.Predictor;
@@ -184,15 +185,20 @@ public class AkkhaPredictor extends Plugin
 			return;
 		}
 
-		TriFunction<NPC, Integer, Integer, Integer, Enemy> constructor = Enemy.enemies.getOrDefault(npc.getId(), null);
-		if (constructor == null) {
-			return;
+		Enemy enemy;
+		if (isAtToa()) {
+			TriFunction<NPC, Integer, Integer, Integer, Enemy> constructor = ToaEnemy.enemies.getOrDefault(npc.getId(), null);
+			if (constructor == null) {
+				return;
+			}
+
+			enemy = constructor.apply(npc, getInvocation(), getPartySize(), getPathLevel());
+			enemy.setClient(client);
+			activeEnemies.put(npc.getIndex(), enemy);
+		} else if (false) {
+			// cox
 		}
 
-		Enemy enemy = constructor.apply(npc, getInvocation(), getPartySize(), getPathLevel());
-		enemy.setClient(client);
-
-		activeEnemies.put(npc.getIndex(), enemy);
 	}
 
 	/**
@@ -212,7 +218,10 @@ public class AkkhaPredictor extends Plugin
 			return;
 		}
 		for (Enemy enemy : activeEnemies.values()) {
-			enemy.fixupStats(invo, partySize, pathLevel);
+			if (enemy instanceof ToaEnemy) {
+				ToaEnemy e = (ToaEnemy) enemy;
+				e.fixupStats(invo, partySize, pathLevel);
+			}
 		}
 	}
 
@@ -275,7 +284,7 @@ public class AkkhaPredictor extends Plugin
 			enemy = activeEnemies.get(npc.getIndex());
 		} else {
 			// Construct a new enemy
-			enemy = Enemy.enemies.get(npc.getId()).apply(npc, getInvocation(), getPartySize(), getPathLevel());
+			enemy = ToaEnemy.enemies.get(npc.getId()).apply(npc, getInvocation(), getPartySize(), getPathLevel());
 			if (enemy == null) {
 				return;
 			}

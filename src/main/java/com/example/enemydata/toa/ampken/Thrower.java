@@ -1,9 +1,9 @@
 package com.example.enemydata.toa.ampken;
 
-import com.example.enemydata.Enemy;
+import com.example.enemydata.toa.ToaEnemy;
 import net.runelite.api.*;
 
-public class Thrower extends Enemy {
+public class Thrower extends ToaEnemy {
     public Thrower(NPC npc, int invocation, int partySize, int pathLevel) {
         super(npc, invocation, partySize, pathLevel,
                 npc.getId() == NpcID.BABOON_THROWER ? 30 : 35, npc.getId() == NpcID.BABOON_THROWER ? 40 : 60,

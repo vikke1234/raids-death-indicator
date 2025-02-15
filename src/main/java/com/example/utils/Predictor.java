@@ -131,7 +131,7 @@ public class Predictor {
              */
 
             case HITPOINTS:
-                precise = (int) (hit * 10 * 4 * scaling / 3);
+                precise = hit * 10 * 4 * scaling / 3;
                 break;
         }
         return precise / 1000;

@@ -1,9 +1,9 @@
 package com.example.enemydata.toa.ampken;
 
-import com.example.enemydata.Enemy;
+import com.example.enemydata.toa.ToaEnemy;
 import net.runelite.api.NPC;
 
-public class Baboon extends Enemy {
+public class Baboon extends ToaEnemy {
     // Baba baboon
     public Baboon(NPC npc, int invocation, int partySize, int pathLevel) {
         super(npc, invocation, partySize, pathLevel,

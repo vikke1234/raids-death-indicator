@@ -1,6 +1,7 @@
 package com.example.enemydata.toa.het;
 
 import com.example.enemydata.Enemy;
+import com.example.enemydata.toa.ToaEnemy;
 import lombok.Getter;
 import lombok.Setter;
 import lombok.experimental.Accessors;
@@ -12,7 +13,7 @@ import net.runelite.api.NpcID;
 @Getter
 @Setter
 @Accessors(fluent = true)
-public class Akkha  extends Enemy {
+public class Akkha  extends ToaEnemy {
     private boolean canPhase;
 
     public Akkha(NPC npc, int invocation, int partySize, int pathLevel) {

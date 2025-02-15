@@ -1,6 +1,7 @@
 package com.example;
 
 import com.example.enemydata.Enemy;
+import com.example.enemydata.toa.ToaEnemy;
 import com.example.enemydata.toa.ampken.*;
 import com.example.enemydata.toa.het.Akkha;
 import com.example.enemydata.toa.scabaras.Kephri;
@@ -466,7 +467,7 @@ public class ScalingTests {
     @Test
     public void akkhaScalingTest() {
         TestNPC akkhaNpc = new TestNPC(NpcID.AKKHA_11790);
-        Enemy akkha = new Akkha(akkhaNpc, 305, 2, 0);
+        ToaEnemy akkha = new Akkha(akkhaNpc, 305, 2, 0);
         assertEquals(1.575, akkha.getModifier(), delta);
         akkha.fixupStats(305, 2, 0);
         assertEquals(1.575, akkha.getModifier(), delta);
