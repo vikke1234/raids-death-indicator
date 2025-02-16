@@ -5,13 +5,13 @@ import lombok.NonNull;
 import net.runelite.api.NPC;
 import net.runelite.api.Skill;
 
-import java.util.concurrent.ConcurrentHashMap;
+import java.util.*;
 
 /**
  * Class for computing the internal fraction in xp.
  */
 public class Predictor {
-    final ConcurrentHashMap<Skill, PredictionTree> roots;
+    Map<Skill, PredictionTree> roots;
 
     @AllArgsConstructor
     public static class Properties {
@@ -32,7 +32,7 @@ public class Predictor {
     }
 
     public Predictor() {
-        roots = new ConcurrentHashMap<>();
+        roots = new HashMap<>();
     }
 
     @Deprecated
@@ -59,7 +59,7 @@ public class Predictor {
      * Resets all skill prediction trees.
      */
     public void reset() {
-        roots.clear();
+        roots = new HashMap<>();
     }
 
     /**
@@ -155,25 +155,21 @@ public class Predictor {
      * @return true if accurate, false if not
      */
     public boolean isAccurate(Skill skill) {
-        final PredictionTree root = roots.getOrDefault(skill, null);
+        PredictionTree root = roots.getOrDefault(skill, null);
         if (root == null) {
             return false;
         }
-
-        synchronized (root) {
-            return root.getFrac() >= 0;
-        }
+        int frac = root.getFrac();
+        return frac >= 0;
     }
 
     public boolean isDead(Skill skill) {
-        final PredictionTree root = roots.getOrDefault(skill, null);
+        PredictionTree root = roots.getOrDefault(skill, null);
         if (root == null) {
             return false;
         }
-
-        synchronized (root) {
-            return root.getFrac() == -2;
-        }
+        int frac = root.getFrac();
+        return frac == -2;
     }
 
     /**
@@ -188,9 +184,7 @@ public class Predictor {
             roots.put(props.skill, PredictionTree.createRoot());
         }
         PredictionTree root = roots.get(props.skill);
-        synchronized (root) {
-            root.insertInto(xp, props);
-        }
+        root.insertInto(xp, props);
     }
 
     /**
@@ -203,14 +197,9 @@ public class Predictor {
         if (!roots.containsKey(props.skill)) {
             roots.put(props.skill, PredictionTree.createRoot());
         }
-
-        final PredictionTree root = roots.get(props.skill);
-        int frac;
-        synchronized (root) {
-            frac = root.getFrac();
-            root.insertInto(xp, props);
-        }
-
+        PredictionTree root = roots.get(props.skill);
+        int frac = root.getFrac();
+        root.insertInto(xp, props);
         Hit hit = findHit(xp, props);
 
         int high = computePrecise(hit.hit, props);
