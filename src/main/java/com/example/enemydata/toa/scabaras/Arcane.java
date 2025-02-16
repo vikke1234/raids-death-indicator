@@ -8,6 +8,6 @@ public class Arcane extends Enemy {
         super(npc, invocation, partySize, pathLevel,
                 40, 75, 80, 80,
                 0, 55,
-                15, 150, 30);
+                15, 250, 30);
     }
 }
