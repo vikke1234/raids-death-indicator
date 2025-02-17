@@ -322,6 +322,10 @@ public class AkkhaPredictor extends Plugin
 				.filter(enemy -> npc.getWorldLocation().distanceTo(enemy.getNpc().getWorldLocation()) <= 1)
 				.collect(Collectors.toList());
 
+		if (nearby.stream().anyMatch(e -> npc.getId() != e.getNpc().getId())) {
+			predictor.reset(); // Reset if there' multiple NPCs in the clump
+		}
+
 		final int clumpHp = nearby.stream().mapToInt(Enemy::getCurrent_health).sum();
 		if (damage >= clumpHp) {
 			sendClumpDamage(nearby);
