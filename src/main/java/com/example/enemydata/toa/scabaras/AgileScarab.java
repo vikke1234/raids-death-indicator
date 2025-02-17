@@ -8,6 +8,6 @@ public class AgileScarab extends Enemy {
         super(npc, invocation, partySize, pathLevel,
                 30, 60, 20, 5,
                 0, 25,
-                0, 0, 0);
+                0, 0, 0, true);
     }
 }
