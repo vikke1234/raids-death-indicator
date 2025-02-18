@@ -1,6 +1,8 @@
 package com.example;
 
 import com.example.enemydata.Enemy;
+import com.example.utils.DamageHandler;
+import com.example.utils.Predictor;
 import lombok.extern.slf4j.Slf4j;
 import net.runelite.api.Client;
 import net.runelite.api.NPC;
@@ -14,24 +16,29 @@ import java.awt.*;
 
 @Slf4j
 public class AkkhaPredictorOverlay extends Overlay {
-    private final AkkhaPredictor plugin;
-    private final AkkhaPredictorConfig config;
-    private final Client client;
+    @Inject
+    private AkkhaPredictor plugin;
 
     @Inject
-    public AkkhaPredictorOverlay(AkkhaPredictor plugin, AkkhaPredictorConfig config, Client client, ModelOutlineRenderer renderer) {
-        this.plugin = plugin;
-        this.config = config;
-        this.client = client;
+    private AkkhaPredictorConfig config;
+
+    @Inject
+    private Client client;
+
+    @Inject
+    private DamageHandler damageHandler;
+
+    @Inject
+    public void initialize() {
         setPosition(OverlayPosition.DYNAMIC);
     }
 
     @Override
     public Dimension render(Graphics2D graphics) {
-        if (!plugin.isAtToa()) {
+        if (!damageHandler.isAtToa()) {
             return null;
         }
-        var enemies = plugin.getActiveEnemies();
+        var enemies = damageHandler.getActiveEnemies();
 
         for (Enemy enemy : enemies.values()) {
             if (enemy.shouldHighlight()) {
@@ -42,11 +49,13 @@ public class AkkhaPredictorOverlay extends Overlay {
 
         Skill []skills = new Skill[]{Skill.HITPOINTS};
         int start = 20;
+        Predictor predictor = damageHandler.getPredictor();
+
         for (Skill skill : skills) {
-            if (plugin.getPredictor().isAccurate(skill)) {
+            if (predictor.isAccurate(skill)) {
                 graphics.setColor(Color.green);
                 graphics.fillRect(10, start, 10, 10);
-            } else if (plugin.getPredictor().isDead(skill)) {
+            } else if (predictor.isDead(skill)) {
                 graphics.setColor(Color.pink);
                 graphics.fillRect(10, start, 10, 10);
             } else {
