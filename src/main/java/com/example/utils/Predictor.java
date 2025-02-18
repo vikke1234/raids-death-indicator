@@ -59,7 +59,7 @@ public class Predictor {
      * Resets all skill prediction trees.
      */
     public void reset() {
-        roots = new HashMap<>();
+        roots.clear();
     }
 
     /**
