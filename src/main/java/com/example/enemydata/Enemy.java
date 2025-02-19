@@ -1,13 +1,5 @@
 package com.example.enemydata;
 
-import com.example.enemydata.toa.ampken.*;
-import com.example.enemydata.toa.crondis.Crocodile;
-import com.example.enemydata.toa.crondis.Zebak;
-import com.example.enemydata.toa.het.Akkha;
-import com.example.enemydata.toa.het.AkkhaShadow;
-import com.example.enemydata.toa.scabaras.*;
-import com.example.enemydata.toa.wardens.*;
-import com.example.utils.TriFunction;
 import lombok.Getter;
 import lombok.Setter;
 import lombok.extern.slf4j.Slf4j;
@@ -15,8 +7,6 @@ import net.runelite.api.Client;
 import net.runelite.api.NPC;
 import net.runelite.api.NpcID;
 
-import java.util.HashMap;
-import java.util.Map;
 import java.util.Set;
 
 @Slf4j
