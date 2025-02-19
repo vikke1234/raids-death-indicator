@@ -114,7 +114,7 @@ public class DamageHandler {
         if (activeEnemies.containsKey(npc.getIndex())) {
             enemy = activeEnemies.get(npc.getIndex());
         } else {
-            System.out.println("Unknown enemy \"" + npc.getName() + "\": " + npc.getId() + " (idx: " + npc.getIndex() + ")");
+            //System.out.println("Unknown enemy \"" + npc.getName() + "\": " + npc.getId() + " (idx: " + npc.getIndex() + ")");
             return;
         }
 
