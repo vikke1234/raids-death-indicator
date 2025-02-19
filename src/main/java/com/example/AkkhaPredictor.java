@@ -3,6 +3,7 @@ package com.example;
 import com.example.enemydata.Enemy;
 import com.example.enemydata.toa.het.Akkha;
 import com.example.events.EntityDamaged;
+import com.example.raids.Toa;
 import com.example.utils.DamageHandler;
 import com.example.utils.Predictor;
 import com.example.utils.TriFunction;
@@ -47,6 +48,9 @@ public class AkkhaPredictor extends Plugin {
 	private DamageHandler damageHandler;
 
 	@Inject
+	private Toa toa;
+
+	@Inject
 	private ClientThread clientThread;
 
 	@Inject
@@ -56,6 +60,7 @@ public class AkkhaPredictor extends Plugin {
 	protected void startUp() throws Exception
 	{
 		eventBus.register(damageHandler);
+		eventBus.register(toa);
 		clientThread.invoke(damageHandler::initXpMap);
 		overlayManager.add(overlay);
 		wsClient.registerMessage(EntityDamaged.class);
@@ -65,6 +70,7 @@ public class AkkhaPredictor extends Plugin {
 	{
 		overlayManager.remove(overlay);
 		eventBus.unregister(damageHandler);
+		eventBus.unregister(toa);
 		wsClient.unregisterMessage(EntityDamaged.class);
 		damageHandler.getPredictor().reset();
 	}
