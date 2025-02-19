@@ -1,12 +1,13 @@
 package com.example.enemydata.toa.ampken;
 
 import com.example.enemydata.Enemy;
+import com.example.enemydata.toa.ToaEnemy;
 import net.runelite.api.NPC;
 
 import java.util.HashMap;
 import java.util.Map;
 
-public class Boulder extends Enemy {
+public class Boulder extends ToaEnemy {
     // team size -> path level -> hp
     private static final int [][] hpMap = {
                     {25, 25, 27, 27, 31},
