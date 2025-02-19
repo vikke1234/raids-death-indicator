@@ -35,7 +35,7 @@ public class AkkhaPredictorOverlay extends Overlay {
 
     @Override
     public Dimension render(Graphics2D graphics) {
-        if (!damageHandler.isAtToa()) {
+        if (!damageHandler.shouldProcess()) {
             return null;
         }
         var enemies = damageHandler.getActiveEnemies();
