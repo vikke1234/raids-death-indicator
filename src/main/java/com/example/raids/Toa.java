@@ -1,6 +1,7 @@
 package com.example.raids;
 
 import com.example.enemydata.Enemy;
+import com.example.enemydata.toa.ToaEnemy;
 import com.example.enemydata.toa.het.Akkha;
 import com.example.utils.DamageHandler;
 import com.example.utils.TriFunction;
@@ -122,7 +123,10 @@ public class Toa {
             return;
         }
         for (Enemy enemy : damageHandler.getActiveEnemies().values()) {
-            enemy.fixupStats(invo, partySize, pathLevel);
+            if (enemy instanceof ToaEnemy) {
+                ToaEnemy e = (ToaEnemy) enemy;
+                e.fixupStats(invo, partySize, pathLevel);
+            }
         }
     }
 
@@ -167,7 +171,7 @@ public class Toa {
             return;
         }
 
-        TriFunction<NPC, Integer, Integer, Integer, Enemy> constructor = Enemy.enemies.getOrDefault(npc.getId(), null);
+        TriFunction<NPC, Integer, Integer, Integer, Enemy> constructor = ToaEnemy.enemies.getOrDefault(npc.getId(), null);
         if (constructor == null) {
             return;
         }

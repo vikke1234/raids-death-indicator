@@ -1,9 +1,10 @@
 package com.example.enemydata.toa.wardens;
 
 import com.example.enemydata.Enemy;
+import com.example.enemydata.toa.ToaEnemy;
 import net.runelite.api.NPC;
 
-public class TumekensWarden762 extends Enemy {
+public class TumekensWarden762 extends ToaEnemy {
 
     public TumekensWarden762(NPC npc, int invocation, int partySize, int pathLevel) {
         super(npc, invocation, partySize, pathLevel,

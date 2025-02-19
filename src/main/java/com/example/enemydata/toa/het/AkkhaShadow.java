@@ -1,9 +1,10 @@
 package com.example.enemydata.toa.het;
 
 import com.example.enemydata.Enemy;
+import com.example.enemydata.toa.ToaEnemy;
 import net.runelite.api.NPC;
 
-public class AkkhaShadow extends Enemy {
+public class AkkhaShadow extends ToaEnemy {
     public AkkhaShadow(NPC npc, int invocation, int partySize, int pathLevel) {
         super(npc, invocation, partySize, pathLevel,
                 70, 100, 140, 30,
