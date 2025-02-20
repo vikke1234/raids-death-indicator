@@ -8,7 +8,7 @@ import com.example.enemydata.toa.het.Akkha;
 import com.example.enemydata.toa.het.AkkhaShadow;
 import com.example.enemydata.toa.scabaras.*;
 import com.example.enemydata.toa.wardens.*;
-import com.example.utils.TriFunction;
+import com.example.utils.QuadFunction;
 import net.runelite.api.NPC;
 import net.runelite.api.NpcID;
 
@@ -16,7 +16,7 @@ import java.util.HashMap;
 import java.util.Map;
 
 public class ToaEnemy extends Enemy {
-    public static final Map<Integer, TriFunction<NPC, Integer, Integer, Integer, Enemy>> enemies;
+    public static final Map<Integer, QuadFunction<NPC, Integer, Integer, Integer, Enemy>> enemies;
     private static final Map<Integer, Double> teamScaling;
     private static final Map<Integer, Double> pathScaling;
 

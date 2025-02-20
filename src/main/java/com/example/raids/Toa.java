@@ -4,7 +4,7 @@ import com.example.enemydata.Enemy;
 import com.example.enemydata.toa.ToaEnemy;
 import com.example.enemydata.toa.het.Akkha;
 import com.example.utils.DamageHandler;
-import com.example.utils.TriFunction;
+import com.example.utils.QuadFunction;
 import lombok.extern.slf4j.Slf4j;
 import net.runelite.api.Client;
 import net.runelite.api.NPC;
@@ -171,7 +171,7 @@ public class Toa {
             return;
         }
 
-        TriFunction<NPC, Integer, Integer, Integer, Enemy> constructor = ToaEnemy.enemies.getOrDefault(npc.getId(), null);
+        QuadFunction<NPC, Integer, Integer, Integer, Enemy> constructor = ToaEnemy.enemies.getOrDefault(npc.getId(), null);
         if (constructor == null) {
             return;
         }
