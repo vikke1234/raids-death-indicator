@@ -1,34 +1,19 @@
 package com.example;
 
-import com.example.enemydata.Enemy;
-import com.example.enemydata.toa.het.Akkha;
 import com.example.events.EntityDamaged;
 import com.example.raids.Toa;
 import com.example.utils.DamageHandler;
-import com.example.utils.Predictor;
-import com.example.utils.TriFunction;
 import com.google.inject.Provides;
 import javax.inject.Inject;
 
-import lombok.Getter;
 import lombok.extern.slf4j.Slf4j;
-import net.runelite.api.*;
-import net.runelite.api.events.*;
-import net.runelite.api.kit.KitType;
-import net.runelite.api.widgets.*;
 import net.runelite.client.callback.ClientThread;
 import net.runelite.client.config.ConfigManager;
 import net.runelite.client.eventbus.EventBus;
-import net.runelite.client.eventbus.Subscribe;
-import net.runelite.client.party.PartyMember;
-import net.runelite.client.party.PartyService;
 import net.runelite.client.party.WSClient;
 import net.runelite.client.plugins.Plugin;
 import net.runelite.client.plugins.PluginDescriptor;
 import net.runelite.client.ui.overlay.OverlayManager;
-
-import java.util.*;
-import java.util.stream.Collectors;
 
 @Slf4j
 @PluginDescriptor(
