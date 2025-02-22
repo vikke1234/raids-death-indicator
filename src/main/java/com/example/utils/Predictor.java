@@ -202,6 +202,7 @@ public class Predictor {
         root.insertInto(xp, props);
         Hit hit = findHit(xp, props);
 
+        int next = computePrecise(hit.hit + 1, props);
         int high = computePrecise(hit.hit, props);
         int low = computePrecise(hit.hit-1, props);
 
@@ -217,6 +218,11 @@ public class Predictor {
         // to where the low hit is returned.
         if (high / 10 != low / 10) {
             return high / 10 == xp ? hit.hit : hit.hit - 1;
+        }
+
+        // If the next xp drop is further than 1 xp off, we can lazily check if it wrapped or not
+        if ((high / 10 + 1) == xp && (next / 10) != xp) {
+            return hit.hit;
         }
 
         // We have to always take hit-1 because low hits have overlapping xpdrops

@@ -1,6 +1,7 @@
 package com.example;
 
 import com.example.enemydata.Enemy;
+import com.example.raids.Toa;
 import com.example.utils.DamageHandler;
 import com.example.utils.Predictor;
 import lombok.extern.slf4j.Slf4j;
@@ -9,15 +10,13 @@ import net.runelite.api.NPC;
 import net.runelite.api.Skill;
 import net.runelite.client.ui.overlay.Overlay;
 import net.runelite.client.ui.overlay.OverlayPosition;
+import net.runelite.client.ui.overlay.outline.ModelOutlineRenderer;
 
 import javax.inject.Inject;
 import java.awt.*;
 
 @Slf4j
 public class AkkhaPredictorOverlay extends Overlay {
-    @Inject
-    private AkkhaPredictor plugin;
-
     @Inject
     private AkkhaPredictorConfig config;
 
@@ -34,7 +33,7 @@ public class AkkhaPredictorOverlay extends Overlay {
 
     @Override
     public Dimension render(Graphics2D graphics) {
-        if (!damageHandler.shouldProcess()) {
+        if (!Toa.isAtToa(client) && config.status()) {
             return null;
         }
         var enemies = damageHandler.getActiveEnemies();

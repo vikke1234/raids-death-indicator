@@ -1,9 +1,12 @@
 package com.example;
 
 import com.example.events.EntityDamaged;
+import com.example.raids.Cox;
 import com.example.raids.Toa;
 import com.example.utils.DamageHandler;
 import com.google.inject.Provides;
+import javax.inject.Inject;
+
 import lombok.extern.slf4j.Slf4j;
 import net.runelite.client.callback.ClientThread;
 import net.runelite.client.config.ConfigManager;
@@ -12,8 +15,6 @@ import net.runelite.client.party.WSClient;
 import net.runelite.client.plugins.Plugin;
 import net.runelite.client.plugins.PluginDescriptor;
 import net.runelite.client.ui.overlay.OverlayManager;
-
-import javax.inject.Inject;
 
 @Slf4j
 @PluginDescriptor(
@@ -36,6 +37,9 @@ public class AkkhaPredictor extends Plugin {
 	private Toa toa;
 
 	@Inject
+	private Cox cox;
+
+	@Inject
 	private ClientThread clientThread;
 
 	@Inject
@@ -46,6 +50,7 @@ public class AkkhaPredictor extends Plugin {
 	{
 		eventBus.register(damageHandler);
 		eventBus.register(toa);
+		eventBus.register(cox);
 		clientThread.invoke(damageHandler::initXpMap);
 		overlayManager.add(overlay);
 		wsClient.registerMessage(EntityDamaged.class);
@@ -56,6 +61,7 @@ public class AkkhaPredictor extends Plugin {
 		overlayManager.remove(overlay);
 		eventBus.unregister(damageHandler);
 		eventBus.unregister(toa);
+		eventBus.unregister(cox);
 		wsClient.unregisterMessage(EntityDamaged.class);
 		damageHandler.getPredictor().reset();
 	}

@@ -131,7 +131,7 @@ public class PredictionTree {
         int precise;
         for(PredictionTree leaf : leaves) {
             Set<Integer> avail = leaf.available;
-            //System.out.println("Current guesses: " + avail);
+            System.out.println("Current guesses: " + avail);
             assert (!avail.isEmpty()); // should never be empty, something is wrong
             int phigh = Predictor.computePrecise(hit.hit, properties);
             int plow = Predictor.computePrecise(hit.hit-1, properties);
@@ -152,7 +152,7 @@ public class PredictionTree {
 
                 if ((precise + getFrac(leaf)) / 10 != xp) {
                     leaf.dead = true;
-                    //log.info("dead leaf");
+                    log.debug("dead leaf");
                     continue;
                 }
                 final int finalFrac = precise % 10;

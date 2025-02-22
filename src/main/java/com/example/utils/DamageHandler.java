@@ -2,6 +2,7 @@ package com.example.utils;
 
 import com.example.enemydata.Enemy;
 import com.example.events.EntityDamaged;
+import com.example.raids.Cox;
 import com.example.raids.Toa;
 import lombok.Getter;
 import lombok.extern.slf4j.Slf4j;
@@ -71,7 +72,7 @@ public class DamageHandler {
     }
 
     public boolean shouldProcess() {
-        return Toa.isAtToa(client);
+        return Toa.isAtToa(client) || Cox.isInCox(client);
     }
 
     @Subscribe
@@ -114,8 +115,13 @@ public class DamageHandler {
         if (activeEnemies.containsKey(npc.getIndex())) {
             enemy = activeEnemies.get(npc.getIndex());
         } else {
-            //System.out.println("Unknown enemy \"" + npc.getName() + "\": " + npc.getId() + " (idx: " + npc.getIndex() + ")");
+            System.out.println("Unknown enemy \"" + npc.getName() + "\": " + npc.getId() + " (idx: " + npc.getIndex() + ")");
             return;
+        }
+
+        int bossHealth = client.getVarbitValue(Varbits.BOSS_HEALTH_CURRENT);
+        if (bossHealth > 0) {
+            enemy.current_health = bossHealth; // re-synchronize the health
         }
 
         int attackStyle = client.getVarpValue(VarPlayer.ATTACK_STYLE);
@@ -248,7 +254,6 @@ public class DamageHandler {
         if (!shouldProcess() || hitsplat.getHitsplatType() == HitsplatID.HEAL || hitsplat.getAmount() <= 0) {
             return;
         }
-
         Actor actor = hit.getActor();
         if (actor instanceof NPC) {
             NPC npc = (NPC) actor;
