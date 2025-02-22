@@ -2,6 +2,7 @@ package com.example.utils;
 
 import com.example.enemydata.Enemy;
 import com.example.events.EntityDamaged;
+import com.example.raids.Cox;
 import com.example.raids.Toa;
 import lombok.Getter;
 import lombok.extern.slf4j.Slf4j;
@@ -71,7 +72,7 @@ public class DamageHandler {
     }
 
     public boolean shouldProcess() {
-        return Toa.isAtToa(client);
+        return Toa.isAtToa(client) || Cox.isInCox(client);
     }
 
     @Subscribe

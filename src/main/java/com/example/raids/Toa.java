@@ -132,7 +132,7 @@ public class Toa {
 
     @Subscribe
     public void onGameTick(GameTick tick) {
-        if (partyDead()) {
+        if (isAtToa() && partyDead()) {
             // TODO: does this need to be done each tick?
             damageHandler.getActiveEnemies().clear();
         }

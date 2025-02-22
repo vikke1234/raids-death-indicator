@@ -22,14 +22,14 @@ public abstract class Enemy implements IEnemy {
     @Getter
     public int current_health;
 
-    protected final int attack;
-    protected final int str;
-    protected final int def;
-    protected final int offAtt;
-    protected final int offStr;
-    protected final int defStab;
-    protected final int defSlash;
-    protected final int defCrush;
+    protected int attack;
+    protected int str;
+    protected int def;
+    protected int offAtt;
+    protected int offStr;
+    protected int defStab;
+    protected int defSlash;
+    protected int defCrush;
 
     @Getter
     @Setter
@@ -46,6 +46,7 @@ public abstract class Enemy implements IEnemy {
         this.npc = npc;
 
         this.base_health = baseHealth;
+        this.current_health = base_health;
         this.attack = attack;
         this.str = str;
         this.def = def;
