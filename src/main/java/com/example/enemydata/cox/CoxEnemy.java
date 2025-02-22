@@ -21,11 +21,10 @@ public class CoxEnemy extends Enemy {
     static {
         enemies = new HashMap<>();
         bosses = new HashSet<>();
-        enemies.put(NpcID.TEKTON, Tekton::new);
-        enemies.put(NpcID.TEKTON_7541, Tekton::new);
-        enemies.put(NpcID.TEKTON_7545, Tekton::new);
-        enemies.put(NpcID.TEKTON_ENRAGED, Tekton::new);
-        enemies.put(NpcID.TEKTON_ENRAGED_7544, Tekton::new);
+
+        enemies.put(NpcID.ABYSSAL_PORTAL, Portal::new);
+        enemies.put(NpcID.GREAT_OLM_RIGHT_CLAW, OlmMageHand::new);
+        enemies.put(NpcID.GREAT_OLM_RIGHT_CLAW_7553, OlmMageHand::new);
     }
 
     protected CoxEnemy(NPC npc, boolean isCm, int partySize, int maxCombat, int maxHp, int baseHealth, int melee, int def, int offAtt, int offStr, int defStab, int defSlash, int defCrush) {
@@ -42,15 +41,14 @@ public class CoxEnemy extends Enemy {
         int scaledMelee = getScaledOffence(melee, partySize, maxHp);
         this.str = scaledMelee;
         this.attack = scaledMelee;
-        System.out.println("Def: " + scaledDef);
     }
 
     protected int getScaledDefence(int baseDef, int partySize, int maxHp) {
-        return baseDef*(maxHp*4/9+55)/99*((int)Math.sqrt(partySize-1)+(partySize-1)*7/10+100)/100*(isCm?3:2)/2;
+        return baseDef * (maxHp * 4 / 9 + 55) / 99 * ((int) Math.sqrt(partySize - 1) + (partySize - 1) * 7 / 10 + 100) / 100 * (isCm ? 3 : 2) / 2;
     }
 
     protected int getScaledOffence(int baseStat, int partySize, int maxHp) {
-        return baseStat*(maxHp*4/9+55)/99*((int)Math.sqrt(partySize-1)*7+(partySize-1)+100)/100*(isCm?3:2)/2;
+        return baseStat * (maxHp * 4 / 9 + 55) / 99 * ((int) Math.sqrt(partySize - 1) * 7 + (partySize - 1) + 100) / 100 * (isCm ? 3 : 2) / 2;
     }
 
     // TODO: override for olm

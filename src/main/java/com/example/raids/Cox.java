@@ -57,11 +57,34 @@ public class Cox {
     }
 
     public static boolean isInCox(Client client) {
-        return client.getVarbitValue(Varbits.RAID_STATE) == 1;
+        return client.getVarbitValue(Varbits.RAID_STATE) >= 1;
     }
 
     public boolean isInCox() {
         return isInCox(client);
+    }
+
+    private int getMaxHpInRaid() {
+        var players = client.getTopLevelWorldView().players().stream().collect(Collectors.toList());
+        maxCombat = players.stream().map(Player::getCombatLevel).max(Integer::compare).get();
+
+        // only get the first 5 players so that masses don't ddos hiscore servers.
+        var sorted = players.stream()
+                .sorted(Comparator.comparingInt((Player p) -> p.getCombatLevel()))
+                .collect(Collectors.toList());
+        int size = sorted.size();
+        System.out.println("Fetching stats: " + sorted);
+        List<HiscoreResult> results = sorted.subList(0, Math.min(5, size)).stream().map(p -> {
+            try {
+                return hiscoreClient.lookup(p.getName());
+            } catch (IOException e) {
+                throw new RuntimeException(e);
+            }
+        }).collect(Collectors.toList());
+        System.out.println("Done fetching stats");
+        return results.stream()
+                .map(result -> result.getSkill(HiscoreSkill.HITPOINTS).getLevel())
+                .max(Integer::compare).get();
     }
 
     @Subscribe
@@ -69,27 +92,7 @@ public class Cox {
         if (ev.getVarbitId() == Varbits.RAID_STATE && ev.getValue() == 1) {
             isCm = client.getVarbitValue(InternalVarbits.COX_CM) == 1;
             groupSize = client.getVarbitValue(InternalVarbits.GROUP_SIZE);
-            var players = client.getTopLevelWorldView().players().stream().collect(Collectors.toList());
-            maxCombat = players.stream().map(Player::getCombatLevel).max(Integer::compare).get();
-
-            // only get the first 5 players so that masses don't ddos hiscore servers.
-            var sorted = players.stream()
-                    .sorted(Comparator.comparingInt((Player p) -> p.getCombatLevel()))
-                    .collect(Collectors.toList());
-            int size = sorted.size();
-            System.out.println("Fetching stats: " + sorted);
-            List<HiscoreResult> results = sorted.subList(0, Math.min(5, size)).stream().map(p -> {
-                try {
-                    return hiscoreClient.lookup(p.getName());
-                } catch (IOException e) {
-                    throw new RuntimeException(e);
-                }
-            }).collect(Collectors.toList());
-            System.out.println("Done fetching stats");
-            maxHp = results.stream()
-                    .map(result -> result.getSkill(HiscoreSkill.HITPOINTS).getLevel())
-                    .max(Integer::compare).get();
-
+            maxHp = getMaxHpInRaid();
         }
     }
 
@@ -123,7 +126,6 @@ public class Cox {
         System.out.println(MessageFormat.format("NPC spawned \"{0}\": {1} {2}", npc.getName(), npc.getId(), npc.getIndex()));
         Enemy enemy = enemyConstructor.apply(npc, isCm, groupSize, maxCombat, maxHp);
         damageHandler.getActiveEnemies().put(npc.getIndex(), enemy);
-        System.out.println("added enemies: " + damageHandler.getActiveEnemies());
     }
 
     @Subscribe

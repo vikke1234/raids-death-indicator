@@ -152,7 +152,7 @@ public class PredictionTree {
 
                 if ((precise + getFrac(leaf)) / 10 != xp) {
                     leaf.dead = true;
-                    //log.info("dead leaf");
+                    log.debug("dead leaf");
                     continue;
                 }
                 final int finalFrac = precise % 10;

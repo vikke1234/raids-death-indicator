@@ -1,6 +1,7 @@
 package com.example;
 
 import com.example.enemydata.Enemy;
+import com.example.raids.Toa;
 import com.example.utils.DamageHandler;
 import com.example.utils.Predictor;
 import lombok.extern.slf4j.Slf4j;
@@ -17,9 +18,6 @@ import java.awt.*;
 @Slf4j
 public class AkkhaPredictorOverlay extends Overlay {
     @Inject
-    private AkkhaPredictor plugin;
-
-    @Inject
     private AkkhaPredictorConfig config;
 
     @Inject
@@ -35,7 +33,7 @@ public class AkkhaPredictorOverlay extends Overlay {
 
     @Override
     public Dimension render(Graphics2D graphics) {
-        if (!damageHandler.shouldProcess()) {
+        if (!Toa.isAtToa(client)) {
             return null;
         }
         var enemies = damageHandler.getActiveEnemies();

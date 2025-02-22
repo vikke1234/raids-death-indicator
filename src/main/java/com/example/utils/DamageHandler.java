@@ -119,6 +119,11 @@ public class DamageHandler {
             return;
         }
 
+        int bossHealth = client.getVarbitValue(Varbits.BOSS_HEALTH_CURRENT);
+        if (bossHealth > 0) {
+            enemy.current_health = bossHealth; // re-synchronize the health
+        }
+
         int attackStyle = client.getVarpValue(VarPlayer.ATTACK_STYLE);
         int weapon = playerComposition.getEquipmentId(KitType.WEAPON);
 
@@ -249,7 +254,6 @@ public class DamageHandler {
         if (!shouldProcess() || hitsplat.getHitsplatType() == HitsplatID.HEAL || hitsplat.getAmount() <= 0) {
             return;
         }
-
         Actor actor = hit.getActor();
         if (actor instanceof NPC) {
             NPC npc = (NPC) actor;
