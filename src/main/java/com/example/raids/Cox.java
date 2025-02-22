@@ -1,5 +1,6 @@
 package com.example.raids;
 
+import com.example.AkkhaPredictorConfig;
 import com.example.enemydata.Enemy;
 import com.example.enemydata.cox.CoxEnemy;
 import com.example.enemydata.cox.Tekton;
@@ -8,18 +9,12 @@ import net.runelite.api.*;
 import net.runelite.api.events.*;
 import net.runelite.client.eventbus.Subscribe;
 import net.runelite.client.hiscore.HiscoreClient;
-import net.runelite.client.hiscore.HiscoreResult;
-import net.runelite.client.hiscore.HiscoreSkill;
 
 import javax.inject.Inject;
 import javax.inject.Singleton;
-import java.io.IOException;
 import java.text.MessageFormat;
-import java.util.Comparator;
 import java.util.HashSet;
-import java.util.List;
 import java.util.Set;
-import java.util.stream.Collectors;
 
 @Singleton
 public class Cox {
@@ -36,6 +31,9 @@ public class Cox {
 
     @Inject
     private HiscoreClient hiscoreClient;
+
+    @Inject
+    private AkkhaPredictorConfig config;
 
     Set<String> cachedPlayers;
 
@@ -64,35 +62,12 @@ public class Cox {
         return isInCox(client);
     }
 
-    private int getMaxHpInRaid() {
-        var players = client.getTopLevelWorldView().players().stream().collect(Collectors.toList());
-        maxCombat = players.stream().map(Player::getCombatLevel).max(Integer::compare).get();
-
-        // only get the first 5 players so that masses don't ddos hiscore servers.
-        var sorted = players.stream()
-                .sorted(Comparator.comparingInt((Player p) -> p.getCombatLevel()))
-                .collect(Collectors.toList());
-        int size = sorted.size();
-        System.out.println("Fetching stats: " + sorted);
-        List<HiscoreResult> results = sorted.subList(0, Math.min(5, size)).stream().map(p -> {
-            try {
-                return hiscoreClient.lookup(p.getName());
-            } catch (IOException e) {
-                throw new RuntimeException(e);
-            }
-        }).collect(Collectors.toList());
-        System.out.println("Done fetching stats");
-        return results.stream()
-                .map(result -> result.getSkill(HiscoreSkill.HITPOINTS).getLevel())
-                .max(Integer::compare).get();
-    }
-
     @Subscribe
     public void onVarbitChanged(VarbitChanged ev) {
         if (ev.getVarbitId() == Varbits.RAID_STATE && ev.getValue() == 1) {
             isCm = client.getVarbitValue(InternalVarbits.COX_CM) == 1;
             groupSize = client.getVarbitValue(InternalVarbits.GROUP_SIZE);
-            maxHp = getMaxHpInRaid();
+            maxHp = config.maxHp();
         }
     }
 

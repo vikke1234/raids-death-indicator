@@ -20,5 +20,21 @@ public interface AkkhaPredictorConfig extends Config
         return new Color(98, 174, 253, 64);
     }
 
-    // TODO: add hidden options to store the fraction
+    @ConfigItem(
+            keyName = "maxHp",
+            name = "Max HP",
+            description = "Max HP in CoX, affects scales"
+    )
+    default int maxHp() {
+        return 99;
+    }
+
+    @ConfigItem(
+            keyName = "showStatus",
+            name = "Show predictor status",
+            description = "Show or hide the box in top left"
+    )
+    default boolean status() {
+        return true;
+    }
 }
