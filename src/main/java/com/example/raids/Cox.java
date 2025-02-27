@@ -79,7 +79,7 @@ public class Cox {
         }
         NPC npc = ev.getNpc();
         var activeEnemies = damageHandler.getActiveEnemies();
-        System.out.println(MessageFormat.format("NPC despawned \"{0}\": {1} {2}", npc.getName(), npc.getId(), npc.getIndex()));
+        //System.out.println(MessageFormat.format("NPC despawned \"{0}\": {1} {2}", npc.getName(), npc.getId(), npc.getIndex()));
 
         activeEnemies.remove(npc.getIndex());
     }
@@ -95,7 +95,7 @@ public class Cox {
         if (enemyConstructor == null) {
             return;
         }
-        System.out.println(MessageFormat.format("NPC spawned \"{0}\": {1} {2}", npc.getName(), npc.getId(), npc.getIndex()));
+        //System.out.println(MessageFormat.format("NPC spawned \"{0}\": {1} {2}", npc.getName(), npc.getId(), npc.getIndex()));
         Enemy enemy = enemyConstructor.apply(npc, isCm, groupSize, maxCombat, maxHp);
         damageHandler.getActiveEnemies().put(npc.getIndex(), enemy);
     }

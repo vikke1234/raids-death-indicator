@@ -22,7 +22,7 @@ public class PredictorTests {
             xp += wrapped ? 10 : 0;
 
             internalFrac = (internalFrac + xp) % 10;
-            System.out.println("internal: " + internalFrac + " hit: " + hit + " xp: " + xp +" wrapped: " + wrapped);
+            //System.out.println("internal: " + internalFrac + " hit: " + hit + " xp: " + xp +" wrapped: " + wrapped);
             // We don't care about uncalibrated hits
             int predicted = predictor.treePredict(xp / 10, properties);
             // Make sure that when calibrating, we won't estimate higher
@@ -40,8 +40,8 @@ public class PredictorTests {
 
             internalFrac = (internalFrac + xp) % 10;
             int predicted = predictor.treePredict(xp / 10, properties);
-            System.out.println("internal: " + internalFrac + " hit(" + properties.skill.getName() + "): " + hit + " predicted: " + predicted + " xp: " + xp +" wrapped: " + wrapped);
-            System.out.println();
+            //System.out.println("internal: " + internalFrac + " hit(" + properties.skill.getName() + "): " + hit + " predicted: " + predicted + " xp: " + xp +" wrapped: " + wrapped);
+            //System.out.println();
             assertEquals(hit, predicted);
         }
     }
@@ -107,14 +107,14 @@ public class PredictorTests {
             dfrac = (dfrac + dxp) % 10;
             int mpredict = predictor.treePredict(mxp / 10, magicxp);
             int dpredict = predictor.treePredict(dxp / 10, defxp);
-            System.out.println("mfrac: " + mfrac + " dfrac: " + dfrac +
-                    " hit: " + hit + " mpredict: " + mpredict + " dpredict: " + dpredict +
-                    " mxp(" + mwrapped + "): " + mxp + " dxp(" + dwrapped + "): " + dxp);
-            System.out.println();
+            //System.out.println("mfrac: " + mfrac + " dfrac: " + dfrac +
+            //        " hit: " + hit + " mpredict: " + mpredict + " dpredict: " + dpredict +
+            //        " mxp(" + mwrapped + "): " + mxp + " dxp(" + dwrapped + "): " + dxp);
+            //System.out.println();
             //assertEquals(mpredict, dpredict);
             assertTrue(hit + " >= " + mpredict,hit >= mpredict);
         }
-        System.out.println("*** CALIBRATED " + predictor.isAccurate(Skill.MAGIC) + " " + predictor.isAccurate(Skill.DEFENCE) +" ***");
+        //System.out.println("*** CALIBRATED " + predictor.isAccurate(Skill.MAGIC) + " " + predictor.isAccurate(Skill.DEFENCE) +" ***");
 
 
         for (int i = 0; i < iterations; i++) {

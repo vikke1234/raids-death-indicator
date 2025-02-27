@@ -6,8 +6,6 @@ public class Tekton extends CoxEnemy {
     public Tekton(NPC npc, boolean isCm, int groupSize, int maxCombat, int maxHp) {
         super(npc, isCm, groupSize, maxCombat, maxHp, 300, 390, 205, 64, 20, 155, 165, 105);
         hideOnDeath = false;
-        System.out.println("tek hp: " + current_health);
-        System.out.println("slash def: " + this.defSlash + " stab def: " + this.defStab + " crush def: " + this.defCrush);
     }
 
     @Override
