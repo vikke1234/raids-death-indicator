@@ -33,9 +33,6 @@ public class AkkhaPredictorOverlay extends Overlay {
 
     @Override
     public Dimension render(Graphics2D graphics) {
-        if (!Toa.isAtToa(client) && config.status()) {
-            return null;
-        }
         var enemies = damageHandler.getActiveEnemies();
 
         for (Enemy enemy : enemies.values()) {
@@ -43,6 +40,10 @@ public class AkkhaPredictorOverlay extends Overlay {
                 NPC npc = enemy.getNpc();
                 renderPoly(graphics, null, 0, config.highlightColor(), npc.getConvexHull());
             }
+        }
+
+        if (!Toa.isAtToa(client) && config.status()) {
+            return null;
         }
 
         Skill []skills = new Skill[]{Skill.HITPOINTS};

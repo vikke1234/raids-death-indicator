@@ -7,11 +7,14 @@ import net.runelite.api.Client;
 import net.runelite.api.NPC;
 import net.runelite.api.NpcID;
 
+import java.util.HashSet;
 import java.util.Set;
 
 @Slf4j
 public abstract class Enemy implements IEnemy {
     public static final Set<Integer> blacklist = Set.of(NpcID.SCARAB_SWARM_11723, NpcID.JUG, NpcID.JUG_11736);
+    public static final Set<Integer> bosses;
+
     public int queuedDamage;
     public boolean shouldDraw;
     protected boolean hideOnDeath;
@@ -39,6 +42,42 @@ public abstract class Enemy implements IEnemy {
     @Getter
     Client client;
 
+    static {
+        bosses = new HashSet<>();
+        // Add the NpcID values to the Set
+        bosses.add(NpcID.AKKHA);
+        bosses.add(NpcID.AKKHA_11790);
+        bosses.add(NpcID.AKKHA_11791);
+        bosses.add(NpcID.AKKHA_11792);
+        bosses.add(NpcID.AKKHA_11793);
+        bosses.add(NpcID.AKKHA_11794);
+        bosses.add(NpcID.AKKHA_11795);
+        bosses.add(NpcID.AKKHA_11796);
+
+        bosses.add(NpcID.BABA);
+        bosses.add(NpcID.BABA_11779);
+        bosses.add(NpcID.BABA_11780);
+
+        bosses.add(NpcID.KEPHRI);
+        bosses.add(NpcID.KEPHRI_11721);
+
+        bosses.add(NpcID.ZEBAK_11730);
+        bosses.add(NpcID.ZEBAK_11732);
+
+
+        bosses.add(NpcID.OBELISK_11751);
+        bosses.add(NpcID.ELIDINIS_WARDEN_11753);
+        bosses.add(NpcID.ELIDINIS_WARDEN_11754);
+        bosses.add(NpcID.ELIDINIS_WARDEN_11761);
+        bosses.add(NpcID.TUMEKENS_WARDEN_11756);
+        bosses.add(NpcID.TUMEKENS_WARDEN_11757);
+        bosses.add(NpcID.TUMEKENS_WARDEN_11762);
+
+        bosses.add(NpcID.ABYSSAL_PORTAL);
+        bosses.add(NpcID.GREAT_OLM_RIGHT_CLAW);
+        bosses.add(NpcID.GREAT_OLM_RIGHT_CLAW_7553);
+        // TODO: add vangs? might be worth adding an event to send the HP to other players too
+    }
 
     protected Enemy(NPC npc, int baseHealth, int attack, int str, int def,
           int offAtt, int offStr,
@@ -56,7 +95,7 @@ public abstract class Enemy implements IEnemy {
         this.defSlash = defSlash;
         this.defCrush = defCrush;
         this.shouldDraw = false;
-        this.hideOnDeath = true;
+        this.hideOnDeath = false;
         this.queuedDamage = 0;
     }
 

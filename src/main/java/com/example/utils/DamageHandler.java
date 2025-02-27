@@ -120,7 +120,7 @@ public class DamageHandler {
         }
 
         int bossHealth = client.getVarbitValue(Varbits.BOSS_HEALTH_CURRENT);
-        if (bossHealth > 0) {
+        if (bossHealth > 0 && Enemy.bosses.contains(npc.getId())) {
             enemy.current_health = bossHealth; // re-synchronize the health
         }
 

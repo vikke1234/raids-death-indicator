@@ -55,11 +55,12 @@ public class Cox {
     }
 
     public static boolean isInCox(Client client) {
-        return client.getVarbitValue(Varbits.RAID_STATE) >= 1;
+        int state = client.getVarbitValue(Varbits.RAID_STATE);
+        return state >= 1 && state < 5;
     }
 
     public boolean isInCox() {
-        return isInCox(client);
+        return isInCox(client); // TODO: find a better way to check if in cox
     }
 
     @Subscribe
@@ -69,10 +70,6 @@ public class Cox {
             groupSize = client.getVarbitValue(InternalVarbits.GROUP_SIZE);
             maxHp = config.maxHp();
         }
-    }
-
-    @Subscribe
-    public void onGameTick(GameTick tick) {
     }
 
     @Subscribe
