@@ -19,7 +19,7 @@ import java.util.Set;
 @Singleton
 public class Cox {
     static class InternalVarbits {
-        public static final int COX_CM = 6835;
+        public static final int COX_CM = 6385;
         public static final int GROUP_SIZE = 9540;
     }
 
