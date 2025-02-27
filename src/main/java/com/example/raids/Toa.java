@@ -32,17 +32,17 @@ public class Toa {
 
     public static boolean isAtToa(Client client) {
         final int []TOA_REGIONS = {
-                //13455, // Lobby
-                //14160, // Nexus
+                13455, // Lobby
+                14160, // Nexus
 
-                //15698, // Crondis
-                //15700, // Zebak
+                15698, // Crondis
+                15700, // Zebak
 
-                //14162, // Scabaras
+                14162, // Scabaras
                 14164, // Kephri
 
                 15186, // Apmken
-                //15188, // Baba
+                15188, // Baba
 
                 14674, // Het
                 14676, // Akkha
