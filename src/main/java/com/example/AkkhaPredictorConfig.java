@@ -37,4 +37,15 @@ public interface AkkhaPredictorConfig extends Config
     default boolean status() {
         return true;
     }
+
+    @ConfigItem(
+            keyName = "enableCox",
+            name = "Enable cox (experimental)",
+            description = ""
+    )
+    default boolean enableCox() {
+        return true;
+    }
+
+
 }
