@@ -69,6 +69,7 @@ public class Cox {
             isCm = client.getVarbitValue(InternalVarbits.COX_CM) == 1;
             groupSize = client.getVarbitValue(InternalVarbits.GROUP_SIZE);
             maxHp = config.maxHp();
+            maxCombat = client.getTopLevelWorldView().players().stream().map(Player::getCombatLevel).max(Integer::compare).get();
         }
     }
 
