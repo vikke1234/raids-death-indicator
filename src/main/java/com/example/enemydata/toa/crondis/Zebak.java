@@ -1,6 +1,5 @@
 package com.example.enemydata.toa.crondis;
 
-import com.example.enemydata.Enemy;
 import com.example.enemydata.toa.ToaEnemy;
 import net.runelite.api.NPC;
 
@@ -10,5 +9,6 @@ public class Zebak extends ToaEnemy {
                 580, 250, 140, 70,
                 160, 100,
                 160, 160, 260);
+        hideOnDeath = false;
     }
 }
