@@ -17,6 +17,7 @@ public class CoxEnemy extends Enemy {
     boolean isCm;
     int partySize;
     int maxHp;
+    int maxCombat;
 
     static {
         enemies = new HashMap<>();
@@ -25,6 +26,11 @@ public class CoxEnemy extends Enemy {
         enemies.put(NpcID.ABYSSAL_PORTAL, Portal::new);
         enemies.put(NpcID.GREAT_OLM_RIGHT_CLAW, OlmMageHand::new);
         enemies.put(NpcID.GREAT_OLM_RIGHT_CLAW_7553, OlmMageHand::new);
+        enemies.put(NpcID.VANGUARD, Vanguard::new);
+        enemies.put(NpcID.VANGUARD_7526, Vanguard::new);
+        enemies.put(NpcID.VANGUARD_7527, MeleeVanguard::new);
+        enemies.put(NpcID.VANGUARD_7528, RangeVanguard::new);
+        enemies.put(NpcID.VANGUARD_7529, MageVanguard::new);
     }
 
     protected CoxEnemy(NPC npc, boolean isCm, int partySize, int maxCombat, int maxHp, int baseHealth, int melee, int def, int offAtt, int offStr, int defStab, int defSlash, int defCrush) {
@@ -33,6 +39,7 @@ public class CoxEnemy extends Enemy {
         this.isCm = isCm;
         this.partySize = partySize;
         this.maxHp = maxHp;
+        this.maxCombat = maxCombat;
 
         this.scaled_health = this.getScaledHealth(baseHealth, maxCombat, partySize);
         this.current_health = scaled_health;

@@ -20,6 +20,16 @@ public interface AkkhaPredictorConfig extends Config
         return new Color(98, 174, 253, 64);
     }
 
+    @Alpha
+    @ConfigItem(
+            keyName = "textColor",
+            name = "Text color",
+            description = ""
+    )
+    default Color textColor() {
+        return new Color(98, 174, 253, 64);
+    }
+
     @ConfigItem(
             keyName = "maxHp",
             name = "Max HP",

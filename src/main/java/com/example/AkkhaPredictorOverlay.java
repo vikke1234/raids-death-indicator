@@ -7,10 +7,13 @@ import com.example.utils.Predictor;
 import lombok.extern.slf4j.Slf4j;
 import net.runelite.api.Client;
 import net.runelite.api.NPC;
+import net.runelite.api.NpcID;
+import net.runelite.api.Point;
 import net.runelite.api.Skill;
+import net.runelite.client.ui.FontManager;
 import net.runelite.client.ui.overlay.Overlay;
 import net.runelite.client.ui.overlay.OverlayPosition;
-import net.runelite.client.ui.overlay.outline.ModelOutlineRenderer;
+import net.runelite.client.ui.overlay.OverlayUtil;
 
 import javax.inject.Inject;
 import java.awt.*;
@@ -40,6 +43,12 @@ public class AkkhaPredictorOverlay extends Overlay {
                 NPC npc = enemy.getNpc();
                 renderPoly(graphics, null, 0, config.highlightColor(), npc.getConvexHull());
             }
+
+            int id = enemy.getNpc().getId();
+            if (id == NpcID.VANGUARD_7526 || id == NpcID.VANGUARD_7527 ||
+                    id == NpcID.VANGUARD_7528 || id == NpcID.VANGUARD_7529) {
+                renderText(graphics, enemy.getNpc(), String.valueOf(enemy.getCurrent_health()), config.textColor());
+            }
         }
 
         if (!Toa.isAtToa(client) && config.status()) {
@@ -64,6 +73,17 @@ public class AkkhaPredictorOverlay extends Overlay {
             start += 20;
         }
         return null;
+    }
+
+    private void renderText(Graphics2D graphics, NPC npc, String str, Color c) {
+        Point p = npc.getCanvasTextLocation(graphics, str, npc.getLogicalHeight());
+        if (p == null) {
+            return;
+        }
+
+        p = new Point(p.getX(), p.getY() + 20);
+        graphics.setFont(FontManager.getDefaultBoldFont());
+        OverlayUtil.renderTextLocation(graphics, p, str, c);
     }
 
     private void renderPoly(Graphics2D graphics, Color borderColor, float borderWidth, Color fillColor, Shape polygon)

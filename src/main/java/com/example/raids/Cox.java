@@ -4,6 +4,7 @@ import com.example.AkkhaPredictorConfig;
 import com.example.enemydata.Enemy;
 import com.example.enemydata.cox.CoxEnemy;
 import com.example.enemydata.cox.Tekton;
+import com.example.enemydata.cox.Vanguard;
 import com.example.utils.DamageHandler;
 import net.runelite.api.*;
 import net.runelite.api.events.*;
@@ -80,7 +81,7 @@ public class Cox {
         }
         NPC npc = ev.getNpc();
         var activeEnemies = damageHandler.getActiveEnemies();
-        //System.out.println(MessageFormat.format("NPC despawned \"{0}\": {1} {2}", npc.getName(), npc.getId(), npc.getIndex()));
+        System.out.println(MessageFormat.format("NPC despawned \"{0}\": {1} {2}", npc.getName(), npc.getId(), npc.getIndex()));
 
         activeEnemies.remove(npc.getIndex());
     }
@@ -96,7 +97,7 @@ public class Cox {
         if (enemyConstructor == null) {
             return;
         }
-        //System.out.println(MessageFormat.format("NPC spawned \"{0}\": {1} {2}", npc.getName(), npc.getId(), npc.getIndex()));
+        System.out.println(MessageFormat.format("NPC spawned \"{0}\": {1} {2}", npc.getName(), npc.getId(), npc.getIndex()));
         Enemy enemy = enemyConstructor.apply(npc, isCm, groupSize, maxCombat, maxHp);
         damageHandler.getActiveEnemies().put(npc.getIndex(), enemy);
     }
@@ -109,23 +110,35 @@ public class Cox {
 
         NPC npc = ev.getNpc();
         int id = npc.getId();
-        Enemy enemy = damageHandler.getActiveEnemies().getOrDefault(npc.getIndex(), null);
-        if (!(enemy instanceof Tekton)) {
-            return;
-        }
+        var activeEnemies = damageHandler.getActiveEnemies();
+        Enemy enemy = activeEnemies.getOrDefault(npc.getIndex(), null);
 
-        Tekton tekton = (Tekton) enemy;
         switch (id) {
             case NpcID.TEKTON:
             case NpcID.TEKTON_7541:
             case NpcID.TEKTON_7542:
             case NpcID.TEKTON_7545:
-                tekton.swapForm(false);
+                if (enemy instanceof Tekton) {
+                    Tekton tekton = (Tekton) enemy;
+                    tekton.swapForm(false);
+                }
                 break;
 
             case NpcID.TEKTON_ENRAGED:
             case NpcID.TEKTON_ENRAGED_7544:
-                tekton.swapForm(true);
+                if (enemy instanceof Tekton) {
+                    Tekton tekton = (Tekton) enemy;
+                    tekton.swapForm(true);
+                }
+                break;
+
+            case NpcID.VANGUARD_7527:
+            case NpcID.VANGUARD_7528:
+            case NpcID.VANGUARD_7529:
+                if (enemy instanceof Vanguard) {
+                    Vanguard vang = (Vanguard) enemy;
+                    activeEnemies.put(npc.getIndex(), vang.correctVanguard(id));
+                }
                 break;
         }
     }

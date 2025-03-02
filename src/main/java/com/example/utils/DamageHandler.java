@@ -2,6 +2,7 @@ package com.example.utils;
 
 import com.example.enemydata.Enemy;
 import com.example.events.EntityDamaged;
+import com.example.events.SyncHealth;
 import com.example.raids.Cox;
 import com.example.raids.Toa;
 import lombok.Getter;
@@ -122,6 +123,11 @@ public class DamageHandler {
         int bossHealth = client.getVarbitValue(Varbits.BOSS_HEALTH_CURRENT);
         if (bossHealth > 0 && Enemy.bosses.contains(npc.getId())) {
             enemy.current_health = bossHealth; // re-synchronize the health
+            final SyncHealth ev = new SyncHealth(npc.getIndex(), bossHealth);
+            if (party.isInParty()) {
+                clientThread.invokeLater(() -> party.send(ev));
+            }
+            onSyncHealth(ev);
         }
 
         int attackStyle = client.getVarpValue(VarPlayer.ATTACK_STYLE);
@@ -219,7 +225,7 @@ public class DamageHandler {
      * @param entityDamaged event
      */
     @Subscribe
-    public void onEntityDamaged(EntityDamaged entityDamaged) {
+    public void onEntityDamaged(final EntityDamaged entityDamaged) {
         if (!shouldProcess()) {
             return;
         }
@@ -236,6 +242,26 @@ public class DamageHandler {
         Enemy enemy = activeEnemies.getOrDefault(npcIndex, null);
         if (enemy != null) {
             enemy.queueDamage(entityDamaged.getDamage());
+        }
+    }
+
+    @Subscribe
+    public void onSyncHealth(final SyncHealth ev) {
+        if (!shouldProcess()) {
+            return;
+        }
+
+        PartyMember localPlayer = party.getLocalMember();
+
+        if (localPlayer != null) {
+            if (localPlayer.getMemberId() == ev.getMemberId()) {
+                return; // Don't process your own events
+            }
+        }
+
+        Enemy enemy = activeEnemies.getOrDefault(ev.getNpcIndex(), null);
+        if (enemy != null) {
+            enemy.setCurrentHealth(ev.getHealth());
         }
     }
 

@@ -36,11 +36,11 @@ public abstract class Enemy implements IEnemy {
 
     @Getter
     @Setter
-    NPC npc;
+    protected NPC npc;
 
     @Setter
     @Getter
-    Client client;
+    protected Client client;
 
     static {
         bosses = new HashSet<>();
@@ -76,6 +76,9 @@ public abstract class Enemy implements IEnemy {
         bosses.add(NpcID.ABYSSAL_PORTAL);
         bosses.add(NpcID.GREAT_OLM_RIGHT_CLAW);
         bosses.add(NpcID.GREAT_OLM_RIGHT_CLAW_7553);
+        bosses.add(NpcID.VANGUARD_7527);
+        bosses.add(NpcID.VANGUARD_7528);
+        bosses.add(NpcID.VANGUARD_7529);
         // TODO: add vangs? might be worth adding an event to send the HP to other players too
     }
 
