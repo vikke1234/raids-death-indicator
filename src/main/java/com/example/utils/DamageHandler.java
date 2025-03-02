@@ -138,7 +138,13 @@ public class DamageHandler {
             predictor.insertInto(xp, scaling, props);
             return;
         }
+
         int damage = predictor.treePredict(xp, props);
+        if (!Toa.isAtToa(client)) {
+            // TODO: figure out a better way to do this
+            predictor.reset();
+        }
+
         assert (damage >= 0);
         if (isChinchompa) {
             // TODO: barrage? prio: low, tldr: check for barrage animation
