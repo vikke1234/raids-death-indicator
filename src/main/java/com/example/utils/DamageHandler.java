@@ -76,7 +76,7 @@ public class DamageHandler {
     }
 
     public boolean shouldProcess() {
-        return Toa.isAtToa(client) && cox.isCachedInCox();
+        return Toa.isAtToa(client) || cox.isCachedInCox();
     }
 
     @Subscribe
