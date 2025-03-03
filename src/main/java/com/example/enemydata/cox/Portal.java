@@ -1,7 +1,9 @@
 package com.example.enemydata.cox;
 
+import lombok.extern.slf4j.Slf4j;
 import net.runelite.api.NPC;
 
+@Slf4j
 public class Portal extends CoxEnemy {
     public Portal(NPC npc, boolean isCm, int partySize, int maxCombat, int maxHp) {
         super(npc, isCm, partySize, maxCombat, maxHp, 250, 1, 176, 0, 0, 0, 0, 0);
@@ -10,7 +12,7 @@ public class Portal extends CoxEnemy {
     @Override
     public boolean queueDamage(int damage) {
         shouldDraw = super.queueDamage(damage);
-        System.out.println("current hp: " + current_health + " queued damage: " + queuedDamage + " should draw: " + shouldDraw);
+        log.debug("current hp: {} queued damage: {} should draw: {}", current_health, queuedDamage, shouldDraw);
         return shouldDraw;
     }
 
