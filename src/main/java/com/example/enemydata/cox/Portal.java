@@ -10,6 +10,7 @@ public class Portal extends CoxEnemy {
     @Override
     public boolean queueDamage(int damage) {
         shouldDraw = super.queueDamage(damage);
+        System.out.println("current hp: " + current_health + " queued damage: " + queuedDamage + " should draw: " + shouldDraw);
         return shouldDraw;
     }
 
