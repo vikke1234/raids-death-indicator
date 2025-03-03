@@ -5,6 +5,7 @@ import com.example.enemydata.Enemy;
 import com.example.enemydata.cox.CoxEnemy;
 import com.example.enemydata.cox.Tekton;
 import com.example.utils.DamageHandler;
+import lombok.Getter;
 import net.runelite.api.*;
 import net.runelite.api.events.*;
 import net.runelite.client.eventbus.Subscribe;
@@ -12,9 +13,6 @@ import net.runelite.client.hiscore.HiscoreClient;
 
 import javax.inject.Inject;
 import javax.inject.Singleton;
-import java.text.MessageFormat;
-import java.util.HashSet;
-import java.util.Set;
 
 @Singleton
 public class Cox {
@@ -35,7 +33,8 @@ public class Cox {
     @Inject
     private AkkhaPredictorConfig config;
 
-    Set<String> cachedPlayers;
+    @Getter
+    boolean cachedInCox;
 
     boolean isCm;
 
@@ -47,11 +46,11 @@ public class Cox {
 
     @Inject
     public void initialize() {
+        cachedInCox = false;
         isCm = false;
         groupSize = 0;
         maxCombat = 0;
         maxHp = 0;
-        cachedPlayers = new HashSet<>();
     }
 
     public static boolean isInCox(Client client) {
@@ -65,11 +64,14 @@ public class Cox {
 
     @Subscribe
     public void onVarbitChanged(VarbitChanged ev) {
-        if (ev.getVarbitId() == Varbits.RAID_STATE && ev.getValue() == 1) {
-            isCm = client.getVarbitValue(InternalVarbits.COX_CM) == 1;
-            groupSize = client.getVarbitValue(InternalVarbits.GROUP_SIZE);
-            maxHp = config.maxHp();
-            maxCombat = client.getTopLevelWorldView().players().stream().map(Player::getCombatLevel).max(Integer::compare).get();
+        if (ev.getVarbitId() == Varbits.RAID_STATE) {
+            if (ev.getValue() == 1) {
+                isCm = client.getVarbitValue(InternalVarbits.COX_CM) == 1;
+                groupSize = client.getVarbitValue(InternalVarbits.GROUP_SIZE);
+                maxHp = config.maxHp();
+                maxCombat = client.getTopLevelWorldView().players().stream().map(Player::getCombatLevel).max(Integer::compare).get();
+            }
+            cachedInCox = ev.getValue() == 1;
         }
     }
 

@@ -17,6 +17,9 @@ import net.runelite.client.party.PartyService;
 import javax.inject.Inject;
 import javax.inject.Singleton;
 import java.util.*;
+import java.util.concurrent.atomic.AtomicBoolean;
+import java.util.concurrent.locks.Lock;
+import java.util.concurrent.locks.ReentrantLock;
 import java.util.stream.Collectors;
 
 /**
@@ -37,8 +40,9 @@ public class DamageHandler {
     @Inject
     ClientThread clientThread;
 
+    // We need to use the instanced one because getVarbitValue requires it to run on the clientThread
     @Inject
-    DamageHandler damageHandler;
+    Cox cox;
 
     @Inject
     private PartyService party;
@@ -72,7 +76,7 @@ public class DamageHandler {
     }
 
     public boolean shouldProcess() {
-        return Toa.isAtToa(client) || Cox.isInCox(client);
+        return Toa.isAtToa(client) && cox.isCachedInCox();
     }
 
     @Subscribe
