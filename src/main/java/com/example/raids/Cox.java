@@ -13,6 +13,7 @@ import net.runelite.client.hiscore.HiscoreClient;
 
 import javax.inject.Inject;
 import javax.inject.Singleton;
+import java.util.concurrent.atomic.AtomicBoolean;
 
 @Singleton
 public class Cox {
@@ -34,7 +35,7 @@ public class Cox {
     private AkkhaPredictorConfig config;
 
     @Getter
-    boolean cachedInCox;
+    AtomicBoolean cachedInCox;
 
     boolean isCm;
 
@@ -46,7 +47,7 @@ public class Cox {
 
     @Inject
     public void initialize() {
-        cachedInCox = false;
+        cachedInCox.set(false);
         isCm = false;
         groupSize = 0;
         maxCombat = 0;
@@ -71,7 +72,7 @@ public class Cox {
                 maxHp = config.maxHp();
                 maxCombat = client.getTopLevelWorldView().players().stream().map(Player::getCombatLevel).max(Integer::compare).get();
             }
-            cachedInCox = ev.getValue() == 1;
+            cachedInCox.set(ev.getValue() == 1);
         }
     }
 
