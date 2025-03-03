@@ -20,6 +20,16 @@ public interface AkkhaPredictorConfig extends Config
         return new Color(98, 174, 253, 64);
     }
 
+    @Alpha
+    @ConfigItem(
+            keyName = "textColor",
+            name = "Text color",
+            description = ""
+    )
+    default Color textColor() {
+        return new Color(98, 174, 253, 64);
+    }
+
     @ConfigItem(
             keyName = "maxHp",
             name = "Max HP",
@@ -45,6 +55,15 @@ public interface AkkhaPredictorConfig extends Config
     )
     default boolean enableCox() {
         return true;
+    }
+
+    @ConfigItem(
+            keyName = "enableHpOverlay",
+            name = "Enable HP overlay",
+            description = "Draws the tracked health on the boss, please use this when reporting bugs"
+    )
+    default boolean enableHpOverlay() {
+        return false;
     }
 
 
