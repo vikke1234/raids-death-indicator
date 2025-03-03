@@ -14,6 +14,7 @@ import net.runelite.client.callback.ClientThread;
 import net.runelite.client.eventbus.Subscribe;
 import net.runelite.client.party.PartyMember;
 import net.runelite.client.party.PartyService;
+import net.runelite.client.party.messages.PartyMemberMessage;
 
 import javax.inject.Inject;
 import javax.inject.Singleton;
@@ -219,6 +220,18 @@ public class DamageHandler {
         processXpDrop(skill, diff);
     }
 
+    private boolean eventIsInvalid(PartyMemberMessage msg) {
+        if (!shouldProcess()) {
+            return true;
+        }
+        PartyMember localPlayer = party.getLocalMember();
+
+        if (localPlayer != null) {
+            return localPlayer.getMemberId() == msg.getMemberId(); // Don't process your own events
+        }
+
+        return false;
+    }
     /**
      * Queues damage on an entity. If the entity is a shadow, it hides the shadow.
      * If the entity is Akkha, it will highlight her.
@@ -226,16 +239,8 @@ public class DamageHandler {
      */
     @Subscribe
     public void onEntityDamaged(final EntityDamaged entityDamaged) {
-        if (!shouldProcess()) {
+        if (eventIsInvalid(entityDamaged)) {
             return;
-        }
-
-        PartyMember localPlayer = party.getLocalMember();
-
-        if (localPlayer != null) {
-            if (localPlayer.getMemberId() == entityDamaged.getMemberId()) {
-                return; // Don't process your own events
-            }
         }
 
         Integer npcIndex = entityDamaged.getNpcIndex();
@@ -247,16 +252,8 @@ public class DamageHandler {
 
     @Subscribe
     public void onSyncHealth(final SyncHealth ev) {
-        if (!shouldProcess()) {
+        if (eventIsInvalid(ev)) {
             return;
-        }
-
-        PartyMember localPlayer = party.getLocalMember();
-
-        if (localPlayer != null) {
-            if (localPlayer.getMemberId() == ev.getMemberId()) {
-                return; // Don't process your own events
-            }
         }
 
         Enemy enemy = activeEnemies.getOrDefault(ev.getNpcIndex(), null);
