@@ -47,6 +47,7 @@ public class Cox {
 
     @Inject
     public void initialize() {
+        cachedInCox = new AtomicBoolean();
         cachedInCox.set(false);
         isCm = false;
         groupSize = 0;
@@ -72,7 +73,7 @@ public class Cox {
                 maxHp = config.maxHp();
                 maxCombat = client.getTopLevelWorldView().players().stream().map(Player::getCombatLevel).max(Integer::compare).get();
             }
-            cachedInCox.set(ev.getValue() == 1);
+            cachedInCox.set(ev.getValue() >= 1 && ev.getValue() < 5);
         }
     }
 
