@@ -75,13 +75,8 @@ public abstract class Enemy implements IEnemy {
 
         bosses.add(NpcID.ABYSSAL_PORTAL);
         bosses.add(NpcID.VASA_NISTIRIO);
-        bosses.add(NpcID.LIZARDMAN_SHAMAN);
-        bosses.add(NpcID.LIZARDMAN_SHAMAN_6767);
         bosses.add(NpcID.LIZARDMAN_SHAMAN_7573);
         bosses.add(NpcID.LIZARDMAN_SHAMAN_7574);
-        bosses.add(NpcID.LIZARDMAN_SHAMAN_7744);
-        bosses.add(NpcID.LIZARDMAN_SHAMAN_7745);
-        bosses.add(NpcID.LIZARDMAN_SHAMAN_8565);
         bosses.add(NpcID.SKELETAL_MYSTIC);
         bosses.add(NpcID.SKELETAL_MYSTIC_7605);
         bosses.add(NpcID.SKELETAL_MYSTIC_7606);
