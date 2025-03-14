@@ -23,6 +23,17 @@ public class CoxEnemy extends Enemy {
         bosses = new HashSet<>();
 
         enemies.put(NpcID.ABYSSAL_PORTAL, Portal::new);
+        enemies.put(NpcID.SKELETAL_MYSTIC, SkeletalMystic::new);
+        enemies.put(NpcID.SKELETAL_MYSTIC_7605, SkeletalMystic::new);
+        enemies.put(NpcID.SKELETAL_MYSTIC_7606, SkeletalMystic::new);
+        enemies.put(NpcID.LIZARDMAN_SHAMAN, LizardmanShaman::new);
+        enemies.put(NpcID.LIZARDMAN_SHAMAN_7573, LizardmanShaman::new);
+        enemies.put(NpcID.LIZARDMAN_SHAMAN_7574, LizardmanShaman::new);
+        enemies.put(NpcID.LIZARDMAN_SHAMAN_6767, LizardmanShaman::new);
+        enemies.put(NpcID.LIZARDMAN_SHAMAN_7744, LizardmanShaman::new);
+        enemies.put(NpcID.LIZARDMAN_SHAMAN_7745, LizardmanShaman::new);
+        enemies.put(NpcID.LIZARDMAN_SHAMAN_8565, LizardmanShaman::new);
+        enemies.put(NpcID.ROCKS_7565, VasaNistirio::new);
         enemies.put(NpcID.GREAT_OLM_RIGHT_CLAW, OlmMageHand::new);
         enemies.put(NpcID.GREAT_OLM_RIGHT_CLAW_7553, OlmMageHand::new);
     }
