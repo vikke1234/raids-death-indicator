@@ -1,0 +1,20 @@
+package com.example.enemydata.cox;
+
+import lombok.extern.slf4j.Slf4j;
+import net.runelite.api.NPC;
+
+@Slf4j
+public class SkeletalMystic extends CoxEnemy {
+    public SkeletalMystic(NPC npc, boolean isCm, int partySize, int maxCombat, int maxHp) {
+        super(npc, isCm, partySize, maxCombat, maxHp, 160, 140, 187, 85, 50, 85, 155, 75);
+    }
+
+    @Override
+    public boolean queueDamage(int damage) {
+        shouldDraw = super.queueDamage(damage);
+
+        log.debug("current hp: {} queued damage: {} should draw: {}", current_health, queuedDamage, shouldDraw);
+        return shouldDraw;
+    }
+
+}

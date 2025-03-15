@@ -74,6 +74,7 @@ public abstract class Enemy implements IEnemy {
         bosses.add(NpcID.TUMEKENS_WARDEN_11762);
 
         bosses.add(NpcID.ABYSSAL_PORTAL);
+        bosses.add(NpcID.VASA_NISTIRIO);
         bosses.add(NpcID.GREAT_OLM_RIGHT_CLAW);
         bosses.add(NpcID.GREAT_OLM_RIGHT_CLAW_7553);
         // TODO: add vangs? might be worth adding an event to send the HP to other players too
