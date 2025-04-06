@@ -6,7 +6,7 @@ import net.runelite.api.NPC;
 @Slf4j
 public class LizardmanShaman extends CoxEnemy {
     public LizardmanShaman(NPC npc, boolean isCm, int partySize, int maxCombat, int maxHp) {
-        super(npc, isCm, partySize, maxCombat, maxHp, 190, 130, 210, 58, 62, 102, 160, 150);
+        super(npc, isCm, partySize, maxCombat, maxHp, 190, 130, 210, 58, 52, 102, 160, 150);
     }
 
     @Override
