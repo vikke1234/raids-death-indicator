@@ -45,7 +45,8 @@ public class AkkhaPredictorOverlay extends Overlay {
             }
 
             if (config.enableHpOverlay()) {
-                renderText(graphics, enemy.getNpc(), String.valueOf(enemy.getCurrent_health()), config.textColor());
+                String str = enemy.getCurrent_health() + " (" + enemy.getQueuedDamage() + ")";
+                renderText(graphics, enemy.getNpc(), str, config.textColor());
             }
         }
 
