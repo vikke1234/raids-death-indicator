@@ -50,7 +50,7 @@ public class AkkhaPredictorOverlay extends Overlay {
             }
         }
 
-        if (!Toa.isAtToa(client) && config.status()) {
+        if (Toa.isAtToa(client) && !config.status()) {
             return null;
         }
 
