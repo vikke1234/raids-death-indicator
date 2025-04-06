@@ -9,6 +9,6 @@ public class Crocodile extends ToaEnemy {
         super(npc, invocation, partySize, pathLevel,
                 30, 150, 60, 100,
                 0, 100,
-                150, 350, 350);
+                150, 350, 350, true);
     }
 }
