@@ -3,7 +3,6 @@ package com.example.raids;
 import com.example.AkkhaPredictorConfig;
 import com.example.enemydata.Enemy;
 import com.example.enemydata.cox.CoxEnemy;
-import com.example.enemydata.cox.Tekton;
 import com.example.utils.DamageHandler;
 import lombok.Getter;
 import net.runelite.api.*;
@@ -103,34 +102,5 @@ public class Cox {
         //System.out.println(MessageFormat.format("NPC spawned \"{0}\": {1} {2}", npc.getName(), npc.getId(), npc.getIndex()));
         Enemy enemy = enemyConstructor.apply(npc, isCm, groupSize, maxCombat, maxHp);
         damageHandler.getActiveEnemies().put(npc.getIndex(), enemy);
-    }
-
-    @Subscribe
-    public void onNpcChanged(NpcChanged ev) {
-        if (!isInCox()) {
-            return;
-        }
-
-        NPC npc = ev.getNpc();
-        int id = npc.getId();
-        Enemy enemy = damageHandler.getActiveEnemies().getOrDefault(npc.getIndex(), null);
-        if (!(enemy instanceof Tekton)) {
-            return;
-        }
-
-        Tekton tekton = (Tekton) enemy;
-        switch (id) {
-            case NpcID.TEKTON:
-            case NpcID.TEKTON_7541:
-            case NpcID.TEKTON_7542:
-            case NpcID.TEKTON_7545:
-                tekton.swapForm(false);
-                break;
-
-            case NpcID.TEKTON_ENRAGED:
-            case NpcID.TEKTON_ENRAGED_7544:
-                tekton.swapForm(true);
-                break;
-        }
     }
 }
