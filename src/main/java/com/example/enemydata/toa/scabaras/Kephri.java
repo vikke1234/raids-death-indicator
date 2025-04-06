@@ -13,6 +13,7 @@ public class Kephri extends ToaEnemy {
                 60, 300, 100);
         scaled_health = (int) (Math.round(scaled_health / 10.0) * 10);
         current_health = scaled_health;
+        hideOnDeath = false;
     }
 
     @Override
