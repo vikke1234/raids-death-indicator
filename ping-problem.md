@@ -23,6 +23,10 @@ Player A would send the expected damage along with a timestamp (current tick) to
 Player B would look at the animations of players, calculate when an attack *should* arrive.
 If the event from player B is late, and should've already been processed it will not queue damage.
 
+### Notes
+After brief testing on syncing clocks, it seems to work pretty well.
+
+
 ### Problems
 This approach has a number of problems:
 1) Would need to make a list of attack animations, which needs to be updated whenever there' new weapons.
@@ -33,3 +37,17 @@ This approach has a number of problems:
    caps solves this by looking for the chin projectile but god damn...
 
 3) How do we handle logouts and re-sync, logging out is apparently meta in CMs
+
+4) If a person isn't in range to see animations, what should be the behavior in that case?
+
+
+### Solutions to said problems
+1) List of weapons and their delay formulas
+2) Check for projectile in the future, initially just don't support
+3) Upon relogging, make others send the current timestamp. 600ms is a "large" window but IF it's 
+   late, use animations to re-sync the timestamp. We know locally when for example a person shadows,
+   the queued damage event sends a timestamp when the projectile should land. From that we can tell
+   when the attack happened on their side.
+   It should be noted though that the others can for 1 hit be off slightly but I think the single event
+   should just be ignored as it gets re-synced after that.
+4) Ignore?
