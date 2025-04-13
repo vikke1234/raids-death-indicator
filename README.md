@@ -11,9 +11,16 @@ if it would be, can be inaccurate when it is not calibrated. Once calibrated it 
 
 See [Docs](./docs.md) for how it works.
 
+## Known issues
+- HP Scaling is wrong (by a lot) in CoX
+  - Solution: Make sure that you've set **YOUR** board to w/e you're running
+    if you're running CMs make sure when you make a party it's also set to
+    CMs.
+    - Will eventually be fixed
+
+
 TODO 
 --
-~~TOB: maiden crab procs, nylo might come implicitly~~
 COX: Shamans, maybe melee/mage vangs, definitely olm mage hand and vesp portal, mystics and vasa
 
 Broken: kephri swarms, zebak jugs, kephri eggs (?)
@@ -21,3 +28,4 @@ verify: spitter, arcane, soldier
 
 Fix prediction tree based on hitsplat
 
+Add raid started event to tell others if it's a CM or not.
