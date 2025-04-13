@@ -17,9 +17,9 @@ import net.runelite.client.party.PartyService;
 import javax.inject.Inject;
 import javax.inject.Singleton;
 import java.util.*;
-import java.util.concurrent.atomic.AtomicBoolean;
-import java.util.concurrent.locks.Lock;
-import java.util.concurrent.locks.ReentrantLock;
+import java.util.concurrent.ConcurrentHashMap;
+import java.util.concurrent.ConcurrentMap;
+import java.util.concurrent.atomic.AtomicInteger;
 import java.util.stream.Collectors;
 
 /**
@@ -29,7 +29,7 @@ import java.util.stream.Collectors;
 @Slf4j
 public class DamageHandler {
     @Getter
-    private final Map<Integer, Enemy> activeEnemies = new HashMap<>();
+    private final ConcurrentMap<Integer, Enemy> activeEnemies = new ConcurrentHashMap<>();
 
     @Getter
     private final Predictor predictor = new Predictor();
