@@ -1,5 +1,6 @@
 package com.example.raids;
 
+import net.runelite.api.gameval.*;
 import com.example.AkkhaPredictorConfig;
 import com.example.enemydata.Enemy;
 import com.example.enemydata.cox.CoxEnemy;
@@ -55,7 +56,7 @@ public class Cox {
     }
 
     public static boolean isInCox(Client client) {
-        int state = client.getVarbitValue(Varbits.RAID_STATE);
+        int state = client.getVarbitValue(VarbitID.RAIDS_CLIENT_PROGRESS);
         return state >= 1 && state < 5;
     }
 
@@ -65,12 +66,13 @@ public class Cox {
 
     @Subscribe
     public void onVarbitChanged(VarbitChanged ev) {
-        if (ev.getVarbitId() == Varbits.RAID_STATE) {
+        if (ev.getVarbitId() == VarbitID.RAIDS_CLIENT_PROGRESS) {
             if (ev.getValue() == 1) {
-                isCm = client.getVarbitValue(InternalVarbits.COX_CM) == 1;
-                groupSize = client.getVarbitValue(InternalVarbits.GROUP_SIZE);
+                // TODO: Do the CM check only as the party leader
+                isCm = client.getVarbitValue(VarbitID.RAIDS_CHALLENGE_MODE) == 1;
+                groupSize = client.getVarbitValue(VarbitID.RAIDS_CLIENT_PARTYSIZE);
                 maxHp = config.maxHp();
-                maxCombat = client.getTopLevelWorldView().players().stream().map(Player::getCombatLevel).max(Integer::compare).get();
+                maxCombat = client.getServerVarbitValue(VarbitID.RAIDS_CLIENT_HIGHESTCOMBAT);
             }
             cachedInCox.set(ev.getValue() >= 1 && ev.getValue() < 5);
         }

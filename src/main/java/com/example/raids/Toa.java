@@ -8,11 +8,9 @@ import com.example.utils.QuadFunction;
 import lombok.extern.slf4j.Slf4j;
 import net.runelite.api.Client;
 import net.runelite.api.NPC;
-import net.runelite.api.Varbits;
-import net.runelite.api.events.GameTick;
-import net.runelite.api.events.NpcDespawned;
-import net.runelite.api.events.NpcSpawned;
-import net.runelite.api.events.WidgetLoaded;
+import net.runelite.api.events.*;
+import net.runelite.api.gameval.VarPlayerID;
+import net.runelite.api.gameval.VarbitID;
 import net.runelite.api.widgets.InterfaceID;
 import net.runelite.api.widgets.Widget;
 import net.runelite.client.eventbus.Subscribe;
@@ -64,7 +62,7 @@ public class Toa {
      * @return TOA invocation level
      */
     private int getInvocation() {
-        return client.getVarbitValue(Varbits.TOA_RAID_LEVEL);
+        return client.getVarbitValue(VarbitID.TOA_CLIENT_RAID_LEVEL);
     }
 
     /**
@@ -87,7 +85,7 @@ public class Toa {
     {
         int partySize = 1;
         for (int i = 1; i < 8; i++) {
-            if (client.getVarbitValue(Varbits.TOA_MEMBER_0_HEALTH + i) != 0) {
+            if (client.getVarbitValue(VarbitID.TOA_CLIENT_P0 + i) != 0) {
                 partySize++;
             }
         }
@@ -96,7 +94,7 @@ public class Toa {
 
     private boolean partyDead() {
 
-        for (int i = Varbits.TOA_MEMBER_0_HEALTH; i <= Varbits.TOA_MEMBER_7_HEALTH; i++) {
+        for (int i = VarbitID.TOA_CLIENT_P0; i <= VarbitID.TOA_CLIENT_P7; i++) {
             int value = client.getVarbitValue(i);
             if (value != 30 && value != 0) {
                 return false;
@@ -164,7 +162,7 @@ public class Toa {
             enemy.setNpc(npc);
             // Re-sync the health of the enemy (akkha) when it re-appears in case of hits during invuln
             // TODO should akkha be subscribed to the event bus?
-            int newHealth = client.getVarbitValue(Varbits.BOSS_HEALTH_CURRENT);
+            int newHealth = client.getVarbitValue(VarbitID.HPBAR_HUD_HP);
             enemy.setCurrentHealth(newHealth);
             enemy.setQueuedDamage(0);
 
