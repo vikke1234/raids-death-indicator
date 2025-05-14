@@ -1,5 +1,6 @@
 package com.example.raids;
 
+import com.example.utils.AnimationIdentifier;
 import net.runelite.api.gameval.*;
 import com.example.AkkhaPredictorConfig;
 import com.example.enemydata.Enemy;
@@ -24,6 +25,9 @@ public class Cox {
 
     @Inject
     private DamageHandler damageHandler;
+
+    @Inject
+    private AnimationIdentifier animationIdentifier;
 
     @Inject
     private Client client;
@@ -73,6 +77,7 @@ public class Cox {
                 groupSize = client.getVarbitValue(VarbitID.RAIDS_CLIENT_PARTYSIZE);
                 maxHp = config.maxHp();
                 maxCombat = client.getServerVarbitValue(VarbitID.RAIDS_CLIENT_HIGHESTCOMBAT);
+                animationIdentifier.setTick(0);
             }
             cachedInCox.set(ev.getValue() >= 1 && ev.getValue() < 5);
         }

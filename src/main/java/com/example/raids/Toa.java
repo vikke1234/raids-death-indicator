@@ -3,6 +3,7 @@ package com.example.raids;
 import com.example.enemydata.Enemy;
 import com.example.enemydata.toa.ToaEnemy;
 import com.example.enemydata.toa.het.Akkha;
+import com.example.utils.AnimationIdentifier;
 import com.example.utils.DamageHandler;
 import com.example.utils.QuadFunction;
 import lombok.extern.slf4j.Slf4j;
@@ -27,6 +28,9 @@ public class Toa {
 
     @Inject
     private DamageHandler damageHandler;
+
+    @Inject
+    private AnimationIdentifier animationIdentifier;
 
     public static boolean isAtToa(Client client) {
         final int []TOA_REGIONS = {
@@ -178,5 +182,13 @@ public class Toa {
         enemy.setClient(client);
 
         activeEnemies.put(npc.getIndex(), enemy);
+    }
+
+    @Subscribe
+    public void onVarbitChanged(VarbitChanged ev) {
+        // This still happens late and isn't synchronizing
+        if (ev.getVarbitId() == VarbitID.TOA_CLIENT_PRIMARY0) {
+            animationIdentifier.setTick(0);
+        }
     }
 }

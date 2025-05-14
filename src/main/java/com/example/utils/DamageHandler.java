@@ -13,13 +13,13 @@ import net.runelite.client.callback.ClientThread;
 import net.runelite.client.eventbus.Subscribe;
 import net.runelite.client.party.PartyMember;
 import net.runelite.client.party.PartyService;
+import net.runelite.client.party.events.UserJoin;
 
 import javax.inject.Inject;
 import javax.inject.Singleton;
 import java.util.*;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ConcurrentMap;
-import java.util.concurrent.atomic.AtomicInteger;
 import java.util.stream.Collectors;
 
 /**
@@ -43,6 +43,9 @@ public class DamageHandler {
     // We need to use the instanced one because getVarbitValue requires it to run on the clientThread
     @Inject
     Cox cox;
+
+    @Inject
+    AnimationIdentifier animationIdentifier;
 
     @Inject
     private PartyService party;
@@ -177,9 +180,15 @@ public class DamageHandler {
     private void sendClumpDamage(List<Enemy> enemies) {
         for (Enemy enemy : enemies) {
             final int npcIndex = enemy.getNpc().getIndex();
-            final EntityDamaged ev = new EntityDamaged(npcIndex, enemy.getCurrent_health());
+            final EntityDamaged ev = new EntityDamaged(npcIndex, enemy.getCurrent_health(), animationIdentifier.getTick());
             if (party.isInParty()) {
-                clientThread.invokeLater(() -> party.send(ev));
+                clientThread.invokeLater(() -> {
+                    try {
+                        Thread.sleep(1);
+                    } catch (InterruptedException e) {
+                        throw new RuntimeException(e);
+                    }
+                    party.send(ev);});
             }
             onEntityDamaged(ev);
         }
@@ -193,10 +202,16 @@ public class DamageHandler {
         NPC npc = (NPC) player.getInteracting();
 
         final int npcIndex = npc.getIndex();
-        final EntityDamaged entityDamaged = new EntityDamaged(npcIndex, damage);
+        final EntityDamaged entityDamaged = new EntityDamaged(npcIndex, damage, animationIdentifier.getTick());
 
         if (party.isInParty()) {
-            clientThread.invokeLater(() -> party.send(entityDamaged));
+            clientThread.invokeLater(() -> {
+                try {
+                    Thread.sleep(1);
+                } catch (InterruptedException e) {
+                    throw new RuntimeException(e);
+                }
+                party.send(entityDamaged);});
         }
         onEntityDamaged(entityDamaged);
     }
@@ -223,7 +238,7 @@ public class DamageHandler {
      * @param entityDamaged event
      */
     @Subscribe
-    public void onEntityDamaged(EntityDamaged entityDamaged) {
+    public void onEntityDamaged(final EntityDamaged entityDamaged) {
         if (!shouldProcess()) {
             return;
         }
@@ -238,7 +253,18 @@ public class DamageHandler {
 
         Integer npcIndex = entityDamaged.getNpcIndex();
         Enemy enemy = activeEnemies.getOrDefault(npcIndex, null);
-        if (enemy != null) {
+        Attack attack = animationIdentifier.findAttack(entityDamaged);
+        int tick = animationIdentifier.getTick();
+
+        if (attack == null) {
+            return; // We did not witness the start of the attack, do not do anything
+        }
+
+        System.out.println("Player: " + party.getMemberById(entityDamaged.getMemberId()).getDisplayName()
+                + " att tick: " + entityDamaged.getTick() + " current: " + tick);
+
+        // Only queue up damage IF the hitsplat hasn't already arrived (supposedly)
+        if (enemy != null && (attack.getDelay() + entityDamaged.getTick()) < tick) {
             enemy.queueDamage(entityDamaged.getDamage());
         }
     }
@@ -277,5 +303,11 @@ public class DamageHandler {
             int hp = enemy.hit(amount);
             //log.info("Damage: " + amount + " " + hit.getActor().getName() + " (" + hp +")");
         }
+    }
+
+
+    @Subscribe
+    public void onUserJoin(UserJoin ev) {
+
     }
 }
