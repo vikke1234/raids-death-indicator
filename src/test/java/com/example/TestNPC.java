@@ -357,6 +357,18 @@ class TestNPC implements NPC {
         return null;
     }
 
+    @Nullable
+    @Override
+    public int[] getOverheadArchiveIds() {
+        return new int[0];
+    }
+
+    @Nullable
+    @Override
+    public short[] getOverheadSpriteIds() {
+        return new short[0];
+    }
+
     @Override
     public Model getModel() {
         return null;

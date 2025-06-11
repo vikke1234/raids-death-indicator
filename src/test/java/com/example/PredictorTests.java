@@ -173,4 +173,12 @@ public class PredictorTests {
         runIterations(predictor, iterations, possibleDrops, properties, internalFrac);
         assertFalse(predictor.isDead(Skill.HITPOINTS));
     }
+
+    @Test
+    public void testMysticsHit() {
+        double scaling = 1.3d;
+        Predictor.Properties properties = new Predictor.Properties(Skill.HITPOINTS, true, true, scaling);
+        Predictor predictor = new Predictor();
+        assertEquals(11, predictor.treePredict(20, properties));
+    }
 }
