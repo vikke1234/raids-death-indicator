@@ -217,7 +217,12 @@ public class Predictor {
         // if the xp drops do not overlap, check which one matches the given drop, otherwise fall back
         // to where the low hit is returned.
         if (high / 10 != low / 10) {
-            return (high / 10 == xp && (high / 10 - 1) != low / 10) ? hit.hit : hit.hit - 1;
+            boolean overlapping = (high / 10 == xp && (high / 10 - 1) != low / 10);
+            int rethit = overlapping ? hit.hit : hit.hit - 1;
+            if (low / 10 > 0 && rethit < 1) {
+                rethit++;
+            }
+            return Math.max(rethit, 0);
         }
 
         // If the next xp drop is further than 1 xp off, we can lazily check if it wrapped or not
