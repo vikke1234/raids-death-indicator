@@ -10,6 +10,6 @@ public class Baboon extends ToaEnemy {
         super(npc, invocation, partySize, pathLevel,
                 35, 0, 0, 50,
                 0, 0,
-                10, 50, 50);
+                10, 50, 50, true);
     }
 }

@@ -24,6 +24,6 @@ public class Boulder extends ToaEnemy {
         super(npc, invocation, partySize, pathLevel,
                 hpMap[partySize-1][pathLevel], 0, 0, 0,
                 0, 0,
-                0, 0, 0);
+                0, 0, 0, true);
     }
 }
