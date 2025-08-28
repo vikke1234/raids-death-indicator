@@ -1,5 +1,6 @@
 package com.example.utils;
 
+import com.example.AkkhaPredictorConfig;
 import com.example.enemydata.Enemy;
 import com.example.events.EntityDamaged;
 import com.example.raids.Cox;
@@ -46,6 +47,9 @@ public class DamageHandler {
 
     @Inject
     private PartyService party;
+
+    @Inject
+    private AkkhaPredictorConfig config;
     /**
      * Map of current XP amounts in each skill
      */
@@ -152,7 +156,13 @@ public class DamageHandler {
             return;
         }
 
-        int damage = predictor.treePredict(xp, props);
+        int damage;
+        if (config.experimentalHitPrediction()) {
+            damage = predictor.treePredict2(xp, props);
+        } else {
+            damage = predictor.treePredict(xp, props);
+        }
+
         if (!Toa.isAtToa(client)) {
             // TODO: figure out a better way to do this
             predictor.reset();

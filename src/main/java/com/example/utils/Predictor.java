@@ -97,6 +97,15 @@ public class Predictor {
 
 
     /**
+     * Computes the "Jagex" xp drop, i.e. removes the fraction
+     * @param precise precise xp drop
+     * @return xp drop without a fraction
+     */
+    public static int convertToJagexDrop(int precise) {
+        return precise / 10;
+    }
+
+    /**
      * Computes the precise xp drop as a fixed length integer
      * <a href="https://oldschool.runescape.wiki/w/Combat#Experience_gain">OSRS Wiki</a>
      * @param hit Damage dealt
@@ -228,6 +237,42 @@ public class Predictor {
         // If the next xp drop is further than 1 xp off, we can lazily check if it wrapped or not
         if ((high / 10 + 1) == xp && (next / 10) != xp) {
             return hit.hit;
+        }
+
+        // We have to always take hit-1 because low hits have overlapping xpdrops
+        // it's worse if we say that the mob died and it didn't
+        return Math.max(hit.hit-1, 1);
+    }
+
+
+    /**
+     * Experimental tree prediction, hopefully more maintainable and better.
+     * @param xp
+     * @param props
+     * @return
+     */
+    public int treePredict2(int xp, @NonNull Properties props) {
+        if (!roots.containsKey(props.skill)) {
+            roots.put(props.skill, PredictionTree.createRoot());
+        }
+        PredictionTree root = roots.get(props.skill);
+        int frac = root.getFrac();
+        root.insertInto(xp, props);
+        Hit hit = findHit(xp, props);
+
+        int high = computePrecise(hit.hit, props);
+        int low = computePrecise(hit.hit-1, props);
+
+        if (frac != -1) {
+            high += frac;
+            low += frac;
+        }
+        // if the xp drops do not overlap, check which one matches the given drop, otherwise fall back
+        // to where the low hit is returned.
+        if (convertToJagexDrop(high) != convertToJagexDrop(low)) {
+            if (convertToJagexDrop(high) == xp) {
+                return hit.hit;
+            }
         }
 
         // We have to always take hit-1 because low hits have overlapping xpdrops

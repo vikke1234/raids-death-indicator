@@ -58,6 +58,15 @@ public interface AkkhaPredictorConfig extends Config
     }
 
     @ConfigItem(
+            keyName = "enableExperimentalHitPrediction",
+            name = "Hit prediction (experimental)",
+            description = ""
+    )
+    default boolean experimentalHitPrediction() {
+        return false;
+    }
+
+    @ConfigItem(
             keyName = "enableHpOverlay",
             name = "Enable HP overlay",
             description = "Draws the tracked health on the boss, please use this when reporting bugs"
