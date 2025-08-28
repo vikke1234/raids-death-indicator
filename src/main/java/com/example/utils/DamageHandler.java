@@ -80,9 +80,18 @@ public class DamageHandler {
     }
 
     @Subscribe
-    protected void onGameStateChanged(GameStateChanged state) {
-        if (Objects.requireNonNull(state.getGameState()) == GameState.LOGGED_IN) {
-            initXpMap();
+    protected void onGameStateChanged(GameStateChanged gamestate) {
+        if (gamestate == null) {
+            return;
+        }
+        GameState state = Objects.requireNonNull(gamestate.getGameState());
+        switch (state) {
+            case LOGGED_IN:
+                initXpMap();
+                break;
+            case LOGIN_SCREEN:
+                activeEnemies.clear();
+                break;
         }
     }
 
