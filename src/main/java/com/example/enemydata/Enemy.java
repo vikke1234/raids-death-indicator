@@ -2,6 +2,7 @@ package com.example.enemydata;
 
 import lombok.Getter;
 import lombok.Setter;
+import lombok.Synchronized;
 import lombok.extern.slf4j.Slf4j;
 import net.runelite.api.Client;
 import net.runelite.api.NPC;
@@ -15,6 +16,8 @@ public abstract class Enemy implements IEnemy {
     public static final Set<Integer> blacklist = Set.of(NpcID.SCARAB_SWARM_11723, NpcID.JUG, NpcID.JUG_11736);
     public static final Set<Integer> bosses;
 
+    @Getter(onMethod_ = {@Synchronized})
+    @Setter(onMethod_ = {@Synchronized})
     public int queuedDamage;
     public boolean shouldDraw;
     protected boolean hideOnDeath;
@@ -22,7 +25,7 @@ public abstract class Enemy implements IEnemy {
     public final int base_health;
     // TODO: this may require some rework, akkha for example computes the xp modifier before rounding hp
     public int scaled_health;
-    @Getter
+    @Getter(onMethod_ = {@Synchronized})
     public int current_health;
 
     protected int attack;
@@ -110,14 +113,6 @@ public abstract class Enemy implements IEnemy {
         queuedDamage = Math.max(0, queuedDamage - damage);
         current_health -= damage;
         return current_health;
-    }
-
-    public synchronized int getQueuedDamage() {
-        return queuedDamage;
-    }
-
-    public synchronized void setQueuedDamage(int queuedDamage) {
-        this.queuedDamage = queuedDamage;
     }
 
     /**
