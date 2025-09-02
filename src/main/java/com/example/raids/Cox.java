@@ -65,13 +65,6 @@ public class Cox {
     }
 
     @Subscribe
-    public void onFriendsChatChanged(FriendsChatChanged ev) {
-        if (!ev.isJoined()) {
-            damageHandler.getActiveEnemies().clear();
-        }
-    }
-
-    @Subscribe
     public void onVarbitChanged(VarbitChanged ev) {
         if (ev.getVarbitId() == VarbitID.RAIDS_CLIENT_PROGRESS) {
             if (ev.getValue() == 1) {
