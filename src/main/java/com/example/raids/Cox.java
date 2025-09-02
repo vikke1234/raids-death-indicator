@@ -2,7 +2,7 @@ package com.example.raids;
 
 import net.runelite.api.gameval.*;
 import com.example.AkkhaPredictorConfig;
-import com.example.enemydata.Enemy;
+import com.example.enemydata.*;
 import com.example.enemydata.cox.CoxEnemy;
 import com.example.utils.DamageHandler;
 import lombok.Getter;
@@ -65,11 +65,18 @@ public class Cox {
     }
 
     @Subscribe
+    public void onFriendsChatChanged(FriendsChatChanged ev) {
+        if (!ev.isJoined()) {
+            damageHandler.getActiveEnemies().clear();
+        }
+    }
+
+    @Subscribe
     public void onVarbitChanged(VarbitChanged ev) {
         if (ev.getVarbitId() == VarbitID.RAIDS_CLIENT_PROGRESS) {
             if (ev.getValue() == 1) {
                 // TODO: Do the CM check only as the party leader
-                isCm = client.getVarbitValue(VarbitID.RAIDS_CHALLENGE_MODE) == 1;
+                isCm = config.isCM();
                 groupSize = client.getVarbitValue(VarbitID.RAIDS_CLIENT_PARTYSIZE);
                 maxHp = config.maxHp();
                 maxCombat = client.getServerVarbitValue(VarbitID.RAIDS_CLIENT_HIGHESTCOMBAT);

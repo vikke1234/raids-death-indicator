@@ -49,6 +49,15 @@ public interface AkkhaPredictorConfig extends Config
     }
 
     @ConfigItem(
+            keyName = "isCm",
+            name = "Challenge mode",
+            description = "To use challenge mode stats or not."
+    )
+    default boolean isCM() {
+        return true;
+    }
+
+    @ConfigItem(
             keyName = "enableCox",
             name = "Enable cox (experimental)",
             description = ""

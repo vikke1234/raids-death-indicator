@@ -75,6 +75,9 @@ public class AkkhaPredictorOverlay extends Overlay {
     }
 
     private void renderText(Graphics2D graphics, NPC npc, String str, Color c) {
+        if (npc == null) {
+            return;
+        }
         Point p = npc.getCanvasTextLocation(graphics, str, npc.getLogicalHeight());
         if (p == null) {
             return;
