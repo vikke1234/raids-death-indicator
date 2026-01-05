@@ -93,12 +93,7 @@ public class DamageHandler {
             case LOGGED_IN:
                 initXpMap();
                 break;
-
-            case CONNECTION_LOST:
-                break; // no-op
-
             default:
-                activeEnemies.clear();
                 break;
         }
     }

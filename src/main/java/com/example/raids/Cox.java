@@ -56,8 +56,8 @@ public class Cox {
     }
 
     public static boolean isInCox(Client client) {
-        int state = client.getVarbitValue(VarbitID.RAIDS_CLIENT_PROGRESS);
-        return state >= 1 && state < 5;
+        int state = client.getVarbitValue(VarbitID.RAIDS_CLIENT_INDUNGEON);
+        return state == 1;
     }
 
     public boolean isInCox() {
@@ -66,15 +66,23 @@ public class Cox {
 
     @Subscribe
     public void onVarbitChanged(VarbitChanged ev) {
-        if (ev.getVarbitId() == VarbitID.RAIDS_CLIENT_PROGRESS) {
-            if (ev.getValue() == 1) {
-                // TODO: Do the CM check only as the party leader
-                isCm = config.isCM();
-                groupSize = client.getVarbitValue(VarbitID.RAIDS_CLIENT_PARTYSIZE);
-                maxHp = config.maxHp();
-                maxCombat = client.getServerVarbitValue(VarbitID.RAIDS_CLIENT_HIGHESTCOMBAT);
-            }
-            cachedInCox.set(ev.getValue() >= 1 && ev.getValue() < 5);
+        switch(ev.getVarbitId()) {
+            case VarbitID.RAIDS_CLIENT_PROGRESS:
+                if (ev.getValue() == 1) {
+                    // TODO: Do the CM check only as the party leader
+                    isCm = config.isCM();
+                    groupSize = client.getVarbitValue(VarbitID.RAIDS_CLIENT_PARTYSIZE);
+                    maxHp = config.maxHp();
+                    maxCombat = client.getServerVarbitValue(VarbitID.RAIDS_CLIENT_HIGHESTCOMBAT);
+                }
+                cachedInCox.set(ev.getValue() >= 1 && ev.getValue() < 5);
+                break;
+            case VarbitID.RAIDS_CLIENT_INDUNGEON:
+                if (ev.getValue() == 0) {
+                    damageHandler.getActiveEnemies().clear();
+                }
+                break;
+
         }
     }
 

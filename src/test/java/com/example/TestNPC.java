@@ -33,6 +33,11 @@ class TestNPC implements NPC {
     }
 
     @Override
+    public LocalPoint getCameraFocus() {
+        return null;
+    }
+
+    @Override
     public boolean isInteracting() {
         return false;
     }
