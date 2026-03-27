@@ -280,7 +280,7 @@ public class DamageHandler {
     @Subscribe
     public void onHitsplatApplied(HitsplatApplied hit) {
         Hitsplat hitsplat = hit.getHitsplat();
-        if (!shouldProcess() || hitsplat.getHitsplatType() == HitsplatID.HEAL || hitsplat.getAmount() <= 0) {
+        if (!shouldProcess() || hitsplat.getAmount() <= 0) {
             return;
         }
         Actor actor = hit.getActor();
@@ -293,6 +293,9 @@ public class DamageHandler {
             }
 
             int amount = hitsplat.getAmount();
+            if (hitsplat.getHitsplatType() == HitsplatID.HEAL) {
+                amount = -amount;
+            }
             int hp = enemy.hit(amount);
             //log.info("Damage: " + amount + " " + hit.getActor().getName() + " (" + hp +")");
         }
