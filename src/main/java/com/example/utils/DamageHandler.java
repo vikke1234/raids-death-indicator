@@ -294,9 +294,10 @@ public class DamageHandler {
 
             int amount = hitsplat.getAmount();
             if (hitsplat.getHitsplatType() == HitsplatID.HEAL) {
-                amount = -amount;
+                enemy.heal(amount);
+            } else {
+                enemy.hit(amount);
             }
-            int hp = enemy.hit(amount);
             //log.info("Damage: " + amount + " " + hit.getActor().getName() + " (" + hp +")");
         }
     }

@@ -114,6 +114,11 @@ public abstract class Enemy implements IEnemy {
         return current_health;
     }
 
+    public synchronized int heal(int amount) {
+        current_health += amount;
+        return current_health;
+    }
+
     /**
      * Queues damage and counts if the enemy will die to it.
      * @param damage damage dealt.
