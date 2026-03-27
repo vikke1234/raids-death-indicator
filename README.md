@@ -13,19 +13,17 @@ See [Docs](./docs.md) for how it works.
 
 ## Known issues
 - HP Scaling is wrong (by a lot) in CoX
-  - Solution: Make sure that you've set **YOUR** board to w/e you're running
-    if you're running CMs make sure when you make a party it's also set to
-    CMs.
+  - Solution: Change the checkbox in settings to whether the raid is a CM or not.
     - Will eventually be fixed
 
 
 TODO 
 --
-COX: Shamans, maybe melee/mage vangs, definitely olm mage hand and vesp portal, mystics and vasa
+COX: vangs 
 
 Broken: kephri swarms, zebak jugs, kephri eggs (?)
 verify: spitter, arcane, soldier
 
-Fix prediction tree based on hitsplat
+Fix prediction tree based on hitsplat, need to test Hitsplat::isMine
 
 Add raid started event to tell others if it's a CM or not.
