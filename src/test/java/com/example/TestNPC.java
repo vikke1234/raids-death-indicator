@@ -330,7 +330,17 @@ class TestNPC implements NPC {
     }
 
     @Override
+    public int getFootprintSize() {
+        return 0;
+    }
+
+    @Override
     public int getAnimationHeightOffset() {
+        return 0;
+    }
+
+    @Override
+    public int getRenderMode() {
         return 0;
     }
 
