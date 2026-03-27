@@ -7,6 +7,7 @@ import com.example.raids.Cox;
 import com.example.raids.Toa;
 import lombok.Getter;
 import lombok.extern.slf4j.Slf4j;
+import net.runelite.api.gameval.ItemID;
 import net.runelite.api.*;
 import net.runelite.api.events.*;
 import net.runelite.api.kit.KitType;
@@ -20,7 +21,6 @@ import javax.inject.Singleton;
 import java.util.*;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ConcurrentMap;
-import java.util.concurrent.atomic.AtomicInteger;
 import java.util.stream.Collectors;
 
 /**
@@ -58,20 +58,21 @@ public class DamageHandler {
     private final Set<Skill> validSkills = Set.of(Skill.HITPOINTS);
 
     private static final Set<Integer> POWERED_STAVES = new HashSet<>(Arrays.asList(
+            ItemID.TOTS_CHARGED, // Trident of the seas (full)
+            ItemID.TOTS, // Trident of the seas
+            ItemID.TOXIC_TOTS_CHARGED, // Toxic trident of the swamp
+            ItemID.TOXIC_TOTS_I_CHARGED,
             ItemID.SANGUINESTI_STAFF,
-            ItemID.TRIDENT_OF_THE_SEAS_FULL,
-            ItemID.TRIDENT_OF_THE_SEAS,
-            ItemID.TRIDENT_OF_THE_SWAMP,
-            ItemID.TRIDENT_OF_THE_SWAMP_E,
-            ItemID.HOLY_SANGUINESTI_STAFF,
+            ItemID.SANGUINESTI_STAFF_OR,
             ItemID.TUMEKENS_SHADOW,
-            ItemID.CORRUPTED_TUMEKENS_SHADOW,
+            ItemID.DEADMAN_BLIGHTED_TUMEKENS_SHADOW,
             ItemID.VOIDWAKER
     ));
     private static final Set<Integer> CHINCHOMPAS = Set.of(
-            ItemID.CHINCHOMPA_10033,
-            ItemID.BLACK_CHINCHOMPA,
-            ItemID.RED_CHINCHOMPA);
+            ItemID.CHINCHOMPA_CAPTURED, // Grey chinchompa
+            ItemID.CHINCHOMPA_BLACK, // Black chin
+            ItemID.CHINCHOMPA_BIG_CAPTURED // Red chinchompa
+    );
 
 
     public void initXpMap() {
