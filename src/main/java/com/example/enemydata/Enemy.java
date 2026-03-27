@@ -6,14 +6,14 @@ import lombok.Synchronized;
 import lombok.extern.slf4j.Slf4j;
 import net.runelite.api.Client;
 import net.runelite.api.NPC;
-import net.runelite.api.NpcID;
+import net.runelite.api.gameval.NpcID;
 
 import java.util.HashSet;
 import java.util.Set;
 
 @Slf4j
 public abstract class Enemy implements IEnemy {
-    public static final Set<Integer> blacklist = Set.of(NpcID.SCARAB_SWARM_11723, NpcID.JUG, NpcID.JUG_11736);
+    public static final Set<Integer> blacklist = Set.of(NpcID.TOA_KEPHRI_SHIELD_SCARAB, NpcID.TOA_ZEBAK_JUG, NpcID.TOA_ZEBAK_JUG_ROLLING);
     public static final Set<Integer> bosses;
 
     @Getter(onMethod_ = {@Synchronized})
@@ -48,38 +48,37 @@ public abstract class Enemy implements IEnemy {
     static {
         bosses = new HashSet<>();
         // Add the NpcID values to the Set
-        bosses.add(NpcID.AKKHA);
-        bosses.add(NpcID.AKKHA_11790);
-        bosses.add(NpcID.AKKHA_11791);
-        bosses.add(NpcID.AKKHA_11792);
-        bosses.add(NpcID.AKKHA_11793);
-        bosses.add(NpcID.AKKHA_11794);
-        bosses.add(NpcID.AKKHA_11795);
-        bosses.add(NpcID.AKKHA_11796);
+        bosses.add(NpcID.AKKHA_SPAWN);
+        bosses.add(NpcID.AKKHA_MELEE);
+        bosses.add(NpcID.AKKHA_RANGE);
+        bosses.add(NpcID.AKKHA_MAGE);
+        bosses.add(NpcID.AKKHA_ENRAGE_SPAWN);
+        bosses.add(NpcID.AKKHA_ENRAGE_INITIAL);
+        bosses.add(NpcID.AKKHA_ENRAGE);
+        bosses.add(NpcID.AKKHA_ENRAGE_DUMMY);
 
-        bosses.add(NpcID.BABA);
-        bosses.add(NpcID.BABA_11779);
-        bosses.add(NpcID.BABA_11780);
+        bosses.add(NpcID.TOA_BABA);
+        bosses.add(NpcID.TOA_BABA_COFFIN);
+        bosses.add(NpcID.TOA_BABA_DIGGING);
 
-        bosses.add(NpcID.KEPHRI);
-        bosses.add(NpcID.KEPHRI_11721);
+        bosses.add(NpcID.TOA_KEPHRI_BOSS_SHIELDED);
+        bosses.add(NpcID.TOA_KEPHRI_BOSS_ENRAGE);
 
-        bosses.add(NpcID.ZEBAK_11730);
-        bosses.add(NpcID.ZEBAK_11732);
+        bosses.add(NpcID.TOA_ZEBAK);
+        bosses.add(NpcID.TOA_ZEBAK_ENRAGED);
 
+        bosses.add(NpcID.TOA_WARDENS_P1_OBELISK_NPC);
+        bosses.add(NpcID.TOA_WARDEN_ELIDINIS_PHASE2_MAGE);
+        bosses.add(NpcID.TOA_WARDEN_ELIDINIS_PHASE2_RANGE);
+        bosses.add(NpcID.TOA_WARDEN_ELIDINIS_PHASE3);
+        bosses.add(NpcID.TOA_WARDEN_TUMEKEN_PHASE2_MAGE);
+        bosses.add(NpcID.TOA_WARDEN_TUMEKEN_PHASE2_RANGE);
+        bosses.add(NpcID.TOA_WARDEN_TUMEKEN_PHASE3);
 
-        bosses.add(NpcID.OBELISK_11751);
-        bosses.add(NpcID.ELIDINIS_WARDEN_11753);
-        bosses.add(NpcID.ELIDINIS_WARDEN_11754);
-        bosses.add(NpcID.ELIDINIS_WARDEN_11761);
-        bosses.add(NpcID.TUMEKENS_WARDEN_11756);
-        bosses.add(NpcID.TUMEKENS_WARDEN_11757);
-        bosses.add(NpcID.TUMEKENS_WARDEN_11762);
-
-        bosses.add(NpcID.ABYSSAL_PORTAL);
-        bosses.add(NpcID.VASA_NISTIRIO);
-        bosses.add(NpcID.GREAT_OLM_RIGHT_CLAW);
-        bosses.add(NpcID.GREAT_OLM_RIGHT_CLAW_7553);
+        bosses.add(NpcID.RAIDS_VESPULA_PORTAL);
+        bosses.add(NpcID.RAIDS_VASANISTIRIO_WALKING);
+        bosses.add(NpcID.OLM_HAND_RIGHT);
+        bosses.add(NpcID.OLM_HAND_RIGHT_SPAWNING);
         // TODO: add vangs? might be worth adding an event to send the HP to other players too
     }
 
@@ -149,5 +148,4 @@ public abstract class Enemy implements IEnemy {
     private int getAvgDef() {
         return (defStab + defSlash + defCrush) / 3;
     }
-
 }
