@@ -215,51 +215,11 @@ public class PredictionTree {
         return nodes;
     }
 
-    /**
-     * DFS for the tree.
-     * TODO: should this be removed, seems to only have been used for the automatic test generatio that was removed.
-     * @param root root of tree
-     * @return list of nodes with no leaves
-     */
-    private static List<PredictionTree> findDeepestPath(PredictionTree root) {
-        List<PredictionTree> deepestPath = new ArrayList<>();
-        findDeepestPathHelper(root, new ArrayList<>(), deepestPath);
-        return deepestPath;
-    }
-
-    private static void findDeepestPathHelper(PredictionTree node, List<PredictionTree> currentPath, List<PredictionTree> deepestPath) {
-        if (node == null) return;
-
-        currentPath.add(node);
-
-        if (isLeaf(node)) {
-            // Leaf node, check if this path is deeper
-            if (currentPath.size() > deepestPath.size()) {
-                deepestPath.clear();
-                deepestPath.addAll(currentPath);
-            }
-        } else {
-            // Recur for both children
-            findDeepestPathHelper(node.nobxp, currentPath, deepestPath);
-            findDeepestPathHelper(node.bxp, currentPath, deepestPath);
-        }
-
-        currentPath.remove(currentPath.size() - 1); // Backtrack
-    }
-
     public List<PredictionTree> getLeaves() {
         return PredictionTree.getLeaves(this);
     }
 
     public static boolean isLeaf(PredictionTree tree) {
         return tree.nobxp == null && tree.bxp == null && !tree.dead;
-    }
-
-    /**
-     * Places damage dealt into the tree and marks paths that are impossible as dead, additionally fixes fractions.
-     * @param damage
-     */
-    public void retroFit(int damage) {
-
     }
 }
