@@ -231,7 +231,7 @@ public class Predictor {
             if (low / 10 > 0 && rethit < 1) {
                 rethit++;
             }
-            return Math.max(rethit, 0);
+            return Math.max(rethit, 1);
         }
 
         // If the next xp drop is further than 1 xp off, we can lazily check if it wrapped or not
