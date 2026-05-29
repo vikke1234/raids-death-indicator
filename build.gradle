@@ -26,7 +26,20 @@ dependencies {
 group = 'com.example'
 version = '1.0-SNAPSHOT'
 
+java {
+	toolchain {
+		languageVersion = JavaLanguageVersion.of(11)
+	}
+}
+
 tasks.withType(JavaCompile) {
 	options.encoding = 'UTF-8'
-	options.release.set(11)
+}
+
+task runClient(type: JavaExec) {
+	mainClass = 'com.example.ExamplePluginTest'
+	classpath = sourceSets.test.runtimeClasspath
+	jvmArgs '-ea'
+	args '--developer-mode'
+	javaLauncher = javaToolchains.launcherFor(java.toolchain)
 }
