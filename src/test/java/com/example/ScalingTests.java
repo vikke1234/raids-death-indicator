@@ -28,8 +28,8 @@ public class ScalingTests {
     public void testMageScaling() {
         TestNPC npc = new TestNPC(NpcID.BABOON_MAGE);
         Mage mage = new Mage(npc, 515, 1, 2);
-        assertEquals(12, mage.getScaledHealth());
-        assertEquals(1.1, mage.getModifier(), delta);
+        assertEquals(20, mage.getScaledHealth());
+        assertEquals(1.125, mage.getModifier(), delta);
         npc = new TestNPC(NpcID.BABOON_MAGE_11714);
         mage = new Mage(npc, 515, 1, 2);
         assertEquals(1.175, mage.getModifier(), delta);
@@ -39,7 +39,7 @@ public class ScalingTests {
     public void testBrawlerScaling() {
         TestNPC npc = new TestNPC(NpcID.BABOON_BRAWLER);
         Brawler brawler = new Brawler(npc, 515, 1, 2);
-        assertEquals(1.1, brawler.getModifier(), delta);
+        assertEquals(1.125, brawler.getModifier(), delta);
         npc = new TestNPC(NpcID.BABOON_BRAWLER_11712);
         brawler = new Brawler(npc, 515, 1, 2);
         assertEquals(1.175, brawler.getModifier(), delta);
@@ -61,7 +61,7 @@ public class ScalingTests {
 
         TestNPC volatileNPC = new TestNPC(NpcID.VOLATILE_BABOON);
         Volatile vola = new Volatile(volatileNPC, 515, 1, 2);
-        assertEquals(1.175, vola.getModifier(), delta);
+        assertEquals(1.15, vola.getModifier(), delta);
     }
 
     @Test
