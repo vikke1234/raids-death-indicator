@@ -1,6 +1,5 @@
 package com.example.utils;
 
-import com.google.gson.annotations.SerializedName;
 import lombok.extern.slf4j.Slf4j;
 
 import java.util.*;
@@ -24,16 +23,6 @@ import java.util.stream.IntStream;
  */
 @Slf4j
 public class PredictionTree {
-    /**
-     * For debugging purposes
-     */
-    @SerializedName("xp")
-    public int xp;
-
-    public int damage;
-    @SerializedName("properties")
-    public Predictor.Properties properties;
-
     public PredictionTree nobxp;
 
     public PredictionTree bxp;
@@ -48,10 +37,8 @@ public class PredictionTree {
      */
     public boolean dead = false;
 
-    /**
-     * Used to create root.
-     */
     public PredictionTree() { }
+
     public static PredictionTree createRoot() {
         PredictionTree root = new PredictionTree();
         root.available = IntStream.rangeClosed(0, 9).boxed().collect(Collectors.toSet());
@@ -82,30 +69,24 @@ public class PredictionTree {
         return leaf.available.stream().findFirst().get();
     }
 
-    private PredictionTree(int xp, Predictor.Properties properties) {
-        this.xp = xp;
-        this.properties = properties;
-        this.damage = 0;
-    }
-
-    private PredictionTree createBxp(Set<Integer> avail, int preciseXp, int xp, Predictor.Properties properties) {
+    private PredictionTree createBxp(Set<Integer> avail, int preciseXp) {
         final int frac = preciseXp % 10;
         Set<Integer> newAvail = avail.stream().filter(n -> n + frac >= 10).map(n -> (n + frac) % 10).collect(Collectors.toSet());
         if (newAvail.isEmpty()) {
             return null;
         }
-        PredictionTree node = new PredictionTree(xp, properties);
+        PredictionTree node = new PredictionTree();
         node.available = newAvail;
         return node;
     }
 
-    private PredictionTree createNoBxp(Set<Integer> avail, int preciseXp, int xp, Predictor.Properties properties) {
+    private PredictionTree createNoBxp(Set<Integer> avail, int preciseXp) {
         final int frac = preciseXp % 10;
         Set<Integer> newAvail = avail.stream().filter(n -> n + frac < 10).map(n -> (n + frac) % 10).collect(Collectors.toSet());
         if (newAvail.isEmpty()) {
             return null;
         }
-        PredictionTree node = new PredictionTree(xp, properties);
+        PredictionTree node = new PredictionTree();
         node.available = newAvail;
         return node;
     }
@@ -168,19 +149,19 @@ public class PredictionTree {
 
             // branch on the higher hit
             if (high == xp) {
-                leaf.nobxp = createNoBxp(avail, phigh, xp, properties);
+                leaf.nobxp = createNoBxp(avail, phigh);
                 //log.info("Creating nbxp high (" + phigh / 10d +") " + leaf.nobxp);
             } else if (high + 1 == xp) {
-                leaf.bxp = createBxp(avail, phigh, xp, properties);
+                leaf.bxp = createBxp(avail, phigh);
                 //log.info("Creating bxp high (" + phigh / 10d +") " + leaf.bxp);
             }
 
             // branch on the lower hit
             if (low == xp) {
-                leaf.nobxp = createNoBxp(avail, plow, xp, properties);
+                leaf.nobxp = createNoBxp(avail, plow);
                 //log.info("Creating nbxp low (" + plow / 10d + ") " + leaf.nobxp);
             } else if (low != 0 && low + 1 == xp) {
-                leaf.bxp = createBxp(avail, plow, xp, properties);
+                leaf.bxp = createBxp(avail, plow);
                 //log.info("Creating bxp low (" + plow / 10d + ") " + leaf.bxp);
             }
             leaf.dead = leaf.bxp == null && leaf.nobxp == null;
