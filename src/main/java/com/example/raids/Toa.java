@@ -3,6 +3,7 @@ package com.example.raids;
 import com.example.enemydata.Enemy;
 import com.example.enemydata.toa.ToaEnemy;
 import com.example.enemydata.toa.het.Akkha;
+import com.example.enemydata.toa.het.AkkhaShadow;
 import com.example.utils.DamageHandler;
 import com.example.utils.QuadFunction;
 import lombok.extern.slf4j.Slf4j;
@@ -147,7 +148,14 @@ public class Toa {
         if (isAkkha && !isPartyDead) {
             return;
         }
-        damageHandler.getActiveEnemies().remove(npc.getIndex());
+        var activeEnemies = damageHandler.getActiveEnemies();
+        Enemy despawning = activeEnemies.get(npc.getIndex());
+        if (despawning instanceof AkkhaShadow) {
+            activeEnemies.values().stream()
+                    .filter(e -> e instanceof Akkha)
+                    .forEach(e -> e.setQueuedDamage(0));
+        }
+        activeEnemies.remove(npc.getIndex());
     }
 
     @Subscribe
