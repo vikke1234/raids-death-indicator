@@ -13,6 +13,6 @@ public class CoxScalingTests {
     public void testMysticScaling() {
         TestNPC npc = new TestNPC(NpcID.SKELETAL_MYSTIC);
         SkeletalMystic mystic = new SkeletalMystic(npc, true, 3, 126, 99);
-        assertEquals(480, mystic.scaled_health);
+        assertEquals(480, mystic.scaledHealth);
     }
 }

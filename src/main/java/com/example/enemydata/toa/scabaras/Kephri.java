@@ -11,16 +11,16 @@ public class Kephri extends ToaEnemy {
                 150, 0, 0, 80,
                 0, 0,
                 60, 300, 100);
-        scaled_health = (int) (Math.round(scaled_health / 10.0) * 10);
-        current_health = scaled_health;
+        scaledHealth = (int) (Math.round(scaledHealth / 10.0) * 10);
+        currentHealth = scaledHealth;
         hideOnDeath = false;
     }
 
     @Override
     public void fixupStats(int invo, int partySize, int pathLevel) {
         super.fixupStats(invo, partySize, pathLevel);
-        scaled_health = (int) (Math.round(scaled_health / 10.0) * 10);
-        current_health = scaled_health;
+        scaledHealth = (int) (Math.round(scaledHealth / 10.0) * 10);
+        currentHealth = scaledHealth;
     }
 
     /**

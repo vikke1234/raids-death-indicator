@@ -118,9 +118,9 @@ public class ToaEnemy extends Enemy {
             this.invocation = invocation;
             this.partySize = partySize;
             this.pathLevel = pathLevel;
-            this.scaled_health = getScaledHealth(invocation, partySize,
+            this.scaledHealth = getScaledHealth(invocation, partySize,
                     pathLevel, baseHealth, isPuzzle);
-            this.current_health = this.scaled_health;
+            this.currentHealth = this.scaledHealth;
         }
 
     }
@@ -135,7 +135,7 @@ public class ToaEnemy extends Enemy {
                 defStab, defSlash, defCrush, false);
     }
 
-    private static int getScaledHealth(int invocation, int partySize, int pathLevel, int base_health, boolean isPuzzle) {
+    private static int getScaledHealth(int invocation, int partySize, int pathLevel, int baseHealth, boolean isPuzzle) {
         double scale = (1 + 0.004 * invocation);
         double teamScale = teamScaling.get(partySize);
         double pathScale;
@@ -147,7 +147,7 @@ public class ToaEnemy extends Enemy {
             pathScale = pathScaling.get(pathLevel);
         }
 
-        return (int) (base_health * scale * teamScale * pathScale);
+        return (int) (baseHealth * scale * teamScale * pathScale);
     }
 
     public void fixupStats(int invocation, int partySize, int pathLevel) {
@@ -155,7 +155,7 @@ public class ToaEnemy extends Enemy {
         this.invocation = invocation;
         this.partySize = partySize;
         this.pathLevel = pathLevel;
-        scaled_health = getScaledHealth(invocation, partySize, pathLevel, base_health, isPuzzle);
-        current_health = scaled_health;
+        scaledHealth = getScaledHealth(invocation, partySize, pathLevel, baseHealth, isPuzzle);
+        currentHealth = scaledHealth;
     }
 }

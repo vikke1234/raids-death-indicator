@@ -10,12 +10,12 @@ public class AkkhaShadow extends ToaEnemy {
                 70, 100, 140, 30,
                 115, 30,
                 60, 120, 120);
-        if (scaled_health > 100)
+        if (scaledHealth > 100)
         {
-            final int roundTo = scaled_health > 300 ? 10 : 5;
+            final int roundTo = scaledHealth > 300 ? 10 : 5;
             // Shadow does not work like akkha, it uses the rounded health in the xp modifier
-            scaled_health = ((scaled_health + (roundTo / 2)) / roundTo) * roundTo;
-            current_health = scaled_health;
+            scaledHealth = ((scaledHealth + (roundTo / 2)) / roundTo) * roundTo;
+            currentHealth = scaledHealth;
         }
         hideOnDeath = false;
     }
@@ -23,11 +23,11 @@ public class AkkhaShadow extends ToaEnemy {
     @Override
     public void fixupStats(int invo, int partySize, int pathLevel) {
         super.fixupStats(invo, partySize, pathLevel);
-        if (scaled_health > 100)
+        if (scaledHealth > 100)
         {
-            final int roundTo = scaled_health > 300 ? 10 : 5;
-            scaled_health = ((scaled_health + (roundTo / 2)) / roundTo) * roundTo;
-            current_health = scaled_health;
+            final int roundTo = scaledHealth > 300 ? 10 : 5;
+            scaledHealth = ((scaledHealth + (roundTo / 2)) / roundTo) * roundTo;
+            currentHealth = scaledHealth;
         }
     }
 

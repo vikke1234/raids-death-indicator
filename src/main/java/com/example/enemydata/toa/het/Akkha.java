@@ -22,7 +22,7 @@ public class Akkha extends ToaEnemy {
                 60, 120, 120);
         canPhase = false;
         // scale to nearest 10, leave scaled health as is, xp modifier is computed using the "real" hp
-        current_health = (int) (Math.round(scaled_health / 10.0) * 10);
+        currentHealth = (int) (Math.round(scaledHealth / 10.0) * 10);
         hideOnDeath = false;
     }
 
@@ -31,20 +31,20 @@ public class Akkha extends ToaEnemy {
         super.queueDamage(damage);
         int queuedDamage = getQueuedDamage();
 
-        final int max_health = (int) (Math.round(scaled_health / 10.0) * 10);
-        final int phase_health = max_health / 5;
+        final int maxHealth = (int) (Math.round(scaledHealth / 10.0) * 10);
+        final int phaseHealth = maxHealth / 5;
         // compute what the threshold for the next phase is
-        final int next_phase = (current_health / phase_health) * phase_health;
+        final int nextPhase = (currentHealth / phaseHealth) * phaseHealth;
         // This causes her to be highlighted a few hits post shadow, can't fix due to veng being able to overkill too
-        shouldDraw = current_health != next_phase && (current_health - queuedDamage) <= next_phase;
-        //log.info("Akkha: current " + current_health + " queued " + queuedDamage + " next phase: " + next_phase + " draw: " + shouldDraw);
+        shouldDraw = currentHealth != nextPhase && (currentHealth - queuedDamage) <= nextPhase;
+        //log.info("Akkha: current " + currentHealth + " queued " + queuedDamage + " next phase: " + nextPhase + " draw: " + shouldDraw);
         return shouldDraw;
     }
 
     @Override
     public void fixupStats(int invo, int partySize, int pathLevel) {
         super.fixupStats(invo, partySize, pathLevel);
-        current_health = (int) (Math.round(scaled_health / 10.0) * 10);
+        currentHealth = (int) (Math.round(scaledHealth / 10.0) * 10);
     }
 
     /**

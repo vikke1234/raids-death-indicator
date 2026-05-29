@@ -138,7 +138,7 @@ public class DamageHandler {
 
         int bossHealth = client.getVarbitValue(Varbits.BOSS_HEALTH_CURRENT);
         if (bossHealth > 0 && Enemy.bosses.contains(npc.getId())) {
-            enemy.current_health = bossHealth; // re-synchronize the health
+            enemy.currentHealth = bossHealth; // re-synchronize the health
         }
 
         int attackStyle = client.getVarpValue(VarPlayer.ATTACK_STYLE);
@@ -187,7 +187,7 @@ public class DamageHandler {
             predictor.reset(); // can't determine how much each npc was damaged, reset instead
         }
 
-        final int clumpHp = nearby.stream().mapToInt(Enemy::getCurrent_health).sum();
+        final int clumpHp = nearby.stream().mapToInt(Enemy::getCurrentHealth).sum();
         if (damage >= clumpHp) {
             sendClumpDamage(nearby);
         }
@@ -196,7 +196,7 @@ public class DamageHandler {
     private void sendClumpDamage(List<Enemy> enemies) {
         for (Enemy enemy : enemies) {
             final int npcIndex = enemy.getNpc().getIndex();
-            final EntityDamaged ev = new EntityDamaged(npcIndex, enemy.getCurrent_health());
+            final EntityDamaged ev = new EntityDamaged(npcIndex, enemy.getCurrentHealth());
             if (party.isInParty()) {
                 clientThread.invokeLater(() -> party.send(ev));
             }

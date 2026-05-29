@@ -22,11 +22,11 @@ public abstract class Enemy implements IEnemy {
     public boolean shouldDraw;
     protected boolean hideOnDeath;
 
-    public final int base_health;
+    public final int baseHealth;
     // TODO: this may require some rework, akkha for example computes the xp modifier before rounding hp
-    public int scaled_health;
+    public int scaledHealth;
     @Getter(onMethod_ = {@Synchronized})
-    public int current_health;
+    public int currentHealth;
 
     protected int attack;
     protected int str;
@@ -87,8 +87,8 @@ public abstract class Enemy implements IEnemy {
           int defStab, int defSlash, int defCrush) {
         this.npc = npc;
 
-        this.base_health = baseHealth;
-        this.current_health = base_health;
+        this.baseHealth = baseHealth;
+        this.currentHealth = baseHealth;
         this.attack = attack;
         this.str = str;
         this.def = def;
@@ -104,19 +104,19 @@ public abstract class Enemy implements IEnemy {
 
     public void setCurrentHealth(int hp) {
         if (hp >= 0) {
-            current_health = hp;
+            currentHealth = hp;
         }
     }
 
     public synchronized int hit(int damage) {
         queuedDamage = Math.max(0, queuedDamage - damage);
-        current_health -= damage;
-        return current_health;
+        currentHealth -= damage;
+        return currentHealth;
     }
 
     public synchronized int heal(int amount) {
-        current_health += amount;
-        return current_health;
+        currentHealth += amount;
+        return currentHealth;
     }
 
     /**
@@ -126,7 +126,7 @@ public abstract class Enemy implements IEnemy {
      */
     public synchronized boolean queueDamage(int damage) {
         queuedDamage += damage;
-        boolean died = queuedDamage >= current_health;
+        boolean died = queuedDamage >= currentHealth;
 
         npc.setDead(died && hideOnDeath);
         return died;
@@ -143,7 +143,7 @@ public abstract class Enemy implements IEnemy {
     }
 
     public int getScaledHealth() {
-        return scaled_health;
+        return scaledHealth;
     }
 
     private int getAvgLevel() {

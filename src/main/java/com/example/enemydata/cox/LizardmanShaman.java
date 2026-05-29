@@ -12,7 +12,7 @@ public class LizardmanShaman extends CoxEnemy {
     @Override
     public boolean queueDamage(int damage) {
         shouldDraw = super.queueDamage(damage);
-        log.debug("current hp: {} queued damage: {} should draw: {}", current_health, queuedDamage, shouldDraw);
+        log.debug("current hp: {} queued damage: {} should draw: {}", currentHealth, queuedDamage, shouldDraw);
         return shouldDraw;
     }
 
