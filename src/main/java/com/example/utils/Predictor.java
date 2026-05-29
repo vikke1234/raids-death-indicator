@@ -206,44 +206,43 @@ public class Predictor {
             return 0;
         }
 
-        if (!roots.containsKey(props.skill)) {
-            roots.put(props.skill, PredictionTree.createRoot());
-        }
-
-        PredictionTree root = roots.get(props.skill);
+        PredictionTree root = roots.computeIfAbsent(props.skill, k -> PredictionTree.createRoot());
         int frac = root.getFrac();
         root.insertInto(xp, props);
         Hit hit = findHit(xp, props);
 
-        int next = computePrecise(hit.hit + 1, props);
         int high = computePrecise(hit.hit, props);
-        int low = computePrecise(hit.hit-1, props);
+        int low = computePrecise(hit.hit - 1, props);
+        int highDrop = convertToJagexDrop(high);
+        int lowDrop = convertToJagexDrop(low);
 
+        // Known pre-drop carry: exactly one candidate's shifted drop should match xp.
         if (frac >= 0) {
             if (convertToJagexDrop(high + frac) == xp) {
                 return hit.hit;
             }
             if (convertToJagexDrop(low + frac) == xp) {
-                return hit.hit-1;
+                return hit.hit - 1;
             }
         }
 
-        // if the xp drops do not overlap, check which one matches the given drop, otherwise fall back
-        // to where the low hit is returned.
-        if (convertToJagexDrop(high) != convertToJagexDrop(low)) {
-            boolean overlapping = (convertToJagexDrop(high) == xp && (convertToJagexDrop(high) - 1) != convertToJagexDrop(low));
-            int rethit = overlapping ? hit.hit : hit.hit - 1;
-            return Math.max(rethit, 1);
+        // Carry unknown. If the candidates have different displays and xp matches
+        // the upper one with a gap below it, only hit.hit can produce that xp.
+        if (highDrop != lowDrop) {
+            boolean uniqueHigh = highDrop == xp && (highDrop - 1) != lowDrop;
+            return Math.max(uniqueHigh ? hit.hit : hit.hit - 1, 1);
         }
 
-        // If the next xp drop is further than 1 xp off, we can lazily check if it wrapped or not
-        if ((convertToJagexDrop(high) + 1) == xp && convertToJagexDrop(next) != xp) {
+        // Candidates share a display. If xp is one above and the next hit doesn't
+        // also reach it, treat as bxp on the upper candidate.
+        int nextDrop = convertToJagexDrop(computePrecise(hit.hit + 1, props));
+        if (highDrop + 1 == xp && nextDrop != xp) {
             return hit.hit;
         }
 
-        // We have to always take hit-1 because low hits have overlapping xpdrops
-        // it's worse if we say that the mob died and it didn't
-        return Math.max(hit.hit-1, 1);
+        // Default to hit-1: low hits have overlapping xp drops, and predicting too
+        // high causes false-death indications.
+        return Math.max(hit.hit - 1, 1);
     }
 
 
