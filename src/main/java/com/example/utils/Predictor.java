@@ -202,9 +202,14 @@ public class Predictor {
      * @return expected hit
      */
     public int treePredict(int xp, @NonNull Properties props) {
+        if (xp == 0) {
+            return 0;
+        }
+
         if (!roots.containsKey(props.skill)) {
             roots.put(props.skill, PredictionTree.createRoot());
         }
+
         PredictionTree root = roots.get(props.skill);
         int frac = root.getFrac();
         root.insertInto(xp, props);
@@ -214,27 +219,25 @@ public class Predictor {
         int high = computePrecise(hit.hit, props);
         int low = computePrecise(hit.hit-1, props);
 
-        if (frac != -1) {
-            if ((high + frac) / 10 == xp) {
+        if (frac >= 0) {
+            if (convertToJagexDrop(high + frac) == xp) {
                 return hit.hit;
             }
-            if ((low + frac) / 10 == xp) {
+            if (convertToJagexDrop(low + frac) == xp) {
                 return hit.hit-1;
             }
         }
+
         // if the xp drops do not overlap, check which one matches the given drop, otherwise fall back
         // to where the low hit is returned.
-        if (high / 10 != low / 10) {
-            boolean overlapping = (high / 10 == xp && (high / 10 - 1) != low / 10);
+        if (convertToJagexDrop(high) != convertToJagexDrop(low)) {
+            boolean overlapping = (convertToJagexDrop(high) == xp && (convertToJagexDrop(high) - 1) != convertToJagexDrop(low));
             int rethit = overlapping ? hit.hit : hit.hit - 1;
-            if (low / 10 > 0 && rethit < 1) {
-                rethit++;
-            }
             return Math.max(rethit, 1);
         }
 
         // If the next xp drop is further than 1 xp off, we can lazily check if it wrapped or not
-        if ((high / 10 + 1) == xp && (next / 10) != xp) {
+        if ((convertToJagexDrop(high) + 1) == xp && convertToJagexDrop(next) != xp) {
             return hit.hit;
         }
 
@@ -251,9 +254,14 @@ public class Predictor {
      * @return
      */
     public int treePredict2(int xp, @NonNull Properties props) {
+        if (xp == 0) {
+            return 0;
+        }
+
         if (!roots.containsKey(props.skill)) {
             roots.put(props.skill, PredictionTree.createRoot());
         }
+
         PredictionTree root = roots.get(props.skill);
         int frac = root.getFrac();
         root.insertInto(xp, props);
@@ -262,7 +270,7 @@ public class Predictor {
         int high = computePrecise(hit.hit, props);
         int low = computePrecise(hit.hit-1, props);
 
-        if (frac != -1) {
+        if (frac >= 0) {
             high += frac;
             low += frac;
         }
