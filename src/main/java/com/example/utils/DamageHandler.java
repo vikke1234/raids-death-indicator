@@ -293,7 +293,7 @@ public class DamageHandler {
             }
 
             int amount = hitsplat.getAmount();
-            if (hitsplat.getHitsplatType() == HitsplatID.HEAL) {
+            if (hitsplat.getHitsplatType() == HitsplatID.HEAL || hitsplat.getHitsplatType() == HitsplatID.CYAN_UP) {
                 enemy.heal(amount);
             } else {
                 enemy.hit(amount);
