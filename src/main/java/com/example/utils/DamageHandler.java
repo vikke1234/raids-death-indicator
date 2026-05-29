@@ -152,7 +152,7 @@ public class DamageHandler {
         if ((skill == Skill.RANGED || skill == Skill.MAGIC) && isDefensiveCast) {
             // Ignore in order to not double hit, insert the drop into
             // the tree in order to track the fraction
-            predictor.insertInto(xp, scaling, props);
+            predictor.insertInto(xp, props);
             return;
         }
 

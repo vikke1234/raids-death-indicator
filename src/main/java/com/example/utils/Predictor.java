@@ -185,10 +185,9 @@ public class Predictor {
      * Inserts an xp node into the prediction tree.
      *
      * @param xp amount of xp received
-     * @param scaling scaling of the monster attacked
      * @param props properties related to attack
      */
-    public void insertInto(int xp, double scaling, @NonNull Properties props) {
+    public void insertInto(int xp, @NonNull Properties props) {
         if (!roots.containsKey(props.skill)) {
             roots.put(props.skill, PredictionTree.createRoot());
         }
