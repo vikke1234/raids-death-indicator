@@ -30,7 +30,6 @@ public class CoxEnemy extends Enemy {
         enemies.put(NpcID.RAIDS_LIZARDSHAMAN_B, LizardmanShaman::new);
         enemies.put(NpcID.RAIDS_VASANISTIRIO_DORMANT, VasaNistirio::new);
         enemies.put(NpcID.OLM_HAND_LEFT_SPAWNING, OlmMageHand::new);
-        enemies.put(NpcID.OLM_HAND_RIGHT, OlmMageHand::new);
         enemies.put(NpcID.RAIDS_VANGUARD_DORMANT, Vanguard::new);
         enemies.put(NpcID.RAIDS_VANGUARD_WALKING, Vanguard::new);
         enemies.put(NpcID.RAIDS_VANGUARD_MELEE, Vanguard::new);
