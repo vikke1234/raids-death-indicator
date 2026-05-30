@@ -132,12 +132,13 @@ public class DamageHandler {
         if (activeEnemies.containsKey(npc.getIndex())) {
             enemy = activeEnemies.get(npc.getIndex());
         } else {
-            //System.out.println("Unknown enemy \"" + npc.getName() + "\": " + npc.getId() + " (idx: " + npc.getIndex() + ")");
+            Trace.damage("xp drop on untracked NPC {} (id={} idx={})", npc.getName(), npc.getId(), npc.getIndex());
             return;
         }
 
         int bossHealth = client.getVarbitValue(Varbits.BOSS_HEALTH_CURRENT);
         if (bossHealth > 0 && Enemy.bosses.contains(npc.getId())) {
+            Trace.damage("boss-health varbit re-sync: {} {} -> {}", npc.getName(), enemy.currentHealth, bossHealth);
             enemy.currentHealth = bossHealth; // re-synchronize the health
         }
 
@@ -152,6 +153,7 @@ public class DamageHandler {
         if ((skill == Skill.RANGED || skill == Skill.MAGIC) && isDefensiveCast) {
             // Ignore in order to not double hit, insert the drop into
             // the tree in order to track the fraction
+            Trace.damage("xp drop {} on {} (defensive cast, tracking only)", xp, npc.getName());
             predictor.insertInto(xp, props);
             return;
         }
@@ -162,6 +164,9 @@ public class DamageHandler {
         } else {
             damage = predictor.treePredict(xp, props);
         }
+        Trace.damage("xp drop {} -> predicted {} damage on {} (hp={}, queued={}, calibrated={})",
+                xp, damage, npc.getName(), enemy.currentHealth, enemy.getQueuedDamage(),
+                predictor.isAccurate(skill));
 
         if (!Toa.isAtToa(client)) {
             // TODO: figure out a better way to do this
@@ -288,17 +293,21 @@ public class DamageHandler {
             NPC npc = (NPC) actor;
             Enemy enemy = activeEnemies.getOrDefault(npc.getIndex(), null);
             if (enemy == null) {
-                //log.info("Unknown target: " + npc.getId() + " index: " + npc.getIndex());
+                Trace.damage("hitsplat on untracked NPC {} (id={} idx={}) amount={}",
+                        npc.getName(), npc.getId(), npc.getIndex(), hitsplat.getAmount());
                 return;
             }
 
             int amount = hitsplat.getAmount();
-            if (hitsplat.getHitsplatType() == HitsplatID.HEAL || hitsplat.getHitsplatType() == HitsplatID.CYAN_UP) {
+            int type = hitsplat.getHitsplatType();
+            if (type == HitsplatID.HEAL || type == HitsplatID.CYAN_UP) {
                 enemy.heal(amount);
+                Trace.damage("HEAL {} on {} (hp now {})", amount, npc.getName(), enemy.getCurrentHealth());
             } else {
                 enemy.hit(amount);
+                Trace.damage("HIT  {} on {} (hp now {}, queued now {})",
+                        amount, npc.getName(), enemy.getCurrentHealth(), enemy.getQueuedDamage());
             }
-            //log.info("Damage: " + amount + " " + hit.getActor().getName() + " (" + hp +")");
         }
     }
 }

@@ -1,6 +1,7 @@
 package com.example.enemydata.toa.het;
 
 import com.example.enemydata.toa.ToaEnemy;
+import com.example.utils.Trace;
 import lombok.Getter;
 import lombok.Setter;
 import lombok.experimental.Accessors;
@@ -37,7 +38,7 @@ public class Akkha extends ToaEnemy {
         final int nextPhase = (currentHealth / phaseHealth) * phaseHealth;
         // This causes her to be highlighted a few hits post shadow, can't fix due to veng being able to overkill too
         shouldDraw = currentHealth != nextPhase && (currentHealth - queuedDamage) <= nextPhase;
-        //log.info("Akkha: current " + currentHealth + " queued " + queuedDamage + " next phase: " + nextPhase + " draw: " + shouldDraw);
+        Trace.akkha("Akkha: hp={} queued={} nextPhase={} draw={}", currentHealth, queuedDamage, nextPhase, shouldDraw);
         return shouldDraw;
     }
 

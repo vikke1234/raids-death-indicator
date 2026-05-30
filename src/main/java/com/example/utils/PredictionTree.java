@@ -100,26 +100,28 @@ public class PredictionTree {
 
         List<PredictionTree> leaves = getLeaves(this);
 
-        //log.info("XP(" + properties.skill.getName() + ", " + properties.scaling + "): " + xp + "xp hit: "+ hit.hit +
-        //        " leaves: " + leaves.size() + " true xp(-1): " + Predictor.computePrecise(hit.hit-1, properties) / 10d +
-        //        " true xp: " + Predictor.computePrecise(hit.hit, properties) / 10d +
-        //        " true xp(+1): " + Predictor.computePrecise(hit.hit + 1, properties) / 10d +
-        //        " target: " + (properties.npc != null ? properties.npc.getName() + "(idx: " + properties.npc.getIndex() + " ID: " + properties.npc.getId() + ")" : "") + "\n---");
+        Trace.predictor("XP({}, scale={}): {} xp, hit={} leaves={} true xp(-1)={} true xp={} true xp(+1)={} target={}",
+                properties.skill.getName(), properties.scaling, xp, hit.hit, leaves.size(),
+                Predictor.computePrecise(hit.hit - 1, properties) / 10d,
+                Predictor.computePrecise(hit.hit, properties) / 10d,
+                Predictor.computePrecise(hit.hit + 1, properties) / 10d,
+                properties.npc != null
+                        ? properties.npc.getName() + "(idx=" + properties.npc.getIndex() + " id=" + properties.npc.getId() + ")"
+                        : "<none>");
         if (leaves.isEmpty()) {
             log.debug("Leaves are empty");
         }
 
         int precise;
-        for(PredictionTree leaf : leaves) {
+        for (PredictionTree leaf : leaves) {
             Set<Integer> avail = leaf.available;
-            //System.out.println("Current guesses: " + avail);
             assert (!avail.isEmpty()); // should never be empty, something is wrong
             int phigh = Predictor.computePrecise(hit.hit, properties);
-            int plow = Predictor.computePrecise(hit.hit-1, properties);
+            int plow = Predictor.computePrecise(hit.hit - 1, properties);
             int high = phigh / 10;
             int low = plow / 10;
 
-            if(avail.size() == 1) {
+            if (avail.size() == 1) {
                 // When we get to this situation, say we have a 9 here and then
                 // we receive a 20 xp drop. This can be either a 19.2 or a 20.6.
                 // But now we have what we believe is the fraction, so we check;
@@ -128,12 +130,12 @@ public class PredictionTree {
                 precise = Predictor.computePrecise(hit.hit, properties);
                 boolean correct = (getFrac(leaf) + precise) / 10 == xp;
                 if (!correct) {
-                    precise = Predictor.computePrecise(hit.hit-1, properties);
+                    precise = Predictor.computePrecise(hit.hit - 1, properties);
                 }
 
                 if ((precise + getFrac(leaf)) / 10 != xp) {
                     leaf.dead = true;
-                    log.debug("dead leaf");
+                    Trace.predictor("  -> leaf dead (frac={} couldn't reconcile drop)", getFrac(leaf));
                     continue;
                 }
                 final int finalFrac = precise % 10;
@@ -141,30 +143,31 @@ public class PredictionTree {
                         .map(n -> (n + finalFrac) % 10)
                         .collect(Collectors.toSet());
 
-                //log.info("Frac: " + leaf);
-
+                Trace.predictor("  -> resolved frac, leaf now {}", leaf);
                 continue;
             }
-
 
             // branch on the higher hit
             if (high == xp) {
                 leaf.nobxp = createNoBxp(avail, phigh);
-                //log.info("Creating nbxp high (" + phigh / 10d +") " + leaf.nobxp);
+                Trace.predictor("  -> nobxp high ({}xp) {}", phigh / 10d, leaf.nobxp);
             } else if (high + 1 == xp) {
                 leaf.bxp = createBxp(avail, phigh);
-                //log.info("Creating bxp high (" + phigh / 10d +") " + leaf.bxp);
+                Trace.predictor("  -> bxp high ({}xp) {}", phigh / 10d, leaf.bxp);
             }
 
             // branch on the lower hit
             if (low == xp) {
                 leaf.nobxp = createNoBxp(avail, plow);
-                //log.info("Creating nbxp low (" + plow / 10d + ") " + leaf.nobxp);
+                Trace.predictor("  -> nobxp low ({}xp) {}", plow / 10d, leaf.nobxp);
             } else if (low != 0 && low + 1 == xp) {
                 leaf.bxp = createBxp(avail, plow);
-                //log.info("Creating bxp low (" + plow / 10d + ") " + leaf.bxp);
+                Trace.predictor("  -> bxp low ({}xp) {}", plow / 10d, leaf.bxp);
             }
             leaf.dead = leaf.bxp == null && leaf.nobxp == null;
+            if (leaf.dead) {
+                Trace.predictor("  -> leaf dead (no branch reconciled)");
+            }
         }
     }
 
