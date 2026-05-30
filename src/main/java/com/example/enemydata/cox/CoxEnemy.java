@@ -36,10 +36,12 @@ public class CoxEnemy extends Enemy {
         enemies.put(NpcID.RAIDS_VANGUARD_RANGED, Vanguard::new);
         enemies.put(NpcID.RAIDS_VANGUARD_MAGIC, Vanguard::new);
 
-        // Stone Guardians (left/right). Player must wield a pickaxe to actually
-        // damage them; XP drops follow normal scaling either way.
         enemies.put(NpcID.RAIDS_STONEGUARDIANS_LEFT, Guardian::new);
         enemies.put(NpcID.RAIDS_STONEGUARDIANS_RIGHT, Guardian::new);
+
+        enemies.put(NpcID.RAIDS_DOGODILE_SUBMERGED, GreatMuttadile::new);
+        enemies.put(NpcID.RAIDS_DOGODILE, GreatMuttadile::new);
+        enemies.put(NpcID.RAIDS_DOGODILE_JUNIOR, SmallMuttadile::new);
     }
 
     protected CoxEnemy(NPC npc, boolean isCm, int partySize, int maxCombat, int maxHp, int baseHealth, int melee, int def, int offAtt, int offStr, int defStab, int defSlash, int defCrush) {
