@@ -111,11 +111,20 @@ public abstract class Enemy implements IEnemy {
     public synchronized int hit(int damage) {
         queuedDamage = Math.max(0, queuedDamage - damage);
         currentHealth -= damage;
+        if (queuedDamage == 0) {
+            // Queued prediction has been fully consumed by landed hitsplats.
+            // shouldDraw was set when the prediction was made; clear it now that
+            // the predicted event has resolved.
+            shouldDraw = false;
+        }
         return currentHealth;
     }
 
     public synchronized int heal(int amount) {
         currentHealth += amount;
+        // Heals (including phase-transition heals like Akkha's) invalidate any
+        // standing prediction.
+        shouldDraw = false;
         return currentHealth;
     }
 
