@@ -73,6 +73,27 @@ public class DamageHandler {
             ItemID.CHINCHOMPA_BIG_CAPTURED // Red chinchompa
     );
 
+    private static final Set<Integer> MULTI_HIT_WEAPONS = Set.of(
+            ItemID.SCYTHE_OF_VITUR,
+            ItemID.SCYTHE_OF_VITUR_OR,
+            ItemID.SCYTHE_OF_VITUR_BL,
+            ItemID.SCYTHE_OF_VITUR_UNCHARGED,
+            ItemID.SCYTHE_OF_VITUR_UNCHARGED_OR,
+            ItemID.SCYTHE_OF_VITUR_UNCHARGED_BL,
+            ItemID.DRAGON_CLAWS,
+            // Burning claws
+            ItemID.BONE_CLAWS,
+            ItemID.DRAGON_DAGGER,
+            ItemID.DRAGON_DAGGER_P,
+            ItemID.DRAGON_DAGGER_P_,
+            ItemID.DRAGON_DAGGER_P__,
+            // Tonalztics of ralos (2-hit standard attack)
+            ItemID.TONALZTICS_OF_RALOS_CHARGED,
+            ItemID.DRAGON_KNIFE,
+            ItemID.DRAGON_KNIFE_P,
+            ItemID.DRAGON_KNIFE_P_,
+            ItemID.DRAGON_KNIFE_P__);
+
     public void initXpMap() {
         previousXps = new HashMap<>();
         Arrays.stream(Skill.values()).forEach(skill -> previousXps.put(skill, client.getSkillExperience(skill)));
@@ -166,8 +187,9 @@ public class DamageHandler {
                 xp, damage, npc.getName(), enemy.currentHealth, enemy.getQueuedDamage(),
                 predictor.isAccurate(skill));
 
-        if (!Toa.isAtToa(client)) {
-            // TODO: figure out a better way to do this
+        if (MULTI_HIT_WEAPONS.contains(weapon)) {
+            // Reset on multihit weapons as we can't tell the exact hits
+            // that build the hitsplat
             predictor.reset();
         }
 
