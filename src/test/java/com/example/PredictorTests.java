@@ -342,11 +342,11 @@ public class PredictorTests {
         System.out.printf("Swept %d scalings %.3f..%.3f (step %.3f), %d sessions, safetyCap=%d%n",
                 totalScalings, startMilli / 1000.0, endMilli / 1000.0, stepMilli / 1000.0, sessions, safetyCap);
 
-        final String header = String.format("  %-9s %-8s %-8s %-10s %-6s %-8s %-6s",
+        final String header = String.format("  %-9s %-8s %-8s %-10s %-6s %-8s %s",
                 "scaling", "exact%", "under%", "meanCalib", "p90", "neverCal", "over");
         final java.util.function.Consumer<double[]> printRow = r -> {
             String neverCal = String.format("%d/%d", (int) r[5], sessions);
-            System.out.printf("  %-9.3f %-8.1f %-8.1f %-10.1f %-6d %-8s %-6d%n",
+            System.out.printf("  %-9.3f %-8.1f %-8.1f %-10.1f %-6d %-8s %d%n",
                     r[0], r[1], 100.0 - r[1], r[2], (int) r[3], neverCal, (int) r[4]);
         };
 
