@@ -8,3 +8,6 @@ bin/
 nbactions.xml
 nb-configuration.xml
 nbproject/
+.factorypath
+
+tools/hotswap-agent.jar

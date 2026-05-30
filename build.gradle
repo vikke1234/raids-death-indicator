@@ -29,6 +29,7 @@ version = '1.0-SNAPSHOT'
 java {
 	toolchain {
 		languageVersion = JavaLanguageVersion.of(11)
+		vendor = JvmVendorSpec.JETBRAINS
 	}
 }
 
@@ -40,6 +41,10 @@ task runClient(type: JavaExec) {
 	mainClass = 'com.example.ExamplePluginTest'
 	classpath = sourceSets.test.runtimeClasspath
 	jvmArgs '-ea'
+	jvmArgs '-XX:+AllowEnhancedClassRedefinition'
+	jvmArgs "-javaagent:${rootProject.file('tools/hotswap-agent.jar')}"
+	// Let HotSwapAgent's JdkPlugin flush the java.beans cache after a reload (silences module-access errors).
+	jvmArgs '--add-opens', 'java.desktop/com.sun.beans.introspect=ALL-UNNAMED'
 	args '--developer-mode'
 	javaLauncher = javaToolchains.launcherFor(java.toolchain)
 }
