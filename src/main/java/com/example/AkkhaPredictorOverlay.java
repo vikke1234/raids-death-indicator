@@ -39,14 +39,17 @@ public class AkkhaPredictorOverlay extends Overlay {
         var enemies = damageHandler.getActiveEnemies();
 
         for (Enemy enemy : enemies.values()) {
+            NPC npc = enemy.getNpc();
+            if (npc == null) {
+                continue;
+            }
             if (enemy.shouldHighlight()) {
-                NPC npc = enemy.getNpc();
                 renderPoly(graphics, null, 0, config.highlightColor(), npc.getConvexHull());
             }
 
             if (config.enableHpOverlay()) {
                 String str = enemy.getCurrentHealth() + " (" + enemy.getQueuedDamage() + ")";
-                renderText(graphics, enemy.getNpc(), str, config.textColor());
+                renderText(graphics, npc, str, config.textColor());
             }
         }
 
@@ -54,7 +57,7 @@ public class AkkhaPredictorOverlay extends Overlay {
             return null;
         }
 
-        Skill []skills = new Skill[]{Skill.HITPOINTS};
+        Skill[] skills = new Skill[] { Skill.HITPOINTS };
         int start = 20;
         Predictor predictor = damageHandler.getPredictor();
 
@@ -88,10 +91,8 @@ public class AkkhaPredictorOverlay extends Overlay {
         OverlayUtil.renderTextLocation(graphics, p, str, c);
     }
 
-    private void renderPoly(Graphics2D graphics, Color borderColor, float borderWidth, Color fillColor, Shape polygon)
-    {
-        if (polygon != null)
-        {
+    private void renderPoly(Graphics2D graphics, Color borderColor, float borderWidth, Color fillColor, Shape polygon) {
+        if (polygon != null) {
             graphics.setColor(borderColor);
             graphics.setStroke(new BasicStroke(borderWidth));
             graphics.draw(polygon);
