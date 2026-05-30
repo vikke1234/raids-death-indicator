@@ -8,8 +8,7 @@ import net.runelite.client.config.ConfigItem;
 import java.awt.*;
 
 @ConfigGroup("raid-death-indicator")
-public interface AkkhaPredictorConfig extends Config
-{
+public interface AkkhaPredictorConfig extends Config {
     @Alpha
     @ConfigItem(
             keyName = "highlightColor",
@@ -68,8 +67,8 @@ public interface AkkhaPredictorConfig extends Config
 
     @ConfigItem(
             keyName = "enableExperimentalHitPrediction",
-            name = "Hit prediction (experimental)",
-            description = ""
+            name = "Conservative hit prediction",
+            description = "Will not try to use internal fractions until the calibration is done"
     )
     default boolean experimentalHitPrediction() {
         return false;
@@ -83,6 +82,5 @@ public interface AkkhaPredictorConfig extends Config
     default boolean enableHpOverlay() {
         return false;
     }
-
 
 }
