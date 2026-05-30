@@ -130,14 +130,6 @@ public class Toa {
     }
 
     @Subscribe
-    public void onGameTick(GameTick tick) {
-        if (isAtToa() && partyDead()) {
-            // TODO: does this need to be done each tick?
-            damageHandler.getActiveEnemies().clear();
-        }
-    }
-
-    @Subscribe
     protected void onNpcDespawned(NpcDespawned event) {
         if (!isAtToa()) {
             return; // only handle toa enemies
