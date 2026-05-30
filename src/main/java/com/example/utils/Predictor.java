@@ -212,7 +212,8 @@ public class Predictor {
         }
 
         PredictionTree root = roots.computeIfAbsent(props.skill, k -> PredictionTree.createRoot());
-        int frac = root.getFrac();
+        List<PredictionTree> leaves = PredictionTree.getLeaves(root);
+        Set<Integer> available = leaves.size() == 1 ? leaves.get(0).available : null;
         root.insertInto(xp, props);
         Hit hit = findHit(xp, props);
 
@@ -221,14 +222,22 @@ public class Predictor {
         int highDrop = convertToJagexDrop(high);
         int lowDrop = convertToJagexDrop(low);
 
-        // Known pre-drop carry: exactly one candidate's shifted drop should match xp.
-        if (frac >= 0) {
-            if (convertToJagexDrop(high + frac) == xp) {
+        // If every candidate carry in `available` produces the same displayed xp
+        // for exactly one of the two hit candidates, we know which hit it was —
+        // even when available has multiple elements.
+        if (available != null && !available.isEmpty()) {
+            boolean allHigh = true;
+            boolean allLow = true;
+            for (int c : available) {
+                if (convertToJagexDrop(high + c) != xp)
+                    allHigh = false;
+                if (convertToJagexDrop(low + c) != xp)
+                    allLow = false;
+            }
+            if (allHigh && !allLow)
                 return hit.hit;
-            }
-            if (convertToJagexDrop(low + frac) == xp) {
+            if (allLow && !allHigh)
                 return hit.hit - 1;
-            }
         }
 
         // Carry unknown. hit.hit is unique when hit-1's maximum possible display
