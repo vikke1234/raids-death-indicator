@@ -66,14 +66,12 @@ public class DamageHandler {
             ItemID.SANGUINESTI_STAFF_OR,
             ItemID.TUMEKENS_SHADOW,
             ItemID.DEADMAN_BLIGHTED_TUMEKENS_SHADOW,
-            ItemID.VOIDWAKER
-    ));
+            ItemID.VOIDWAKER));
     private static final Set<Integer> CHINCHOMPAS = Set.of(
             ItemID.CHINCHOMPA_CAPTURED, // Grey chinchompa
             ItemID.CHINCHOMPA_BLACK, // Black chin
             ItemID.CHINCHOMPA_BIG_CAPTURED // Red chinchompa
     );
-
 
     public void initXpMap() {
         previousXps = new HashMap<>();
@@ -104,7 +102,7 @@ public class DamageHandler {
      * Rounds down so that in case it does get fractional it should not give false positives.
      *
      * @param skill Skill that xp was received in.
-     * @param xp Amount of XP that was received.
+     * @param xp    Amount of XP that was received.
      */
     private void processXpDrop(Skill skill, int xp) {
         if (!validSkills.contains(skill)) {
@@ -138,8 +136,8 @@ public class DamageHandler {
 
         int bossHealth = client.getVarbitValue(Varbits.BOSS_HEALTH_CURRENT);
         if (bossHealth > 0 && Enemy.bosses.contains(npc.getId())) {
-            Trace.damage("boss-health varbit re-sync: {} {} -> {}", npc.getName(), enemy.currentHealth, bossHealth);
-            enemy.currentHealth = bossHealth; // re-synchronize the health
+            Trace.damage("boss-health varbit re-sync: {} {} -> {}", npc.getName(), enemy.getCurrentHealth(), bossHealth);
+            enemy.setCurrentHealth(bossHealth); // re-synchronize the health
         }
 
         int attackStyle = client.getVarpValue(VarPlayer.ATTACK_STYLE);
@@ -227,8 +225,9 @@ public class DamageHandler {
 
     /**
      * Computes the difference between the updated xp drop and the previous one
+     *
      * @param skill Skill XP was received in.
-     * @param xp Updated XP amount.
+     * @param xp    Updated XP amount.
      */
     private void preProcessXpDrop(Skill skill, int xp) {
         if (!shouldProcess()) {
@@ -244,6 +243,7 @@ public class DamageHandler {
     /**
      * Queues damage on an entity. If the entity is a shadow, it hides the shadow.
      * If the entity is Akkha, it will highlight her.
+     *
      * @param entityDamaged event
      */
     @Subscribe
@@ -263,7 +263,16 @@ public class DamageHandler {
         Integer npcIndex = entityDamaged.getNpcIndex();
         Enemy enemy = activeEnemies.getOrDefault(npcIndex, null);
         if (enemy != null) {
-            enemy.queueDamage(entityDamaged.getDamage());
+            boolean died = enemy.queueDamage(entityDamaged.getDamage());
+            if (died && enemy.isHideOnDeath()) {
+                // npc.setDead is a RuneLite NPC API that requires the client thread.
+                // onEntityDamaged can come from the party/WebSocket thread, so post
+                // the side effect onto the client thread.
+                NPC liveNpc = enemy.getNpc();
+                if (liveNpc != null) {
+                    clientThread.invoke(() -> liveNpc.setDead(true));
+                }
+            }
         }
     }
 
@@ -280,6 +289,7 @@ public class DamageHandler {
 
     /**
      * Removes the hit from queued damage.
+     *
      * @param hit hitsplat
      */
     @Subscribe

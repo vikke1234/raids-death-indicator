@@ -28,9 +28,8 @@ public class Akkha extends ToaEnemy {
     }
 
     @Override
-    public boolean queueDamage(int damage) {
+    public synchronized boolean queueDamage(int damage) {
         super.queueDamage(damage);
-        int queuedDamage = getQueuedDamage();
 
         final int maxHealth = (int) (Math.round(scaledHealth / 10.0) * 10);
         final int phaseHealth = maxHealth / 5;

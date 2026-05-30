@@ -20,6 +20,7 @@ public abstract class Enemy implements IEnemy {
     @Setter(onMethod_ = {@Synchronized})
     public int queuedDamage;
     public boolean shouldDraw;
+    @Getter(onMethod_ = {@Synchronized})
     protected boolean hideOnDeath;
 
     public final int baseHealth;
@@ -102,7 +103,7 @@ public abstract class Enemy implements IEnemy {
         this.queuedDamage = 0;
     }
 
-    public void setCurrentHealth(int hp) {
+    public synchronized void setCurrentHealth(int hp) {
         if (hp >= 0) {
             currentHealth = hp;
         }
@@ -130,18 +131,20 @@ public abstract class Enemy implements IEnemy {
 
     /**
      * Queues damage and counts if the enemy will die to it.
+     *
+     * <p>Pure state mutation — the caller is responsible for any client-thread
+     * side effects (e.g. {@code npc.setDead(...)}) based on the returned value,
+     * since this method can be invoked from the network thread.</p>
+     *
      * @param damage damage dealt.
      * @return true if the mob died, false if not.
      */
     public synchronized boolean queueDamage(int damage) {
         queuedDamage += damage;
-        boolean died = queuedDamage >= currentHealth;
-
-        npc.setDead(died && hideOnDeath);
-        return died;
+        return queuedDamage >= currentHealth;
     }
 
-    public boolean shouldHighlight() {
+    public synchronized boolean shouldHighlight() {
         return shouldDraw;
     }
 

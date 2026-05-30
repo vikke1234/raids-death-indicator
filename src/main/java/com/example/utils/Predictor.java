@@ -11,6 +11,9 @@ import java.util.*;
  * Class for computing the internal fraction in xp.
  */
 public class Predictor {
+    // ConcurrentHashMap so the overlay (EDT) can safely consult the per-skill
+    // tree handles while the client thread is mutating them. Tree-internal state
+    // is further guarded by synchronizing the methods that touch it (below).
     Map<Skill, PredictionTree> roots;
 
     @AllArgsConstructor
@@ -31,7 +34,7 @@ public class Predictor {
     }
 
     public Predictor() {
-        roots = new HashMap<>();
+        roots = new java.util.concurrent.ConcurrentHashMap<>();
     }
 
     @Deprecated
@@ -57,7 +60,7 @@ public class Predictor {
     /**
      * Resets all skill prediction trees.
      */
-    public void reset() {
+    public synchronized void reset() {
         roots.clear();
     }
 
@@ -166,7 +169,7 @@ public class Predictor {
      * @param skill skill to check
      * @return true if accurate, false if not
      */
-    public boolean isAccurate(Skill skill) {
+    public synchronized boolean isAccurate(Skill skill) {
         PredictionTree root = roots.getOrDefault(skill, null);
         if (root == null) {
             return false;
@@ -175,7 +178,7 @@ public class Predictor {
         return frac >= 0;
     }
 
-    public boolean isDead(Skill skill) {
+    public synchronized boolean isDead(Skill skill) {
         PredictionTree root = roots.getOrDefault(skill, null);
         if (root == null) {
             return false;
@@ -190,7 +193,7 @@ public class Predictor {
      * @param xp    amount of xp received
      * @param props properties related to attack
      */
-    public void insertInto(int xp, @NonNull Properties props) {
+    public synchronized void insertInto(int xp, @NonNull Properties props) {
         if (!roots.containsKey(props.skill)) {
             roots.put(props.skill, PredictionTree.createRoot());
         }
@@ -206,7 +209,7 @@ public class Predictor {
      * @param props properties of the hit
      * @return expected hit
      */
-    public int treePredict(int xp, @NonNull Properties props) {
+    public synchronized int treePredict(int xp, @NonNull Properties props) {
         if (xp == 0) {
             return 0;
         }
@@ -269,7 +272,7 @@ public class Predictor {
      * @param props
      * @return
      */
-    public int treePredict2(int xp, @NonNull Properties props) {
+    public synchronized int treePredict2(int xp, @NonNull Properties props) {
         if (xp == 0) {
             return 0;
         }

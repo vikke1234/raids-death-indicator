@@ -23,7 +23,7 @@ public class OlmMageHand extends CoxEnemy {
     }
 
     @Override
-    public boolean queueDamage(int damage) {
+    public synchronized boolean queueDamage(int damage) {
         shouldDraw = super.queueDamage(damage);
         //System.out.println("queued damage: " + queuedDamage + " hp: " + currentHealth);
         return shouldDraw;

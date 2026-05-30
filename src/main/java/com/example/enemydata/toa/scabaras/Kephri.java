@@ -29,7 +29,7 @@ public class Kephri extends ToaEnemy {
      * @return false
      */
     @Override
-    public boolean queueDamage(int damage) {
+    public synchronized boolean queueDamage(int damage) {
         return false;
     }
 }
