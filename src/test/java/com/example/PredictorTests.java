@@ -179,6 +179,8 @@ public class PredictorTests {
         double scaling = 1.3d;
         Predictor.Properties properties = new Predictor.Properties(Skill.HITPOINTS, true, true, scaling);
         Predictor predictor = new Predictor();
-        assertEquals(11, predictor.treePredict(20, properties));
+        // precise(11) = 190 → max display with carry 9 is 19, so hit=11 cannot reach
+        // display 20. Only hit=12 is consistent.
+        assertEquals(12, predictor.treePredict(20, properties));
     }
 }

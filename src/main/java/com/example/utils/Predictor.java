@@ -226,10 +226,13 @@ public class Predictor {
             }
         }
 
-        // Carry unknown. If the candidates have different displays and xp matches
-        // the upper one with a gap below it, only hit.hit can produce that xp.
+        // Carry unknown. hit.hit is unique when hit-1's maximum possible display
+        // (carry 9) still falls below xp - hit-1 can't have produced this drop with
+        // any carry. Covers both the exact match (drop(hit) == xp) and bxp
+        // (drop(hit) + 1 == xp) cases.
         if (highDrop != lowDrop) {
-            boolean uniqueHigh = highDrop == xp && (highDrop - 1) != lowDrop;
+            int maxLowDrop = convertToJagexDrop(low + 9);
+            boolean uniqueHigh = xp > maxLowDrop;
             return Math.max(uniqueHigh ? hit.hit : hit.hit - 1, 1);
         }
 
