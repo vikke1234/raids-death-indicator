@@ -122,7 +122,11 @@ public abstract class Enemy implements IEnemy {
     }
 
     public synchronized int heal(int amount) {
-        currentHealth += amount;
+        // Cap at scaledHealth — RuneLite reports the full requested heal value
+        // on hitsplats (e.g. Vanguards' group-heal mechanic), but the game
+        // itself never exceeds max HP. Without this clamp, a Vanguard at 104
+        // hp receiving a HEAL 114 ends up at 218 (max is 180).
+        currentHealth = Math.min(currentHealth + amount, scaledHealth);
         // Heals (including phase-transition heals like Akkha's) invalidate any
         // standing prediction.
         shouldDraw = false;
@@ -149,7 +153,24 @@ public abstract class Enemy implements IEnemy {
     }
 
     public double getModifier() {
-        double avgs = Math.floor((getAvgLevel() * (getAvgDef() + offStr + offAtt)) / 5120d);
+        return computeModifier(getAvgDef(), offStr, offAtt);
+    }
+
+    /**
+     * Modifier formula with overridable offensive bonuses (defensive bonuses
+     * default to the standard {@code (stab+slash+crush)/3} average).
+     */
+    protected double computeModifier(int offStrength, int offAttack) {
+        return computeModifier(getAvgDef(), offStrength, offAttack);
+    }
+
+    /**
+     * Modifier formula with all variable inputs explicit — for subclasses whose
+     * defensive bonuses ALSO depend on runtime state (e.g. Vanguards have
+     * completely different stab/slash/crush per combat style).
+     */
+    protected double computeModifier(int avgDef, int offStrength, int offAttack) {
+        double avgs = Math.floor((getAvgLevel() * (avgDef + offStrength + offAttack)) / 5120d);
         avgs /= 40d;
         return Math.max(1.0d, 1 + avgs);
     }

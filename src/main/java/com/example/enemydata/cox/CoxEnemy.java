@@ -3,7 +3,7 @@ package com.example.enemydata.cox;
 import com.example.enemydata.Enemy;
 import com.example.utils.PentFunction;
 import net.runelite.api.NPC;
-import net.runelite.api.NpcID;
+import net.runelite.api.gameval.NpcID;
 
 import java.util.HashMap;
 import java.util.HashSet;
@@ -22,15 +22,20 @@ public class CoxEnemy extends Enemy {
         enemies = new HashMap<>();
         bosses = new HashSet<>();
 
-        enemies.put(NpcID.ABYSSAL_PORTAL, Portal::new);
-        enemies.put(NpcID.SKELETAL_MYSTIC, SkeletalMystic::new);
-        enemies.put(NpcID.SKELETAL_MYSTIC_7605, SkeletalMystic::new);
-        enemies.put(NpcID.SKELETAL_MYSTIC_7606, SkeletalMystic::new);
-        enemies.put(NpcID.LIZARDMAN_SHAMAN_7573, LizardmanShaman::new);
-        enemies.put(NpcID.LIZARDMAN_SHAMAN_7574, LizardmanShaman::new);
-        enemies.put(NpcID.ROCKS_7565, VasaNistirio::new);
-        enemies.put(NpcID.GREAT_OLM_RIGHT_CLAW, OlmMageHand::new);
-        enemies.put(NpcID.GREAT_OLM_RIGHT_CLAW_7553, OlmMageHand::new);
+        enemies.put(NpcID.RAIDS_VESPULA_PORTAL, Portal::new);
+        enemies.put(NpcID.RAIDS_SKELETONMYSTIC_A, SkeletalMystic::new);
+        enemies.put(NpcID.RAIDS_SKELETONMYSTIC_B, SkeletalMystic::new);
+        enemies.put(NpcID.RAIDS_SKELETONMYSTIC_C, SkeletalMystic::new);
+        enemies.put(NpcID.RAIDS_LIZARDSHAMAN_A, LizardmanShaman::new);
+        enemies.put(NpcID.RAIDS_LIZARDSHAMAN_B, LizardmanShaman::new);
+        enemies.put(NpcID.RAIDS_VASANISTIRIO_DORMANT, VasaNistirio::new);
+        enemies.put(NpcID.OLM_HAND_LEFT_SPAWNING, OlmMageHand::new);
+        enemies.put(NpcID.OLM_HAND_RIGHT, OlmMageHand::new);
+        enemies.put(NpcID.RAIDS_VANGUARD_DORMANT, Vanguard::new);
+        enemies.put(NpcID.RAIDS_VANGUARD_WALKING, Vanguard::new);
+        enemies.put(NpcID.RAIDS_VANGUARD_MELEE, Vanguard::new);
+        enemies.put(NpcID.RAIDS_VANGUARD_RANGED, Vanguard::new);
+        enemies.put(NpcID.RAIDS_VANGUARD_MAGIC, Vanguard::new);
     }
 
     protected CoxEnemy(NPC npc, boolean isCm, int partySize, int maxCombat, int maxHp, int baseHealth, int melee, int def, int offAtt, int offStr, int defStab, int defSlash, int defCrush) {

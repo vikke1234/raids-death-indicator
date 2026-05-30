@@ -103,14 +103,35 @@ public class Cox {
         if (!isInCox()) {
             return;
         }
+        trackIfTrackable(ev.getNpc());
+    }
 
-        NPC npc = ev.getNpc();
+    /**
+     * Some COX NPCs (e.g. Vanguards) spawn under one id and transition to a
+     * different id via NpcChanged. If only the post-change id is in our
+     * registry, the spawn handler would miss them — handle the change too.
+     */
+    @Subscribe
+    public void onNpcChanged(NpcChanged ev) {
+        if (!isInCox()) {
+            return;
+        }
+        trackIfTrackable(ev.getNpc());
+    }
+
+    private void trackIfTrackable(NPC npc) {
+        var activeEnemies = damageHandler.getActiveEnemies();
+        if (activeEnemies.containsKey(npc.getIndex())) {
+            // Already tracking this NPC index — id change at the same index is
+            // typically a state transition (e.g. Vanguard sleep → combat), the
+            // existing Enemy keeps the live npc reference.
+            return;
+        }
         var enemyConstructor = CoxEnemy.enemies.getOrDefault(npc.getId(), null);
         if (enemyConstructor == null) {
             return;
         }
-        //System.out.println(MessageFormat.format("NPC spawned \"{0}\": {1} {2}", npc.getName(), npc.getId(), npc.getIndex()));
         Enemy enemy = enemyConstructor.apply(npc, isCm, groupSize, maxCombat, maxHp);
-        damageHandler.getActiveEnemies().put(npc.getIndex(), enemy);
+        activeEnemies.put(npc.getIndex(), enemy);
     }
 }

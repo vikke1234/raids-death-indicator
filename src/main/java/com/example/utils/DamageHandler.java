@@ -312,11 +312,13 @@ public class DamageHandler {
             int type = hitsplat.getHitsplatType();
             if (type == HitsplatID.HEAL || type == HitsplatID.CYAN_UP) {
                 enemy.heal(amount);
-                Trace.damage("HEAL {} on {} (hp now {})", amount, npc.getName(), enemy.getCurrentHealth());
+                Trace.damage("HEAL {} on {}(idx={} id={}) (hp now {})",
+                        amount, npc.getName(), npc.getIndex(), npc.getId(), enemy.getCurrentHealth());
             } else {
                 enemy.hit(amount);
-                Trace.damage("HIT  {} on {} (hp now {}, queued now {})",
-                        amount, npc.getName(), enemy.getCurrentHealth(), enemy.getQueuedDamage());
+                Trace.damage("HIT  {} on {}(idx={} id={}) (hp now {}, queued now {})",
+                        amount, npc.getName(), npc.getIndex(), npc.getId(),
+                        enemy.getCurrentHealth(), enemy.getQueuedDamage());
             }
         }
     }

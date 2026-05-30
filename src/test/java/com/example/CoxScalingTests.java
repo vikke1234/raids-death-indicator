@@ -7,7 +7,7 @@ import com.example.enemydata.toa.ToaEnemy;
 import com.example.utils.PentFunction;
 import com.example.utils.QuadFunction;
 import net.runelite.api.NPC;
-import net.runelite.api.NpcID;
+import net.runelite.api.gameval.NpcID;
 import org.junit.Test;
 
 import java.util.Map;
@@ -22,9 +22,21 @@ public class CoxScalingTests {
 
     @Test
     public void testMysticScaling() {
-        TestNPC npc = new TestNPC(NpcID.SKELETAL_MYSTIC);
+        TestNPC npc = new TestNPC(NpcID.RAIDS_SKELETONMYSTIC_A);
         SkeletalMystic mystic = new SkeletalMystic(npc, true, 3, 126, 99);
         assertEquals(480, mystic.scaledHealth);
+    }
+
+    @Test
+    public void testVanguardSoloHp() {
+        TestNPC npc = new TestNPC(NpcID.RAIDS_VANGUARD_MELEE);
+        com.example.enemydata.cox.Vanguard regular =
+                new com.example.enemydata.cox.Vanguard(npc, false, 1, 126, 99);
+        assertEquals(180, regular.scaledHealth);
+
+        com.example.enemydata.cox.Vanguard cm =
+                new com.example.enemydata.cox.Vanguard(npc, true, 1, 126, 99);
+        assertEquals(270, cm.scaledHealth);
     }
 
     /**
@@ -105,7 +117,7 @@ public class CoxScalingTests {
 
     @Test
     public void simulateVasaCmSolo() {
-        TestNPC npc = new TestNPC(NpcID.ROCKS_7565);
+        TestNPC npc = new TestNPC(NpcID.RAIDS_VASANISTIRIO_DORMANT);
         com.example.enemydata.cox.VasaNistirio vasa =
                 new com.example.enemydata.cox.VasaNistirio(npc, true, 1, 126, 99);
         double scaling = vasa.getModifier();
