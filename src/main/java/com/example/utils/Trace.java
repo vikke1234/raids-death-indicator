@@ -23,7 +23,7 @@ public final class Trace {
     public static final boolean PREDICTOR = false;
 
     /** XP drops, hitsplats, predicted-vs-actual damage. */
-    public static final boolean DAMAGE = true;
+    public static final boolean DAMAGE = false;
 
     /** Akkha phase highlight decisions. */
     public static final boolean AKKHA = false;

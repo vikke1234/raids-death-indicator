@@ -43,13 +43,21 @@ public class AkkhaPredictorOverlay extends Overlay {
             if (npc == null) {
                 continue;
             }
-            if (enemy.shouldHighlight()) {
-                renderPoly(graphics, null, 0, config.highlightColor(), npc.getConvexHull());
-            }
-
-            if (config.enableHpOverlay()) {
-                String str = enemy.getCurrentHealth() + " (" + enemy.getQueuedDamage() + ")";
-                renderText(graphics, npc, str, config.textColor());
+            // Wrap per-enemy so a transitional NPC state (e.g. Akkha during her
+            // memory special, where the model is briefly unavailable and the
+            // RuneLite NPC APIs throw internally) doesn't take down the rest of
+            // the overlay. RuneLite wraps the root NPE in its own exception
+            // type, so we widen to Throwable to catch all flavours.
+            try {
+                if (enemy.shouldHighlight()) {
+                    renderPoly(graphics, null, 0, config.highlightColor(), npc.getConvexHull());
+                }
+                if (config.enableHpOverlay()) {
+                    String str = enemy.getCurrentHealth() + " (" + enemy.getQueuedDamage() + ")";
+                    renderText(graphics, npc, str, config.textColor());
+                }
+            } catch (Throwable ignored) {
+                // NPC is in a half-spawned state; nothing meaningful to draw this frame.
             }
         }
 
