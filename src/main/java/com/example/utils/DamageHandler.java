@@ -152,6 +152,7 @@ public class DamageHandler {
             enemy = activeEnemies.get(npc.getIndex());
         } else {
             Trace.damage("xp drop on untracked NPC {} (id={} idx={})", npc.getName(), npc.getId(), npc.getIndex());
+            predictor.reset();
             return;
         }
 
