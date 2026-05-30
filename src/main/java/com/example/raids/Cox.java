@@ -17,11 +17,6 @@ import java.util.concurrent.atomic.AtomicBoolean;
 
 @Singleton
 public class Cox {
-    static class InternalVarbits {
-        public static final int COX_CM = 6385;
-        public static final int GROUP_SIZE = 9540;
-    }
-
     @Inject
     private DamageHandler damageHandler;
 
@@ -66,7 +61,7 @@ public class Cox {
 
     @Subscribe
     public void onVarbitChanged(VarbitChanged ev) {
-        switch(ev.getVarbitId()) {
+        switch (ev.getVarbitId()) {
             case VarbitID.RAIDS_CLIENT_PROGRESS:
                 if (ev.getValue() == 1) {
                     // TODO: Do the CM check only as the party leader

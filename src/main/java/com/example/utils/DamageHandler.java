@@ -8,6 +8,8 @@ import com.example.raids.Toa;
 import lombok.Getter;
 import lombok.extern.slf4j.Slf4j;
 import net.runelite.api.gameval.ItemID;
+import net.runelite.api.gameval.VarPlayerID;
+import net.runelite.api.gameval.VarbitID;
 import net.runelite.api.*;
 import net.runelite.api.events.*;
 import net.runelite.api.kit.KitType;
@@ -156,13 +158,13 @@ public class DamageHandler {
             return;
         }
 
-        int bossHealth = client.getVarbitValue(Varbits.BOSS_HEALTH_CURRENT);
+        int bossHealth = client.getVarbitValue(VarbitID.HPBAR_HUD_HP);
         if (bossHealth > 0 && Enemy.bosses.contains(npc.getId())) {
             Trace.damage("boss-health varbit re-sync: {} {} -> {}", npc.getName(), enemy.getCurrentHealth(), bossHealth);
             enemy.setCurrentHealth(bossHealth); // re-synchronize the health
         }
 
-        int attackStyle = client.getVarpValue(VarPlayer.ATTACK_STYLE);
+        int attackStyle = client.getVarpValue(VarPlayerID.COM_MODE);
         int weapon = playerComposition.getEquipmentId(KitType.WEAPON);
 
         boolean isDefensiveCast = attackStyle == 3;

@@ -11,8 +11,8 @@ import net.runelite.api.Client;
 import net.runelite.api.NPC;
 import net.runelite.api.events.*;
 import net.runelite.api.gameval.VarPlayerID;
+import net.runelite.api.gameval.InterfaceID;
 import net.runelite.api.gameval.VarbitID;
-import net.runelite.api.widgets.InterfaceID;
 import net.runelite.api.widgets.Widget;
 import net.runelite.client.eventbus.Subscribe;
 
@@ -115,7 +115,7 @@ public class Toa {
     @Subscribe
     public void onWidgetLoaded(WidgetLoaded event) {
         // 481 is the TOA path/time/etc. widget
-        if (event.getGroupId() != InterfaceID.TOA_RAID) {
+        if (event.getGroupId() != InterfaceID.TOA_HUD) {
             return;
         }
         int invo = getInvocation();
@@ -172,8 +172,7 @@ public class Toa {
             return;
         }
 
-        QuadFunction<NPC, Integer, Integer, Integer, Enemy> constructor =
-                ToaEnemy.enemies.getOrDefault(npc.getId(), null);
+        QuadFunction<NPC, Integer, Integer, Integer, Enemy> constructor = ToaEnemy.enemies.getOrDefault(npc.getId(), null);
         if (constructor == null) {
             return;
         }
