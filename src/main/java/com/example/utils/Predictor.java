@@ -21,7 +21,6 @@ public class Predictor {
         public NPC npc;
         public double scaling;
 
-
         public Properties(Skill skill, boolean isDefensive, boolean isPowered, double scaling) {
             this.skill = skill;
             this.isDefensive = isDefensive;
@@ -64,7 +63,8 @@ public class Predictor {
 
     /**
      * Finds the hit that most closely represents the xp drop.
-     * @param xp amount of xp received
+     *
+     * @param xp         amount of xp received
      * @param properties
      * @return Upper bound for the hit.
      */
@@ -95,9 +95,9 @@ public class Predictor {
         return new Hit(hit, possibleBxp, bxp);
     }
 
-
     /**
      * Computes the "Jagex" xp drop, i.e. removes the fraction
+     *
      * @param precise precise xp drop
      * @return xp drop without a fraction
      */
@@ -107,8 +107,10 @@ public class Predictor {
 
     /**
      * Computes the precise xp drop as a fixed length integer
-     * <a href="https://oldschool.runescape.wiki/w/Combat#Experience_gain">OSRS Wiki</a>
-     * @param hit Damage dealt
+     * <a href="https://oldschool.runescape.wiki/w/Combat#Experience_gain">OSRS
+     * Wiki</a>
+     *
+     * @param hit   Damage dealt
      * @param props Skill that the xp was received in
      * @return A fixed length integer for how much xp was received.
      */
@@ -149,7 +151,7 @@ public class Predictor {
     /**
      * Computes the xp amount received in the way that OSRS shows it to the user.
      *
-     * @param hit Damage dealt
+     * @param hit        Damage dealt
      * @param properties Properties of the xp drop
      * @return An integer that has been rounded down to represent the xp.
      */
@@ -160,6 +162,7 @@ public class Predictor {
     /**
      * Checks if the tree for a skill is accurate or not. The tree
      * is accurate if there's only one leaf that is not dead in the tree.
+     *
      * @param skill skill to check
      * @return true if accurate, false if not
      */
@@ -184,7 +187,7 @@ public class Predictor {
     /**
      * Inserts an xp node into the prediction tree.
      *
-     * @param xp amount of xp received
+     * @param xp    amount of xp received
      * @param props properties related to attack
      */
     public void insertInto(int xp, @NonNull Properties props) {
@@ -196,8 +199,10 @@ public class Predictor {
     }
 
     /**
-     * Predicts a hit, if the tree isn't accurate it falls back to primitive methods.
-     * @param xp xp received
+     * Predicts a hit, if the tree isn't accurate it falls back to primitive
+     * methods.
+     *
+     * @param xp    xp received
      * @param props properties of the hit
      * @return expected hit
      */
@@ -248,9 +253,9 @@ public class Predictor {
         return Math.max(hit.hit - 1, 1);
     }
 
-
     /**
      * Experimental tree prediction, hopefully more maintainable and better.
+     *
      * @param xp
      * @param props
      * @return
@@ -270,13 +275,14 @@ public class Predictor {
         Hit hit = findHit(xp, props);
 
         int high = computePrecise(hit.hit, props);
-        int low = computePrecise(hit.hit-1, props);
+        int low = computePrecise(hit.hit - 1, props);
 
         if (frac >= 0) {
             high += frac;
             low += frac;
         }
-        // if the xp drops do not overlap, check which one matches the given drop, otherwise fall back
+        // if the xp drops do not overlap, check which one matches the given drop,
+        // otherwise fall back
         // to where the low hit is returned.
         if (convertToJagexDrop(high) != convertToJagexDrop(low)) {
             if (convertToJagexDrop(high) == xp) {
@@ -286,6 +292,6 @@ public class Predictor {
 
         // We have to always take hit-1 because low hits have overlapping xpdrops
         // it's worse if we say that the mob died and it didn't
-        return Math.max(hit.hit-1, 1);
+        return Math.max(hit.hit - 1, 1);
     }
 }

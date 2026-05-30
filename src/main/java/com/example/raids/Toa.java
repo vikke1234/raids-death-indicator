@@ -30,7 +30,7 @@ public class Toa {
     private DamageHandler damageHandler;
 
     public static boolean isAtToa(Client client) {
-        final int []TOA_REGIONS = {
+        final int[] TOA_REGIONS = {
                 13455, // Lobby
                 14160, // Nexus
 
@@ -46,13 +46,14 @@ public class Toa {
                 14674, // Het
                 14676, // Akkha
 
-                //15184, // Wardens
-                //15696, // Wardens
+                // 15184, // Wardens
+                // 15696, // Wardens
 
-                //14672, // Tomb
+                // 14672, // Tomb
         };
 
-        return Arrays.stream(client.getTopLevelWorldView().getMapRegions()).anyMatch(current -> Arrays.stream(TOA_REGIONS).anyMatch(reg -> reg == current));
+        return Arrays.stream(client.getTopLevelWorldView().getMapRegions())
+                .anyMatch(current -> Arrays.stream(TOA_REGIONS).anyMatch(reg -> reg == current));
     }
 
     public boolean isAtToa() {
@@ -68,6 +69,7 @@ public class Toa {
 
     /**
      * Fetches the path level from the TOA widget
+     *
      * @return Path level
      */
     private int getPathLevel() {
@@ -80,10 +82,10 @@ public class Toa {
 
     /**
      * Gets amount of people in the raid, amount makes the enemy health scale with 90%
+     *
      * @return Amount of people in the raid
      */
-    private int getPartySize()
-    {
+    private int getPartySize() {
         int partySize = 1;
         for (int i = 1; i < 8; i++) {
             if (client.getVarbitValue(VarbitID.TOA_CLIENT_P0 + i) != 0) {
@@ -107,6 +109,7 @@ public class Toa {
 
     /**
      * Create the new Akkha object when the TOA path widget has loaded, we aren't able to get the path level otherwise.
+     *
      * @param event
      */
     @Subscribe
@@ -169,7 +172,8 @@ public class Toa {
             return;
         }
 
-        QuadFunction<NPC, Integer, Integer, Integer, Enemy> constructor = ToaEnemy.enemies.getOrDefault(npc.getId(), null);
+        QuadFunction<NPC, Integer, Integer, Integer, Enemy> constructor =
+                ToaEnemy.enemies.getOrDefault(npc.getId(), null);
         if (constructor == null) {
             return;
         }
