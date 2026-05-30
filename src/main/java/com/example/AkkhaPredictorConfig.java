@@ -83,4 +83,13 @@ public interface AkkhaPredictorConfig extends Config {
         return false;
     }
 
+    @ConfigItem(
+            keyName = "hpOverlayHeightOffset",
+            name = "HP overlay height offset",
+            description = "Pixels above the NPC's top edge to draw the HP overlay text. Larger = higher."
+    )
+    default int hpOverlayHeightOffset() {
+        return 14;
+    }
+
 }

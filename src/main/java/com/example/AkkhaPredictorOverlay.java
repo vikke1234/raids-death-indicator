@@ -53,7 +53,11 @@ public class AkkhaPredictorOverlay extends Overlay {
                     renderPoly(graphics, null, 0, config.highlightColor(), npc.getConvexHull());
                 }
                 if (config.enableHpOverlay()) {
-                    String str = enemy.getCurrentHealth() + " (" + enemy.getQueuedDamage() + ")";
+                    int hp = enemy.getCurrentHealth();
+                    int queued = enemy.getQueuedDamage();
+                    String str = queued > 0
+                            ? (hp - queued) + " (" + queued + ")"
+                            : Integer.toString(hp);
                     renderText(graphics, npc, str, config.textColor());
                 }
             } catch (Throwable ignored) {
@@ -89,14 +93,16 @@ public class AkkhaPredictorOverlay extends Overlay {
         if (npc == null) {
             return;
         }
-        Point p = npc.getCanvasTextLocation(graphics, str, npc.getLogicalHeight());
-        if (p == null) {
+        Shape hull = npc.getConvexHull();
+        if (hull == null) {
             return;
         }
-
-        p = new Point(p.getX(), p.getY() + 20);
-        graphics.setFont(FontManager.getDefaultBoldFont());
-        OverlayUtil.renderTextLocation(graphics, p, str, c);
+        Rectangle bounds = hull.getBounds();
+        graphics.setFont(FontManager.getRunescapeBoldFont().deriveFont(14f));
+        FontMetrics fm = graphics.getFontMetrics();
+        int x = bounds.x + bounds.width / 2 - fm.stringWidth(str) / 2;
+        int y = bounds.y - config.hpOverlayHeightOffset();
+        OverlayUtil.renderTextLocation(graphics, new Point(x, y), str, c);
     }
 
     private void renderPoly(Graphics2D graphics, Color borderColor, float borderWidth, Color fillColor, Shape polygon) {
