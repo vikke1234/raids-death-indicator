@@ -36,8 +36,12 @@ public class CoxEnemy extends Enemy {
         enemies.put(NpcID.RAIDS_VANGUARD_RANGED, Vanguard::new);
         enemies.put(NpcID.RAIDS_VANGUARD_MAGIC, Vanguard::new);
 
-        enemies.put(NpcID.RAIDS_STONEGUARDIANS_LEFT, Guardian::new);
-        enemies.put(NpcID.RAIDS_STONEGUARDIANS_RIGHT, Guardian::new);
+        // Disabled for now, until a way to calculate the average mining level
+        // for a raid is figured out. Guardians will also likely never work
+        // properly unless everyone is in party. That or some other cursed
+        // shenanigans.
+        //enemies.put(NpcID.RAIDS_STONEGUARDIANS_LEFT, Guardian::new);
+        //enemies.put(NpcID.RAIDS_STONEGUARDIANS_RIGHT, Guardian::new);
 
         enemies.put(NpcID.RAIDS_DOGODILE_SUBMERGED, GreatMuttadile::new);
         enemies.put(NpcID.RAIDS_DOGODILE, GreatMuttadile::new);
