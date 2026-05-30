@@ -103,35 +103,50 @@ public class CoxScalingTests {
         bucket.computeIfAbsent(scaling, k -> new TreeSet<>()).add(label);
     }
 
-    /**
-     * Print the Akkha modifier across invocation 300..500 and party 1..8,
-     * for each path level. Helps spot which configs land on the predictor's
-     * ambiguous scaling bands.
-     */
     @Test
-    public void akkhaModifierGrid() {
-        TestNPC npc = new TestNPC(NpcID.AKKHA_11790);
-        int[] invos = {300, 325, 350, 375, 400, 425, 450, 475, 500};
-        for (int path = 0; path <= 6; path++) {
-            System.out.printf("%n=== path level %d ===%n", path);
-            System.out.printf("%-7s", "invo");
-            for (int p = 1; p <= 8; p++) {
-                System.out.printf(" p%d-----", p);
-            }
-            System.out.println();
-            for (int invo : invos) {
-                System.out.printf("%-7d", invo);
-                for (int p = 1; p <= 8; p++) {
-                    try {
-                        com.example.enemydata.toa.het.Akkha akkha =
-                                new com.example.enemydata.toa.het.Akkha(npc, invo, p, path);
-                        System.out.printf(" %-7.3f", akkha.getModifier());
-                    } catch (Throwable t) {
-                        System.out.printf(" %-7s", "err");
-                    }
-                }
-                System.out.println();
-            }
+    public void simulateVasaCmSolo() {
+        TestNPC npc = new TestNPC(NpcID.ROCKS_7565);
+        com.example.enemydata.cox.VasaNistirio vasa =
+                new com.example.enemydata.cox.VasaNistirio(npc, true, 1, 126, 99);
+        double scaling = vasa.getModifier();
+        com.example.utils.Predictor.Properties props =
+                new com.example.utils.Predictor.Properties(net.runelite.api.Skill.HITPOINTS, false, false, scaling);
+        com.example.utils.Predictor predictor = new com.example.utils.Predictor();
+
+        int[] openingHits = {98, 61, 21, 8, 8, 36, 65, 50};
+        int totalHits = 25;
+        int internalFrac = 0; // assume player carry starts at 0
+        java.util.Random rng = new java.util.Random(42);
+
+        int exact = 0, under = 0, over = 0;
+        int totalDamage = 0;
+        System.out.printf("Vasa CM solo simulation (scaling=%.3f, hp=%d)%n", scaling, vasa.scaledHealth);
+        System.out.printf("%-4s %-7s %-5s %-9s %-5s%n", "#", "actual", "xp", "predicted", "");
+
+        for (int i = 0; i < totalHits; i++) {
+            int hit = i < openingHits.length ? openingHits[i] : 1 + rng.nextInt(90);
+            int precise = com.example.utils.Predictor.computePrecise(hit, props);
+            int total = precise + internalFrac;
+            int displayedXp = total / 10;
+            internalFrac = total % 10;
+
+            int predicted = predictor.treePredict(displayedXp, props);
+            String tag = predicted == hit ? "exact"
+                    : predicted > hit ? "OVER (unsafe!)"
+                    : "under";
+            if (predicted == hit) exact++;
+            else if (predicted > hit) over++;
+            else under++;
+
+            totalDamage += hit;
+            boolean accurate = predictor.isAccurate(net.runelite.api.Skill.HITPOINTS);
+            System.out.printf("%-4d %-7d %-5d %-9d %s%s%n",
+                    i + 1, hit, displayedXp, predicted, tag,
+                    accurate ? " [calibrated]" : "");
         }
+
+        System.out.printf("%nTotal hits: %d, exact=%d, under=%d, over=%d, total damage=%d%n",
+                totalHits, exact, under, over, totalDamage);
     }
+
 }
