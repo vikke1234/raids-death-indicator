@@ -92,4 +92,13 @@ public interface AkkhaPredictorConfig extends Config {
         return 14;
     }
 
+    @ConfigItem(
+            keyName = "hpOverlayFontSize",
+            name = "HP overlay font size",
+            description = "Point size of the HP overlay text."
+    )
+    default int hpOverlayFontSize() {
+        return 14;
+    }
+
 }

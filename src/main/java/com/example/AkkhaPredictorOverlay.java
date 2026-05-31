@@ -98,7 +98,7 @@ public class AkkhaPredictorOverlay extends Overlay {
             return;
         }
         Rectangle bounds = hull.getBounds();
-        graphics.setFont(FontManager.getRunescapeBoldFont().deriveFont(14f));
+        graphics.setFont(FontManager.getRunescapeBoldFont().deriveFont((float) config.hpOverlayFontSize()));
         FontMetrics fm = graphics.getFontMetrics();
         int x = bounds.x + bounds.width / 2 - fm.stringWidth(str) / 2;
         int y = bounds.y - config.hpOverlayHeightOffset();
