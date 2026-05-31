@@ -57,15 +57,6 @@ public interface AkkhaPredictorConfig extends Config {
     }
 
     @ConfigItem(
-            keyName = "enableCox",
-            name = "Enable cox (experimental)",
-            description = ""
-    )
-    default boolean enableCox() {
-        return true;
-    }
-
-    @ConfigItem(
             keyName = "enableExperimentalHitPrediction",
             name = "Conservative hit prediction",
             description = "Will not try to use internal fractions until the calibration is done"

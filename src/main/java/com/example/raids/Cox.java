@@ -56,7 +56,7 @@ public class Cox {
     }
 
     public boolean isInCox() {
-        return isInCox(client) && config.enableCox(); // TODO: find a better way to check if in cox
+        return isInCox(client);
     }
 
     @Subscribe
