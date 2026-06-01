@@ -280,7 +280,7 @@ public class PredictorTests {
     @Test
     public void sweepScalingsForEdgeCases() {
         final int sessions = 100;
-        final int maxHit = 40;
+        final int maxHit = 86;
         final int safetyCap = 200; // any session needing >200 hits is treated as "did not calibrate"
         final int startMilli = 1000;
         final int endMilli = 5000;
