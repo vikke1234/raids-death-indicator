@@ -10,7 +10,7 @@ import com.example.enemydata.toa.scabaras.*;
 import com.example.enemydata.toa.wardens.*;
 import com.example.utils.QuadFunction;
 import net.runelite.api.NPC;
-import net.runelite.api.NpcID;
+import net.runelite.api.gameval.NpcID;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -46,59 +46,59 @@ public class ToaEnemy extends Enemy {
         pathScaling.put(6, 1.33);
 
         enemies = new HashMap<>();
-        enemies.put(NpcID.AKKHA, Akkha::new);
-        enemies.put(NpcID.AKKHA_11790, Akkha::new);
-        enemies.put(NpcID.AKKHA_11791, Akkha::new);
-        enemies.put(NpcID.AKKHA_11792, Akkha::new);
-        enemies.put(NpcID.AKKHA_11793, Akkha::new);
-        enemies.put(NpcID.AKKHA_11794, Akkha::new);
-        enemies.put(NpcID.AKKHA_11795, Akkha::new);
-        enemies.put(NpcID.AKKHA_11796, Akkha::new);
+        enemies.put(NpcID.AKKHA_SPAWN, Akkha::new);
+        enemies.put(NpcID.AKKHA_MELEE, Akkha::new);
+        enemies.put(NpcID.AKKHA_RANGE, Akkha::new);
+        enemies.put(NpcID.AKKHA_MAGE, Akkha::new);
+        enemies.put(NpcID.AKKHA_ENRAGE_SPAWN, Akkha::new);
+        enemies.put(NpcID.AKKHA_ENRAGE_INITIAL, Akkha::new);
+        enemies.put(NpcID.AKKHA_ENRAGE, Akkha::new);
+        enemies.put(NpcID.AKKHA_ENRAGE_DUMMY, Akkha::new);
 
-        enemies.put(NpcID.AKKHAS_SHADOW, AkkhaShadow::new);
+        enemies.put(NpcID.AKKHA_SHADOW, AkkhaShadow::new);
 
-        enemies.put(NpcID.BABA, Baba::new);
-        enemies.put(NpcID.BABA_11779, Baba::new);
-        enemies.put(NpcID.BABA_11780, Baba::new);
-        enemies.put(NpcID.BABOON, Baboon::new);
-        enemies.put(NpcID.BOULDER_11782, Boulder::new);
-        enemies.put(NpcID.BOULDER_11783, Boulder::new);
+        enemies.put(NpcID.TOA_BABA, Baba::new);
+        enemies.put(NpcID.TOA_BABA_COFFIN, Baba::new);
+        enemies.put(NpcID.TOA_BABA_DIGGING, Baba::new);
+        enemies.put(NpcID.TOA_BABA_BABOON, Baboon::new);
+        enemies.put(NpcID.TOA_BABA_BOULDER, Boulder::new);
+        enemies.put(NpcID.TOA_BABA_BOULDER_WEAK, Boulder::new);
 
-        enemies.put(NpcID.KEPHRI, Kephri::new);
-        enemies.put(NpcID.KEPHRI_11721, Kephri721::new);
-        enemies.put(NpcID.AGILE_SCARAB, AgileScarab::new);
-        enemies.put(NpcID.ARCANE_SCARAB, Arcane::new);
-        enemies.put(NpcID.SCARAB, Scarab::new);
-        enemies.put(NpcID.SOLDIER_SCARAB, Soldier::new);
-        enemies.put(NpcID.SPITTING_SCARAB, Spitter::new);
-        // enemies.put(NpcID.SCARAB_SWARM_11723, Swarm::new);
+        enemies.put(NpcID.TOA_KEPHRI_BOSS_SHIELDED, Kephri::new);
+        enemies.put(NpcID.TOA_KEPHRI_BOSS_ENRAGE, Kephri721::new);
+        enemies.put(NpcID.TOA_KEPHRI_SCARAB_RANGEKITE, AgileScarab::new);
+        enemies.put(NpcID.TOA_KEPHRI_GUARDIAN_MAGE, Arcane::new);
+        enemies.put(NpcID.TOA_SCABARAS_SCARAB, Scarab::new);
+        enemies.put(NpcID.TOA_KEPHRI_GUARDIAN_MELEE, Soldier::new);
+        enemies.put(NpcID.TOA_KEPHRI_GUARDIAN_RANGED, Spitter::new);
+        // enemies.put(NpcID.TOA_KEPHRI_SCARAB_SWARM, Swarm::new);
 
-        enemies.put(NpcID.ZEBAK_11730, Zebak::new);
-        enemies.put(NpcID.ZEBAK_11732, Zebak::new);
-        enemies.put(NpcID.CROCODILE_11705, Crocodile::new);
-        // enemies.put(NpcID.JUG, Jug::new);
-        // enemies.put(NpcID.JUG_11736, Jug::new);
+        enemies.put(NpcID.TOA_ZEBAK, Zebak::new);
+        enemies.put(NpcID.TOA_ZEBAK_ENRAGED, Zebak::new);
+        enemies.put(NpcID.TOA_CRONDIS_CROCODILE, Crocodile::new);
+        // enemies.put(NpcID.TOA_ZEBAK_JUG, Jug::new);
+        // enemies.put(NpcID.TOA_ZEBAK_JUG_ROLLING, Jug::new);
 
-        enemies.put(NpcID.BABOON_BRAWLER, Brawler::new);
-        enemies.put(NpcID.BABOON_BRAWLER_11712, Brawler::new);
-        enemies.put(NpcID.BABOON_THROWER, Thrower::new);
-        enemies.put(NpcID.BABOON_THROWER_11713, Thrower::new);
-        enemies.put(NpcID.BABOON_MAGE, Mage::new);
-        enemies.put(NpcID.BABOON_MAGE_11714, Mage::new);
-        enemies.put(NpcID.BABOON_THRALL, Thrall::new);
-        enemies.put(NpcID.BABOON_SHAMAN, Shaman::new);
-        enemies.put(NpcID.CURSED_BABOON, Cursed::new);
-        enemies.put(NpcID.VOLATILE_BABOON, Volatile::new);
+        enemies.put(NpcID.TOA_PATH_APMEKEN_BABOON_MELEE_1, Brawler::new);
+        enemies.put(NpcID.TOA_PATH_APMEKEN_BABOON_MELEE_2, Brawler::new);
+        enemies.put(NpcID.TOA_PATH_APMEKEN_BABOON_RANGED_1, Thrower::new);
+        enemies.put(NpcID.TOA_PATH_APMEKEN_BABOON_RANGED_2, Thrower::new);
+        enemies.put(NpcID.TOA_PATH_APMEKEN_BABOON_MAGIC_1, Mage::new);
+        enemies.put(NpcID.TOA_PATH_APMEKEN_BABOON_MAGIC_2, Mage::new);
+        enemies.put(NpcID.TOA_PATH_APMEKEN_BABOON_THRALL, Thrall::new);
+        enemies.put(NpcID.TOA_PATH_APMEKEN_BABOON_SHAMAN, Shaman::new);
+        enemies.put(NpcID.TOA_PATH_APMEKEN_BABOON_CURSED, Cursed::new);
+        enemies.put(NpcID.TOA_PATH_APMEKEN_BABOON_ZOMBIE, Volatile::new);
 
-        enemies.put(NpcID.OBELISK_11751, Obelisk::new);
+        enemies.put(NpcID.TOA_WARDENS_P1_OBELISK_NPC, Obelisk::new);
         // different overheads -> different ID
-        enemies.put(NpcID.ELIDINIS_WARDEN_11753, ElidinisWarden::new);
-        enemies.put(NpcID.ELIDINIS_WARDEN_11754, ElidinisWarden::new);
-        enemies.put(NpcID.ELIDINIS_WARDEN_11761, ElidinisWarden761::new);
+        enemies.put(NpcID.TOA_WARDEN_ELIDINIS_PHASE2_MAGE, ElidinisWarden::new);
+        enemies.put(NpcID.TOA_WARDEN_ELIDINIS_PHASE2_RANGE, ElidinisWarden::new);
+        enemies.put(NpcID.TOA_WARDEN_ELIDINIS_PHASE3, ElidinisWarden761::new);
         // different overheads -> different ID
-        enemies.put(NpcID.TUMEKENS_WARDEN_11756, TumekensWarden::new);
-        enemies.put(NpcID.TUMEKENS_WARDEN_11757, TumekensWarden::new);
-        enemies.put(NpcID.TUMEKENS_WARDEN_11762, TumekensWarden762::new);
+        enemies.put(NpcID.TOA_WARDEN_TUMEKEN_PHASE2_MAGE, TumekensWarden::new);
+        enemies.put(NpcID.TOA_WARDEN_TUMEKEN_PHASE2_RANGE, TumekensWarden::new);
+        enemies.put(NpcID.TOA_WARDEN_TUMEKEN_PHASE3, TumekensWarden762::new);
     }
 
     public ToaEnemy(NPC npc, int invocation, int partySize, int pathLevel,

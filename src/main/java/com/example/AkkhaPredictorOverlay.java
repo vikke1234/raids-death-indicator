@@ -7,7 +7,6 @@ import com.example.utils.Predictor;
 import lombok.extern.slf4j.Slf4j;
 import net.runelite.api.Client;
 import net.runelite.api.NPC;
-import net.runelite.api.NpcID;
 import net.runelite.api.Point;
 import net.runelite.api.Skill;
 import net.runelite.client.ui.FontManager;

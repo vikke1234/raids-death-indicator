@@ -8,7 +8,8 @@ import com.example.enemydata.toa.scabaras.Kephri;
 import com.example.enemydata.toa.scabaras.Kephri721;
 import com.example.enemydata.toa.scabaras.Spitter;
 import com.example.utils.Predictor;
-import net.runelite.api.*;
+import net.runelite.api.Skill;
+import net.runelite.api.gameval.NpcID;
 import org.junit.Test;
 
 import java.util.Random;
@@ -20,66 +21,66 @@ public class ScalingTests {
 
     @Test
     public void testThrowerScaling() {
-        TestNPC npc = new TestNPC(NpcID.BABOON_THROWER);
+        TestNPC npc = new TestNPC(NpcID.TOA_PATH_APMEKEN_BABOON_RANGED_1);
         Thrower thrower = new Thrower(npc, 515, 1, 2);
         assertEquals(1.0, thrower.getModifier(), delta);
-        npc = new TestNPC(NpcID.BABOON_THROWER_11713);
+        npc = new TestNPC(NpcID.TOA_PATH_APMEKEN_BABOON_RANGED_2);
         thrower = new Thrower(npc, 515, 1, 2);
         assertEquals(1.0, thrower.getModifier(), delta);
     }
 
     @Test
     public void testMageScaling() {
-        TestNPC npc = new TestNPC(NpcID.BABOON_MAGE);
+        TestNPC npc = new TestNPC(NpcID.TOA_PATH_APMEKEN_BABOON_MAGIC_1);
         Mage mage = new Mage(npc, 515, 1, 2);
         assertEquals(20, mage.getScaledHealth());
         assertEquals(1.125, mage.getModifier(), delta);
-        npc = new TestNPC(NpcID.BABOON_MAGE_11714);
+        npc = new TestNPC(NpcID.TOA_PATH_APMEKEN_BABOON_MAGIC_2);
         mage = new Mage(npc, 515, 1, 2);
         assertEquals(1.175, mage.getModifier(), delta);
     }
 
     @Test
     public void testBrawlerScaling() {
-        TestNPC npc = new TestNPC(NpcID.BABOON_BRAWLER);
+        TestNPC npc = new TestNPC(NpcID.TOA_PATH_APMEKEN_BABOON_MELEE_1);
         Brawler brawler = new Brawler(npc, 515, 1, 2);
         assertEquals(1.125, brawler.getModifier(), delta);
-        npc = new TestNPC(NpcID.BABOON_BRAWLER_11712);
+        npc = new TestNPC(NpcID.TOA_PATH_APMEKEN_BABOON_MELEE_2);
         brawler = new Brawler(npc, 515, 1, 2);
         assertEquals(1.175, brawler.getModifier(), delta);
     }
 
     @Test
     public void testMiscAmpkenScaling() {
-        TestNPC shamanNpc = new TestNPC(NpcID.BABOON_SHAMAN);
+        TestNPC shamanNpc = new TestNPC(NpcID.TOA_PATH_APMEKEN_BABOON_SHAMAN);
         Shaman shaman = new Shaman(shamanNpc, 515, 1, 2);
         assertEquals(1.2, shaman.getModifier(), delta);
 
-        TestNPC cursedNPC = new TestNPC(NpcID.CURSED_BABOON);
+        TestNPC cursedNPC = new TestNPC(NpcID.TOA_PATH_APMEKEN_BABOON_CURSED);
         Cursed cursed = new Cursed(cursedNPC, 515, 1, 2);
         assertEquals(1.175, cursed.getModifier(), delta);
 
-        TestNPC thrallNPC = new TestNPC(NpcID.BABOON_THRALL);
+        TestNPC thrallNPC = new TestNPC(NpcID.TOA_PATH_APMEKEN_BABOON_THRALL);
         Thrall thrall = new Thrall(thrallNPC, 515, 1, 2);
         assertEquals(1.0, thrall.getModifier(), delta);
 
-        TestNPC volatileNPC = new TestNPC(NpcID.VOLATILE_BABOON);
+        TestNPC volatileNPC = new TestNPC(NpcID.TOA_PATH_APMEKEN_BABOON_ZOMBIE);
         Volatile vola = new Volatile(volatileNPC, 515, 1, 2);
         assertEquals(1.15, vola.getModifier(), delta);
     }
 
     @Test
     public void spitterScalingTest() {
-        TestNPC spitterNpc = new TestNPC(NpcID.SPITTING_SCARAB);
+        TestNPC spitterNpc = new TestNPC(NpcID.TOA_KEPHRI_GUARDIAN_RANGED);
         Spitter spitter = new Spitter(spitterNpc, 305, 1, 0);
         assertEquals(1.025, spitter.getModifier(), delta);
 
-        TestNPC kephriNpc = new TestNPC(NpcID.KEPHRI);
+        TestNPC kephriNpc = new TestNPC(NpcID.TOA_KEPHRI_BOSS_SHIELDED);
         Kephri kephri = new Kephri(kephriNpc, 305, 1, 0);
         assertEquals(1.075, kephri.getModifier(), delta);
         assertEquals(330, kephri.getScaledHealth());
 
-        TestNPC kephri721Npc = new TestNPC(NpcID.KEPHRI);
+        TestNPC kephri721Npc = new TestNPC(NpcID.TOA_KEPHRI_BOSS_SHIELDED);
         Kephri721 kephri721 = new Kephri721(kephri721Npc, 305, 1, 0);
         assertEquals(180, kephri721.getScaledHealth());
         assertEquals(1.025, kephri721.getModifier(), delta);
@@ -87,7 +88,7 @@ public class ScalingTests {
 
     @Test
     public void akkhaScalingTest() {
-        TestNPC akkhaNpc = new TestNPC(NpcID.AKKHA_11790);
+        TestNPC akkhaNpc = new TestNPC(NpcID.AKKHA_MELEE);
         ToaEnemy akkha = new Akkha(akkhaNpc, 305, 2, 0);
         assertEquals(1.575, akkha.getModifier(), delta);
         akkha.fixupStats(305, 2, 0);
@@ -101,7 +102,7 @@ public class ScalingTests {
      */
     @Test
     public void akkhaModifierGrid() {
-        TestNPC npc = new TestNPC(NpcID.AKKHA_11790);
+        TestNPC npc = new TestNPC(NpcID.AKKHA_MELEE);
         int[] invos = { 300, 325, 350, 375, 400, 425, 450, 475, 500 };
         for (int path = 0; path <= 4; path++) {
             System.out.printf("%n=== path level %d ===%n", path);
@@ -141,7 +142,7 @@ public class ScalingTests {
         };
         Random rng = new Random(7);
         for (int[] cfg : configs) {
-            TestNPC npc = new TestNPC(NpcID.AKKHA_11790);
+            TestNPC npc = new TestNPC(NpcID.AKKHA_MELEE);
             Akkha akkha = new Akkha(npc, cfg[0], cfg[1], cfg[2]);
             double scaling = akkha.getModifier();
             Predictor.Properties props = new Predictor.Properties(Skill.HITPOINTS, false, false, scaling);

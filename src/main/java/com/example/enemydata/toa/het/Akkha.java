@@ -7,7 +7,7 @@ import lombok.Setter;
 import lombok.experimental.Accessors;
 import lombok.extern.slf4j.Slf4j;
 import net.runelite.api.NPC;
-import net.runelite.api.NpcID;
+import net.runelite.api.gameval.NpcID;
 
 @Slf4j
 @Getter
@@ -54,6 +54,6 @@ public class Akkha extends ToaEnemy {
      * @return true if it's Akkha, false otherwise
      */
     public static boolean isAkkha(int id) {
-        return id == NpcID.AKKHA_11790 || id == NpcID.AKKHA_11791 || id == NpcID.AKKHA_11792 || id == NpcID.AKKHA_11793;
+        return id == NpcID.AKKHA_MELEE || id == NpcID.AKKHA_RANGE || id == NpcID.AKKHA_MAGE || id == NpcID.AKKHA_ENRAGE_SPAWN;
     }
 }
