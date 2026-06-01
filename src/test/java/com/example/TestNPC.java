@@ -10,6 +10,7 @@ import javax.annotation.Nullable;
 import java.awt.*;
 import java.awt.image.BufferedImage;
 
+@SuppressWarnings("deprecation") // overrides of deprecated Actor methods (getGraphic, setActionFrame, etc.) required by the NPC interface contract
 class TestNPC implements NPC {
     int id;
 
