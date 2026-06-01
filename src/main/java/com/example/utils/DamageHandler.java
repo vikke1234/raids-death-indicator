@@ -75,13 +75,22 @@ public class DamageHandler {
             ItemID.CHINCHOMPA_BIG_CAPTURED // Red chinchompa
     );
 
-    private static final Set<Integer> MULTI_HIT_WEAPONS = Set.of(
+    // Multi-target multi-hit weapons. XP drop is the sum across all hit
+    // NPCs, so we cannot attribute it to a single target — route through
+    // handleAoe (same pattern as chinchompa AoE) for clump-kill prediction.
+    // Single-target multi-hits (claws, dagger, etc.) don't need special
+    // handling: precise(D1)+precise(D2)+precise(D3) = precise(sum) thanks
+    // to linearity, so treePredict on the summed XP returns the total
+    // damage and the carry tracks correctly.
+    private static final Set<Integer> SCYTHES = Set.of(
             ItemID.SCYTHE_OF_VITUR,
             ItemID.SCYTHE_OF_VITUR_OR,
             ItemID.SCYTHE_OF_VITUR_BL,
             ItemID.SCYTHE_OF_VITUR_UNCHARGED,
             ItemID.SCYTHE_OF_VITUR_UNCHARGED_OR,
-            ItemID.SCYTHE_OF_VITUR_UNCHARGED_BL,
+            ItemID.SCYTHE_OF_VITUR_UNCHARGED_BL);
+
+    private static final Set<Integer> MULTI_HIT_WEAPONS = Set.of(
             ItemID.DRAGON_CLAWS,
             // Burning claws
             ItemID.BONE_CLAWS,
@@ -170,6 +179,7 @@ public class DamageHandler {
         boolean isDefensiveCast = attackStyle == 3;
         boolean isPoweredStaff = POWERED_STAVES.contains(weapon);
         boolean isChinchompa = CHINCHOMPAS.contains(weapon);
+        boolean isScythe = SCYTHES.contains(weapon);
         double scaling = enemy.getModifier();
         Predictor.Properties props = new Predictor.Properties(skill, isDefensiveCast, isPoweredStaff, npc, scaling);
         if ((skill == Skill.RANGED || skill == Skill.MAGIC) && isDefensiveCast) {
@@ -197,8 +207,12 @@ public class DamageHandler {
         }
 
         assert (damage >= 0);
-        if (isChinchompa) {
-            // TODO: barrage? prio: low, tldr: check for barrage animation
+        if (isChinchompa || isScythe) {
+            // Multi-target weapons: total damage is split across nearby NPCs
+            // by the per-target hitsplats themselves; we route through
+            // handleAoe so death prediction fires only when the summed
+            // damage wipes the whole clump. Individual targets are then
+            // updated by HitsplatApplied → enemy.hit(amount) as usual.
             handleAoe(props, damage);
         } else {
             sendDamage(player, damage);
