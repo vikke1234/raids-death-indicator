@@ -9,6 +9,8 @@ import java.util.Arrays;
 import java.util.Comparator;
 import java.util.List;
 import java.util.Random;
+import java.util.Set;
+import java.util.TreeSet;
 import java.util.concurrent.ThreadLocalRandom;
 import java.util.stream.Collectors;
 import java.util.stream.IntStream;
@@ -385,5 +387,44 @@ public class PredictorTests {
         // precise(11) = 190 → max display with carry 9 is 19, so hit=11 cannot reach
         // display 20. Only hit=12 is consistent.
         assertEquals(12, predictor.treePredict(20, properties));
+    }
+
+    /**
+     * Enumerate which hit values in 1..110 produce ambiguous displayed XP at
+     * each Akkha scaling, so we know where the predictor's hit-1 fallback
+     * fires and the phase-cross highlight misses.
+     */
+    @Test
+    public void enumerateAkkhaAmbiguity() {
+        double[] scalings = {1.350, 1.375, 1.400, 1.425, 1.450, 1.475, 1.500, 1.525, 1.575, 1.625, 1.650, 1.675};
+        int maxHit = 110;
+        for (double scaling : scalings) {
+            Predictor.Properties props = new Predictor.Properties(Skill.HITPOINTS, true, false, scaling);
+            Set<Integer> ambiguousHits = new TreeSet<>();
+            for (int hit = 1; hit <= maxHit; hit++) {
+                int high = Predictor.computePrecise(hit, props);
+                int low = Predictor.computePrecise(hit - 1, props);
+                int highDrop = high / 10;
+                int lowDrop = low / 10;
+                // ambiguity exists when, for some carry, the displayed xp
+                // can be reached by both hit and hit-1.
+                for (int c = 0; c < 10; c++) {
+                    int xp = (high + c) / 10;
+                    if (xp == 0) continue;
+                    // emulate the "highDrop != lowDrop, conservative" branch:
+                    if (highDrop != lowDrop) {
+                        int maxLowDrop = (low + 9) / 10;
+                        boolean uniqueHigh = xp > maxLowDrop;
+                        if (!uniqueHigh) ambiguousHits.add(hit);
+                    } else if ((highDrop + 1) == xp) {
+                        // bxp branch — exact, no ambiguity
+                    } else {
+                        ambiguousHits.add(hit);
+                    }
+                }
+            }
+            System.out.printf("scaling=%.3f ambiguous-hit count=%d: %s%n",
+                    scaling, ambiguousHits.size(), ambiguousHits);
+        }
     }
 }
