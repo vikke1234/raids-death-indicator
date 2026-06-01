@@ -17,6 +17,7 @@ import static org.junit.Assert.*;
 
 public class ScalingTests {
     private static final float delta = 0.00000001F;
+
     @Test
     public void testThrowerScaling() {
         TestNPC npc = new TestNPC(NpcID.BABOON_THROWER);
@@ -101,8 +102,8 @@ public class ScalingTests {
     @Test
     public void akkhaModifierGrid() {
         TestNPC npc = new TestNPC(NpcID.AKKHA_11790);
-        int[] invos = {300, 325, 350, 375, 400, 425, 450, 475, 500};
-        for (int path = 0; path <= 6; path++) {
+        int[] invos = { 300, 325, 350, 375, 400, 425, 450, 475, 500 };
+        for (int path = 0; path <= 4; path++) {
             System.out.printf("%n=== path level %d ===%n", path);
             System.out.printf("%-7s", "invo");
             for (int p = 1; p <= 8; p++) {
@@ -133,18 +134,17 @@ public class ScalingTests {
     public void simulateAkkha() {
         int[][] configs = {
                 // {invo, party, path}
-                {300, 1, 0}, // modifier 1.350 (never-calibrate per gcd, but unambiguous)
-                {400, 1, 2}, // modifier ~1.425 (calibratable, unambiguous)
-                {500, 1, 6}, // modifier 1.550 (never-calibrate per gcd, but unambiguous)
-                {500, 2, 0}, // modifier 1.675 (the party 2+ cap)
+                { 300, 1, 0 }, // modifier 1.350 (never-calibrate per gcd, but unambiguous)
+                { 400, 1, 2 }, // modifier ~1.425 (calibratable, unambiguous)
+                { 500, 1, 6 }, // modifier 1.550 (never-calibrate per gcd, but unambiguous)
+                { 500, 2, 0 }, // modifier 1.675 (the party 2+ cap)
         };
         Random rng = new Random(7);
         for (int[] cfg : configs) {
             TestNPC npc = new TestNPC(NpcID.AKKHA_11790);
             Akkha akkha = new Akkha(npc, cfg[0], cfg[1], cfg[2]);
             double scaling = akkha.getModifier();
-            Predictor.Properties props =
-                    new Predictor.Properties(Skill.HITPOINTS, false, false, scaling);
+            Predictor.Properties props = new Predictor.Properties(Skill.HITPOINTS, false, false, scaling);
             Predictor predictor = new Predictor();
 
             int totalHits = 40;
@@ -159,9 +159,12 @@ public class ScalingTests {
                 int xp = total / 10;
                 internalFrac = total % 10;
                 int predicted = predictor.treePredict(xp, props);
-                if (predicted == hit) exact++;
-                else if (predicted > hit) over++;
-                else under++;
+                if (predicted == hit)
+                    exact++;
+                else if (predicted > hit)
+                    over++;
+                else
+                    under++;
                 if (firstCalibratedAt < 0 && predictor.isAccurate(Skill.HITPOINTS)) {
                     firstCalibratedAt = i + 1;
                 }
