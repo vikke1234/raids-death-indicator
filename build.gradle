@@ -38,6 +38,35 @@ tasks.withType(JavaCompile) {
 	options.compilerArgs += ['-Xlint:deprecation', '-Xlint:unchecked']
 }
 
+tasks.register("shadowJar", Jar) {
+	dependsOn configurations.testRuntimeClasspath
+	manifest {
+		attributes("Main-Class": "com.example.ExamplePluginTest")
+	}
+
+	duplicatesStrategy = DuplicatesStrategy.EXCLUDE
+	from sourceSets.main.output
+	from sourceSets.test.output
+	from {
+		configurations.testRuntimeClasspath.collect { file ->
+			file.isDirectory() ? file : zipTree(file)
+		}
+	}
+
+	exclude "META-INF/INDEX.LIST"
+	exclude "META-INF/*.SF"
+	exclude "META-INF/*.DSA"
+	exclude "META-INF/*.RSA"
+	exclude "**/module-info.class"
+
+	group = BasePlugin.BUILD_GROUP
+	archiveClassifier.set("shadow")
+	// Filename intentionally omits version — the artifact is identified by
+	// commit/tag at upload time (e.g. by GitHub Actions' artifact name and
+	// the run's git SHA), not by a manually-edited project.version.
+	archiveFileName.set("${rootProject.name}-all.jar")
+}
+
 task runClient(type: JavaExec) {
 	mainClass = 'com.example.ExamplePluginTest'
 	classpath = sourceSets.test.runtimeClasspath
