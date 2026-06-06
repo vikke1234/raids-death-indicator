@@ -162,14 +162,16 @@ public class DamageHandler {
         if (activeEnemies.containsKey(npc.getIndex())) {
             enemy = activeEnemies.get(npc.getIndex());
         } else {
-            Trace.damage("xp drop on untracked NPC {} (id={} idx={})", npc.getName(), npc.getId(), npc.getIndex());
+            Trace.damage("xp drop on untracked NPC {} (id={} idx={}) tick={}",
+                    npc.getName(), npc.getId(), npc.getIndex(), client.getTickCount());
             predictor.reset();
             return;
         }
 
         int bossHealth = client.getVarbitValue(VarbitID.HPBAR_HUD_HP);
         if (bossHealth > 0 && Enemy.bosses.contains(npc.getId())) {
-            Trace.damage("boss-health varbit re-sync: {} {} -> {}", npc.getName(), enemy.getCurrentHealth(), bossHealth);
+            Trace.damage("boss-health varbit re-sync: {} tick={} {} -> {}",
+                    npc.getName(), client.getTickCount(), enemy.getCurrentHealth(), bossHealth);
             enemy.setCurrentHealth(bossHealth); // re-synchronize the health
         }
 
@@ -185,7 +187,8 @@ public class DamageHandler {
         if ((skill == Skill.RANGED || skill == Skill.MAGIC) && isDefensiveCast) {
             // Ignore in order to not double hit, insert the drop into
             // the tree in order to track the fraction
-            Trace.damage("xp drop {} on {} (defensive cast, tracking only)", xp, npc.getName());
+            Trace.damage("xp drop {} on {} tick={} (defensive cast, tracking only)",
+                    xp, npc.getName(), client.getTickCount());
             predictor.insertInto(xp, props);
             return;
         }
@@ -196,8 +199,9 @@ public class DamageHandler {
         } else {
             damage = predictor.treePredict(xp, props);
         }
-        Trace.damage("xp drop {} -> predicted {} damage on {} (hp={}, queued={}, calibrated={})",
-                xp, damage, npc.getName(), enemy.currentHealth, enemy.getQueuedDamage(),
+        Trace.damage("xp drop {} -> predicted {} damage on {} tick={} (hp={}, queued={}, calibrated={})",
+                xp, damage, npc.getName(), client.getTickCount(),
+                enemy.currentHealth, enemy.getQueuedDamage(),
                 predictor.isAccurate(skill));
 
         if (MULTI_HIT_WEAPONS.contains(weapon)) {
@@ -342,21 +346,30 @@ public class DamageHandler {
             NPC npc = (NPC) actor;
             Enemy enemy = activeEnemies.getOrDefault(npc.getIndex(), null);
             if (enemy == null) {
-                Trace.damage("hitsplat on untracked NPC {} (id={} idx={}) amount={}",
-                        npc.getName(), npc.getId(), npc.getIndex(), hitsplat.getAmount());
+                Trace.damage("hitsplat on untracked NPC {} (id={} idx={}) tick={} amount={} type={} mine={} others={}",
+                        npc.getName(), npc.getId(), npc.getIndex(),
+                        client.getTickCount(), hitsplat.getAmount(), hitsplat.getHitsplatType(),
+                        hitsplat.isMine(), hitsplat.isOthers());
                 return;
             }
 
             int amount = hitsplat.getAmount();
             int type = hitsplat.getHitsplatType();
+            int tick = client.getTickCount();
+            int disappearsOn = hitsplat.getDisappearsOnGameCycle();
+            boolean mine = hitsplat.isMine();
+            boolean others = hitsplat.isOthers();
             if (type == HitsplatID.HEAL || type == HitsplatID.CYAN_UP) {
                 enemy.heal(amount);
-                Trace.damage("HEAL {} on {}(idx={} id={}) (hp now {})",
-                        amount, npc.getName(), npc.getIndex(), npc.getId(), enemy.getCurrentHealth());
+                Trace.damage("HEAL {} on {}(idx={} id={}) tick={} type={} mine={} others={} fade={} (hp now {})",
+                        amount, npc.getName(), npc.getIndex(), npc.getId(),
+                        tick, type, mine, others, disappearsOn,
+                        enemy.getCurrentHealth());
             } else {
                 enemy.hit(amount);
-                Trace.damage("HIT  {} on {}(idx={} id={}) (hp now {}, queued now {})",
+                Trace.damage("HIT  {} on {}(idx={} id={}) tick={} type={} mine={} others={} fade={} (hp now {}, queued now {})",
                         amount, npc.getName(), npc.getIndex(), npc.getId(),
+                        tick, type, mine, others, disappearsOn,
                         enemy.getCurrentHealth(), enemy.getQueuedDamage());
             }
         }
