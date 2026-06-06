@@ -16,17 +16,18 @@ public abstract class Enemy implements IEnemy {
     public static final Set<Integer> blacklist = Set.of(NpcID.TOA_KEPHRI_SHIELD_SCARAB, NpcID.TOA_ZEBAK_JUG, NpcID.TOA_ZEBAK_JUG_ROLLING);
     public static final Set<Integer> bosses;
 
-    @Getter(onMethod_ = {@Synchronized})
-    @Setter(onMethod_ = {@Synchronized})
+    @Getter(onMethod_ = { @Synchronized })
+    @Setter(onMethod_ = { @Synchronized })
     public int queuedDamage;
     public boolean shouldDraw;
-    @Getter(onMethod_ = {@Synchronized})
+    @Getter(onMethod_ = { @Synchronized })
     protected boolean hideOnDeath;
 
     public final int baseHealth;
     // TODO: this may require some rework, akkha for example computes the xp modifier before rounding hp
+    @Getter(onMethod_ = { @Synchronized })
     public int scaledHealth;
-    @Getter(onMethod_ = {@Synchronized})
+    @Getter(onMethod_ = { @Synchronized })
     public int currentHealth;
 
     protected int attack;
@@ -82,8 +83,8 @@ public abstract class Enemy implements IEnemy {
     }
 
     protected Enemy(NPC npc, int baseHealth, int attack, int str, int def,
-          int offAtt, int offStr,
-          int defStab, int defSlash, int defCrush) {
+            int offAtt, int offStr,
+            int defStab, int defSlash, int defCrush) {
         this.npc = npc;
 
         this.baseHealth = baseHealth;
@@ -134,9 +135,11 @@ public abstract class Enemy implements IEnemy {
     /**
      * Queues damage and counts if the enemy will die to it.
      *
-     * <p>Pure state mutation — the caller is responsible for any client-thread
+     * <p>
+     * Pure state mutation — the caller is responsible for any client-thread
      * side effects (e.g. {@code npc.setDead(...)}) based on the returned value,
-     * since this method can be invoked from the network thread.</p>
+     * since this method can be invoked from the network thread.
+     * </p>
      *
      * @param damage damage dealt.
      * @return true if the mob died, false if not.
@@ -171,10 +174,6 @@ public abstract class Enemy implements IEnemy {
         double avgs = Math.floor((getAvgLevel() * (avgDef + offStrength + offAttack)) / 5120d);
         avgs /= 40d;
         return Math.max(1.0d, 1 + avgs);
-    }
-
-    public int getScaledHealth() {
-        return scaledHealth;
     }
 
     private int getAvgLevel() {

@@ -57,6 +57,7 @@ public class CoxEnemy extends Enemy {
         this.maxHp = maxHp;
 
         this.scaledHealth = this.getScaledHealth(baseHealth, maxCombat, partySize);
+        System.out.println("scaled health " + this.scaledHealth + " party size " + partySize);
         this.currentHealth = scaledHealth;
         int scaledDef = getScaledDefence(def, partySize, maxHp);
         this.def = scaledDef;
@@ -65,22 +66,74 @@ public class CoxEnemy extends Enemy {
         this.attack = scaledMelee;
     }
 
+    // CoX scaling — ported from the OSRS DPS calculator's applyMultiCoxScaling.
+    // https://github.com/weirdgloop/osrs-dps-calc / src/lib/scaling/CoxMonsterScaling.ts
+    //
+    // Inputs clamp:
+    //   highestComLevel ∈ [60, 126]
+    //   highestHp       ∈ [55, 99]   (curve: 55 + 44·maxHp/99)
+    //   partySize       ∈ [1, 100]
+    //
+    // Outputs clamp (sanity from the calculator):
+    //   hp        ∈ [50,   30_000]
+    //   offensive ∈ [50,    5_000]
+    //   defensive ∈ [50,   20_000]
+    //
+    // CM is a flat +50% on everything we currently track (Tekton + glowing
+    // crystal special cases from the calculator are not modelled — we don't
+    // track those NPCs).
+    private static final int HP_CLAMP_LO = 50, HP_CLAMP_HI = 30_000;
+    private static final int OFFENCE_CLAMP_LO = 50, OFFENCE_CLAMP_HI = 5_000;
+    private static final int DEFENCE_CLAMP_LO = 50, DEFENCE_CLAMP_HI = 20_000;
+
+    private static int clampPartySize(int partySize) {
+        return Math.max(1, Math.min(100, partySize));
+    }
+
+    private static int highestComLevel(int maxCombat) {
+        return Math.max(60, Math.min(126, maxCombat));
+    }
+
+    private static int highestHp(int maxHp) {
+        // 55 + ⌊44·maxHp / 99⌋, then clamped to [55, 99].
+        int v = 55 + 44 * maxHp / 99;
+        return Math.max(55, Math.min(99, v));
+    }
+
     protected int getScaledDefence(int baseDef, int partySize, int maxHp) {
-        return baseDef * (maxHp * 4 / 9 + 55) / 99 * ((int) Math.sqrt(partySize - 1) + (partySize - 1) * 7 / 10 + 100) / 100 * (isCm ? 3 : 2) / 2;
+        int hh = highestHp(maxHp);
+        int psm1 = clampPartySize(partySize) - 1;
+        int defensive = baseDef * hh / 99;
+        int scalePct = 100 + (int) Math.sqrt(psm1) + psm1 * 7 / 10;
+        defensive = defensive * scalePct / 100;
+        if (isCm) {
+            defensive = defensive * 3 / 2;
+        }
+        return Math.max(DEFENCE_CLAMP_LO, Math.min(DEFENCE_CLAMP_HI, defensive));
     }
 
     protected int getScaledOffence(int baseStat, int partySize, int maxHp) {
-        return baseStat * (maxHp * 4 / 9 + 55) / 99 * ((int) Math.sqrt(partySize - 1) * 7 + (partySize - 1) + 100) / 100 * (isCm ? 3 : 2) / 2;
+        int hh = highestHp(maxHp);
+        int psm1 = clampPartySize(partySize) - 1;
+        int offensive = baseStat * hh / 99;
+        int scalePct = 100 + (int) Math.sqrt(psm1) * 7 + psm1;
+        offensive = offensive * scalePct / 100;
+        if (isCm) {
+            offensive = offensive * 3 / 2;
+        }
+        return Math.max(OFFENCE_CLAMP_LO, Math.min(OFFENCE_CLAMP_HI, offensive));
     }
 
     // TODO: override for olm
     protected int getScaledHealth(int baseHp, int maxCombat, int partySize) {
-        int combatHpScale = (int) ((maxCombat / 126.0) * baseHp);
-        int partyHpScale = (1 + (partySize / 2)) * combatHpScale;
-
+        int hcl = highestComLevel(maxCombat);
+        int ps = clampPartySize(partySize);
+        int hp = baseHp * hcl / 126;
+        // hp *= 1 + ⌊partySize/2⌋  (since ⌊partySize·50/100⌋ = ⌊partySize/2⌋)
+        hp += hp * (ps * 50 / 100);
         if (isCm) {
-            partyHpScale = partyHpScale * 3 / 2;
+            hp = hp * 3 / 2;
         }
-        return partyHpScale;
+        return Math.max(HP_CLAMP_LO, Math.min(HP_CLAMP_HI, hp));
     }
 }

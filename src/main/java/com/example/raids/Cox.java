@@ -64,9 +64,11 @@ public class Cox {
         switch (ev.getVarbitId()) {
             case VarbitID.RAIDS_CLIENT_PROGRESS:
                 if (ev.getValue() == 1) {
-                    // TODO: Do the CM check only as the party leader
-                    isCm = config.isCM();
-                    groupSize = client.getVarbitValue(VarbitID.RAIDS_CLIENT_PARTYSIZE);
+                    boolean isLeader = client.getVarbitValue(VarbitID.RAIDS_CLIENT_ISLEADER) != 0;
+                    isCm = isLeader
+                            ? client.getVarbitValue(VarbitID.RAIDS_CHALLENGE_MODE) != 0
+                            : config.isCM();
+                    groupSize = client.getVarbitValue(VarbitID.RAIDS_CLIENT_PARTYSIZE_SCALED);
                     maxHp = config.maxHp();
                     maxCombat = client.getServerVarbitValue(VarbitID.RAIDS_CLIENT_HIGHESTCOMBAT);
                 }
