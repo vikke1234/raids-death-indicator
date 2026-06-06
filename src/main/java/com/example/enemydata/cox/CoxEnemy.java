@@ -57,7 +57,6 @@ public class CoxEnemy extends Enemy {
         this.maxHp = maxHp;
 
         this.scaledHealth = this.getScaledHealth(baseHealth, maxCombat, partySize);
-        System.out.println("scaled health " + this.scaledHealth + " party size " + partySize);
         this.currentHealth = scaledHealth;
         int scaledDef = getScaledDefence(def, partySize, maxHp);
         this.def = scaledDef;

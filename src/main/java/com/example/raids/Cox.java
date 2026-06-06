@@ -90,8 +90,6 @@ public class Cox {
         }
         NPC npc = ev.getNpc();
         var activeEnemies = damageHandler.getActiveEnemies();
-        //System.out.println(MessageFormat.format("NPC despawned \"{0}\": {1} {2}", npc.getName(), npc.getId(), npc.getIndex()));
-
         activeEnemies.remove(npc.getIndex());
     }
 
