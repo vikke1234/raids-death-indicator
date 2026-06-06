@@ -20,13 +20,13 @@ import org.slf4j.LoggerFactory;
  */
 public final class Trace {
     /** Tree branching, fraction resolution, prediction decisions. */
-    public static final boolean PREDICTOR = false;
+    public static final boolean PREDICTOR = Boolean.getBoolean("trace.predictor");
 
     /** XP drops, hitsplats, predicted-vs-actual damage. */
-    public static final boolean DAMAGE = false;
+    public static final boolean DAMAGE = Boolean.getBoolean("trace.damage");
 
     /** Akkha phase highlight decisions. */
-    public static final boolean AKKHA = false;
+    public static final boolean AKKHA = Boolean.getBoolean("trace.akkha");
 
     private static final Logger LOG = LoggerFactory.getLogger("com.example.trace");
 
