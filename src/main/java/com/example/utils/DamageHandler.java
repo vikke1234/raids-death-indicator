@@ -4,6 +4,7 @@ import com.example.AkkhaPredictorConfig;
 import com.example.enemydata.Enemy;
 import com.example.events.EntityDamaged;
 import com.example.raids.Cox;
+import com.example.raids.Misc;
 import com.example.raids.Toa;
 import lombok.Getter;
 import lombok.extern.slf4j.Slf4j;
@@ -46,6 +47,9 @@ public class DamageHandler {
     // We need to use the instanced one because getVarbitValue requires it to run on the clientThread
     @Inject
     Cox cox;
+
+    @Inject
+    Misc misc;
 
     @Inject
     private PartyService party;
@@ -111,7 +115,7 @@ public class DamageHandler {
     }
 
     public boolean shouldProcess() {
-        return Toa.isAtToa(client) || cox.getCachedInCox().get();
+        return Toa.isAtToa(client) || cox.getCachedInCox().get() || misc.isAtMiscEncounter();
     }
 
     @Subscribe
