@@ -39,6 +39,15 @@ public abstract class Enemy implements IEnemy {
     protected int defSlash;
     protected int defCrush;
 
+    /**
+     * Damage multiplier for a given enemy. Examples for these are {@link} NightmareTotem
+     * and Ice Demon (TODO).
+     *
+     * Defaults to 1.
+     */
+    @Getter
+    protected int damageMultiplier;
+
     @Getter
     @Setter
     NPC npc;
@@ -79,7 +88,6 @@ public abstract class Enemy implements IEnemy {
 
         bosses.add(NpcID.RAIDS_VESPULA_PORTAL);
         bosses.add(NpcID.RAIDS_VASANISTIRIO_WALKING);
-        // TODO: add vangs? might be worth adding an event to send the HP to other players too
     }
 
     protected Enemy(NPC npc, int baseHealth, int attack, int str, int def,
@@ -99,7 +107,8 @@ public abstract class Enemy implements IEnemy {
         this.defCrush = defCrush;
         this.shouldDraw = false;
         this.hideOnDeath = false;
-        this.queuedDamage = 0;
+        this.queuedDamage = -1;
+        this.damageMultiplier = 1;
     }
 
     public synchronized void setCurrentHealth(int hp) {

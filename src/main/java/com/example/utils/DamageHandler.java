@@ -3,9 +3,6 @@ package com.example.utils;
 import com.example.AkkhaPredictorConfig;
 import com.example.enemydata.Enemy;
 import com.example.events.EntityDamaged;
-import com.example.raids.Cox;
-import com.example.raids.Misc;
-import com.example.raids.Toa;
 import lombok.Getter;
 import lombok.extern.slf4j.Slf4j;
 import net.runelite.api.gameval.ItemID;
@@ -43,13 +40,6 @@ public class DamageHandler {
 
     @Inject
     ClientThread clientThread;
-
-    // We need to use the instanced one because getVarbitValue requires it to run on the clientThread
-    @Inject
-    Cox cox;
-
-    @Inject
-    Misc misc;
 
     @Inject
     private PartyService party;
@@ -95,6 +85,10 @@ public class DamageHandler {
             ItemID.SCYTHE_OF_VITUR_UNCHARGED_BL);
 
     private static final Set<Integer> MULTI_HIT_WEAPONS = Set.of(
+            ItemID.DINHS_BULWARK,
+            ItemID.DINHS_BULWARK_ORNAMENT,
+            ItemID.DRAGON_2H_SWORD,
+
             ItemID.DRAGON_CLAWS,
             // Burning claws
             ItemID.BONE_CLAWS,
@@ -112,10 +106,6 @@ public class DamageHandler {
     public void initXpMap() {
         previousXps = new HashMap<>();
         Arrays.stream(Skill.values()).forEach(skill -> previousXps.put(skill, client.getSkillExperience(skill)));
-    }
-
-    public boolean shouldProcess() {
-        return Toa.isAtToa(client) || cox.getCachedInCox().get() || misc.isAtMiscEncounter();
     }
 
     @Subscribe
@@ -147,7 +137,7 @@ public class DamageHandler {
 
         Player player = Objects.requireNonNull(client.getLocalPlayer());
         Actor entity = player.getInteracting();
-        if (!(entity instanceof NPC) || !shouldProcess()) {
+        if (!(entity instanceof NPC)) {
             return;
         }
 
@@ -187,7 +177,10 @@ public class DamageHandler {
         boolean isChinchompa = CHINCHOMPAS.contains(weapon);
         boolean isScythe = SCYTHES.contains(weapon);
         double scaling = enemy.getModifier();
-        Predictor.Properties props = new Predictor.Properties(skill, isDefensiveCast, isPoweredStaff, npc, scaling);
+        Predictor.Properties props = new Predictor.Properties(skill,
+                isDefensiveCast, isPoweredStaff,
+                npc, scaling, enemy.getDamageMultiplier());
+
         if ((skill == Skill.RANGED || skill == Skill.MAGIC) && isDefensiveCast) {
             // Ignore in order to not double hit, insert the drop into
             // the tree in order to track the fraction
@@ -277,11 +270,6 @@ public class DamageHandler {
      * @param xp    Updated XP amount.
      */
     private void preProcessXpDrop(Skill skill, int xp) {
-        if (!shouldProcess()) {
-            predictor.reset();
-            return;
-        }
-
         int diff = xp - previousXps.getOrDefault(skill, 0);
         previousXps.put(skill, xp);
         processXpDrop(skill, diff);
@@ -295,10 +283,6 @@ public class DamageHandler {
      */
     @Subscribe
     public void onEntityDamaged(EntityDamaged entityDamaged) {
-        if (!shouldProcess()) {
-            return;
-        }
-
         PartyMember localPlayer = party.getLocalMember();
 
         if (localPlayer != null) {
@@ -342,9 +326,10 @@ public class DamageHandler {
     @Subscribe
     public void onHitsplatApplied(HitsplatApplied hit) {
         Hitsplat hitsplat = hit.getHitsplat();
-        if (!shouldProcess() || hitsplat.getAmount() <= 0) {
+        if (hitsplat.getAmount() <= 0) {
             return;
         }
+
         Actor actor = hit.getActor();
         if (actor instanceof NPC) {
             NPC npc = (NPC) actor;
@@ -363,6 +348,7 @@ public class DamageHandler {
             int disappearsOn = hitsplat.getDisappearsOnGameCycle();
             boolean mine = hitsplat.isMine();
             boolean others = hitsplat.isOthers();
+
             if (type == HitsplatID.HEAL || type == HitsplatID.CYAN_UP) {
                 enemy.heal(amount);
                 Trace.damage("HEAL {} on {}(idx={} id={}) tick={} type={} mine={} others={} fade={} (hp now {})",

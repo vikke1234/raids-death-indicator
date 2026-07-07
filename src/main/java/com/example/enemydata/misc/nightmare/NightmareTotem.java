@@ -1,4 +1,4 @@
-package com.example.enemydata.misc;
+package com.example.enemydata.misc.nightmare;
 
 import com.example.enemydata.Enemy;
 import net.runelite.api.Client;
@@ -28,6 +28,10 @@ public class NightmareTotem extends Enemy {
     private static final int NEARBY_RADIUS = 15;
 
     public static final Set<Integer> NPC_IDS = Set.of(
+            NpcID.NIGHTMARE_TOTEM_1_DORMANT, // 9435
+            NpcID.NIGHTMARE_TOTEM_2_DORMANT, // 9438
+            NpcID.NIGHTMARE_TOTEM_3_DORMANT, // 9440
+            NpcID.NIGHTMARE_TOTEM_4_DORMANT, // 9444
             NpcID.NIGHTMARE_TOTEM_1_READY, // 9435
             NpcID.NIGHTMARE_TOTEM_2_READY, // 9438
             NpcID.NIGHTMARE_TOTEM_3_READY, // 9440
@@ -36,11 +40,32 @@ public class NightmareTotem extends Enemy {
 
     public NightmareTotem(NPC npc, Client client) {
         super(npc, totemHp(npc, client), 1, 1, 1, 0, 0, 0, 0, 0);
+        this.currentHealth = 0;
+        this.damageMultiplier = 2;
+    }
+
+    /**
+     * Nightmare totems need a custom queue damage handler, as they are
+     * "charged", rather than killed.
+     */
+    @Override
+    public synchronized boolean queueDamage(int damage) {
+        queuedDamage += damage;
+        shouldDraw = (currentHealth + queuedDamage) >= baseHealth;
+        return shouldDraw;
     }
 
     @Override
-    public synchronized boolean queueDamage(int damage) {
-        return super.queueDamage(damage * 2);
+    public synchronized int hit(int damage) {
+        queuedDamage = Math.max(0, queuedDamage - damage);
+        currentHealth += damage;
+        if (queuedDamage == 0) {
+            // Queued prediction has been fully consumed by landed hitsplats.
+            // shouldDraw was set when the prediction was made; clear it now that
+            // the predicted event has resolved.
+            shouldDraw = false;
+        }
+        return currentHealth;
     }
 
     private static int totemHp(NPC npc, Client client) {

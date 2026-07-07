@@ -22,7 +22,10 @@ public class Predictor {
         public boolean isDefensive;
         public boolean isPoweredStaff;
         public NPC npc;
+        /// XP scaling multiplier
         public double scaling;
+        /// Flat damage multiplier
+        public double multiplier = 1.0;
 
         public Properties(Skill skill, boolean isDefensive, boolean isPowered, double scaling) {
             this.skill = skill;
@@ -95,6 +98,12 @@ public class Predictor {
             possibleBxp = (drop + 1) == xp && precise % 10 != 0;
         }
 
+        // TODO add tests
+        // NB: this is the raw, XP-derived hit. The enemy damage multiplier
+        // (e.g. Nightmare totems taking 2x) is applied to the final predicted
+        // damage in treePredict/treePredict2, NOT here — XP is a function of the
+        // raw player hit, so the tree calibration and computePrecise math must
+        // stay in the raw domain.
         return new Hit(hit, possibleBxp, bxp);
     }
 
@@ -163,6 +172,22 @@ public class Predictor {
     }
 
     /**
+     * Scales a raw, XP-derived hit into the actual damage dealt to the enemy.
+     * Some enemies (e.g. Nightmare totems) take a flat multiple of the player's
+     * hit, so their HP depletes faster than the XP would suggest.
+     *
+     * @param hit   raw hit predicted from the XP drop
+     * @param props hit properties, carrying the enemy's damage multiplier
+     * @return damage to apply to the enemy's health
+     */
+    private static int applyDamageMultiplier(int hit, Properties props) {
+        // A multiplier of 0 means "unset" (the legacy 4-arg Properties ctor);
+        // treat it as 1x so damage is never zeroed out.
+        double multiplier = props.multiplier <= 0 ? 1.0 : props.multiplier;
+        return (int) Math.round(hit * multiplier);
+    }
+
+    /**
      * Checks if the tree for a skill is accurate or not. The tree
      * is accurate if there's only one leaf that is not dead in the tree.
      *
@@ -210,6 +235,10 @@ public class Predictor {
      * @return expected hit
      */
     public synchronized int treePredict(int xp, @NonNull Properties props) {
+        return applyDamageMultiplier(treePredictRaw(xp, props), props);
+    }
+
+    private synchronized int treePredictRaw(int xp, @NonNull Properties props) {
         if (xp == 0) {
             return 0;
         }
@@ -273,6 +302,10 @@ public class Predictor {
      * @return
      */
     public synchronized int treePredict2(int xp, @NonNull Properties props) {
+        return applyDamageMultiplier(treePredict2Raw(xp, props), props);
+    }
+
+    private synchronized int treePredict2Raw(int xp, @NonNull Properties props) {
         if (xp == 0) {
             return 0;
         }

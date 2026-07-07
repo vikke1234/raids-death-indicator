@@ -1,13 +1,17 @@
 package com.example.raids;
 
 import com.example.enemydata.Enemy;
-import com.example.enemydata.misc.NightmareTotem;
+import com.example.enemydata.misc.nightmare.NightmareHuskRanged;
+import com.example.enemydata.misc.nightmare.NightmareHuskMage;
+import com.example.enemydata.misc.nightmare.NightmareTotem;
 import com.example.utils.DamageHandler;
 import lombok.extern.slf4j.Slf4j;
 import net.runelite.api.Client;
 import net.runelite.api.NPC;
 import net.runelite.api.events.NpcDespawned;
 import net.runelite.api.events.NpcSpawned;
+import net.runelite.api.gameval.NpcID;
+import net.runelite.api.events.NpcChanged;
 import net.runelite.client.eventbus.Subscribe;
 
 import javax.inject.Inject;
@@ -26,33 +30,43 @@ public class Misc {
     @Inject
     private DamageHandler damageHandler;
 
-    /**
-     * Implicit detection: if any tracked enemy is of a misc-handled type,
-     * we're in that encounter. No region or varbit check needed.
-     */
-    public boolean isAtMiscEncounter() {
-        for (Enemy e : damageHandler.getActiveEnemies().values()) {
-            if (e instanceof NightmareTotem) {
-                return true;
+    private void addIfValid(NPC npc) {
+        if (npc == null) {
+            return;
+        }
+
+        if (NightmareTotem.NPC_IDS.contains(npc.getId())) {
+            damageHandler.getActiveEnemies()
+                    .put(npc.getIndex(), new NightmareTotem(npc, client));
+        } else {
+            switch (npc.getId()) {
+                case NpcID.NIGHTMARE_HUSK_MAGIC:
+                    damageHandler.getActiveEnemies().put(npc.getIndex(), new NightmareHuskMage(npc));
+                    break;
+
+                case NpcID.NIGHTMARE_HUSK_RANGED:
+                    damageHandler.getActiveEnemies().put(npc.getIndex(), new NightmareHuskRanged(npc));
+                    break;
             }
         }
-        return false;
     }
 
     @Subscribe
     protected void onNpcSpawned(NpcSpawned event) {
         NPC npc = event.getNpc();
-        if (NightmareTotem.NPC_IDS.contains(npc.getId())) {
-            damageHandler.getActiveEnemies()
-                    .put(npc.getIndex(), new NightmareTotem(npc, client));
-        }
+        addIfValid(npc);
+    }
+
+    @Subscribe
+    protected void onNpcChanged(NpcChanged event) {
+        NPC npc = event.getNpc();
+        addIfValid(npc);
     }
 
     @Subscribe
     protected void onNpcDespawned(NpcDespawned event) {
         NPC npc = event.getNpc();
-        if (NightmareTotem.NPC_IDS.contains(npc.getId())) {
-            damageHandler.getActiveEnemies().remove(npc.getIndex());
-        }
+        // Remove value if it exists
+        damageHandler.getActiveEnemies().remove(npc.getIndex());
     }
 }
