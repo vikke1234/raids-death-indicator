@@ -48,6 +48,12 @@ public abstract class Enemy implements IEnemy {
     @Getter
     protected int damageMultiplier;
 
+    /**
+     * How often a mob regens health (in ticks).
+     */
+    @Getter
+    protected int regenCycle;
+
     @Getter
     @Setter
     NPC npc;
@@ -112,6 +118,7 @@ public abstract class Enemy implements IEnemy {
         this.hideOnDeath = false;
         this.queuedDamage = -1;
         this.damageMultiplier = 1;
+        this.regenCycle = 0;
     }
 
     public synchronized void setCurrentHealth(int hp) {

@@ -12,11 +12,12 @@ public abstract class Muttadile extends CoxEnemy {
     private boolean halfHpFlagged = false;
 
     protected Muttadile(NPC npc, boolean isCm, int partySize, int maxCombat, int maxHp,
-                        int baseHp, int melee, int def,
-                        int offAtt, int offStr,
-                        int defStab, int defSlash, int defCrush) {
+            int baseHp, int melee, int def,
+            int offAtt, int offStr,
+            int defStab, int defSlash, int defCrush) {
         super(npc, isCm, partySize, maxCombat, maxHp,
                 baseHp, melee, def, offAtt, offStr, defStab, defSlash, defCrush);
+        regenCycle = 15;
     }
 
     @Override

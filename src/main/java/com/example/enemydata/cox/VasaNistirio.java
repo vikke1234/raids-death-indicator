@@ -7,6 +7,7 @@ import net.runelite.api.NPC;
 public class VasaNistirio extends CoxEnemy {
     public VasaNistirio(NPC npc, boolean isCm, int partySize, int maxCombat, int maxHp) {
         super(npc, isCm, partySize, maxCombat, maxHp, 300, 1, 175, 0, 0, 170, 190, 50);
+        regenCycle = 10;
     }
 
     @Override

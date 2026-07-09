@@ -7,6 +7,7 @@ import net.runelite.api.NPC;
 public class Portal extends CoxEnemy {
     public Portal(NPC npc, boolean isCm, int partySize, int maxCombat, int maxHp) {
         super(npc, isCm, partySize, maxCombat, maxHp, 250, 1, 176, 0, 0, 0, 0, 0);
+        regenCycle = 45;
     }
 
     @Override

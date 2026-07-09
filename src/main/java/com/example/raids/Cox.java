@@ -40,6 +40,11 @@ public class Cox {
 
     int maxHp;
 
+    /**
+     * Ticks since raid started, used for accounting for regen.
+     */
+    long raidTick;
+
     @Inject
     public void initialize() {
         cachedInCox = new AtomicBoolean();
@@ -60,6 +65,22 @@ public class Cox {
     }
 
     @Subscribe
+    public void onGameTick(GameTick ev) {
+        for (Enemy e : damageHandler.getActiveEnemies().values()) {
+            int rc = e.getRegenCycle();
+            if (rc > 0 && (raidTick % rc) == 0) {
+                e.heal(1);
+            }
+        }
+
+        if (raidTick == Long.MAX_VALUE) {
+            raidTick = 0;
+        } else {
+            raidTick++;
+        }
+    }
+
+    @Subscribe
     public void onVarbitChanged(VarbitChanged ev) {
         switch (ev.getVarbitId()) {
             case VarbitID.RAIDS_CLIENT_PROGRESS:
@@ -71,6 +92,7 @@ public class Cox {
                     groupSize = client.getVarbitValue(VarbitID.RAIDS_CLIENT_PARTYSIZE_SCALED);
                     maxHp = config.maxHp();
                     maxCombat = client.getServerVarbitValue(VarbitID.RAIDS_CLIENT_HIGHESTCOMBAT);
+                    raidTick = 0;
                 }
                 cachedInCox.set(ev.getValue() >= 1 && ev.getValue() < 5);
                 break;

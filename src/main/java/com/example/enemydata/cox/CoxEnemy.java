@@ -63,6 +63,7 @@ public class CoxEnemy extends Enemy {
         int scaledMelee = getScaledOffence(melee, partySize, maxHp);
         this.str = scaledMelee;
         this.attack = scaledMelee;
+        this.regenCycle = 100;
     }
 
     // CoX scaling — ported from the OSRS DPS calculator's applyMultiCoxScaling.
