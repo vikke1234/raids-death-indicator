@@ -1,7 +1,11 @@
 package com.example.enemydata.cox;
 
 import com.example.enemydata.Enemy;
-import com.example.utils.PentFunction;
+import com.example.utils.HexFunction;
+
+import lombok.Getter;
+import lombok.Setter;
+import lombok.Synchronized;
 import net.runelite.api.NPC;
 import net.runelite.api.gameval.NpcID;
 
@@ -11,16 +15,21 @@ import java.util.Map;
 import java.util.Set;
 
 public class CoxEnemy extends Enemy {
-    public static final Map<Integer, PentFunction<NPC, Boolean, Integer, Integer, Integer, CoxEnemy>> enemies;
-    public static final Set<Integer> bosses;
-
+    public static final Map<Integer, HexFunction<NPC, Boolean, Integer, Integer, Integer, Long, CoxEnemy>> enemies;
     boolean isCm;
     int partySize;
     int maxHp;
 
+    @Getter(onMethod_ = { @Synchronized })
+    @Setter(onMethod_ = { @Synchronized })
+    boolean stalled;
+
+    @Getter(onMethod_ = { @Synchronized })
+    @Setter(onMethod_ = { @Synchronized })
+    long raidTick;
+
     static {
         enemies = new HashMap<>();
-        bosses = new HashSet<>();
 
         enemies.put(NpcID.RAIDS_VESPULA_PORTAL, Portal::new);
         enemies.put(NpcID.RAIDS_SKELETONMYSTIC_A, SkeletalMystic::new);
@@ -41,20 +50,26 @@ public class CoxEnemy extends Enemy {
         // for a raid is figured out. Guardians will also likely never work
         // properly unless everyone is in party. That or some other cursed
         // shenanigans.
-        //enemies.put(NpcID.RAIDS_STONEGUARDIANS_LEFT, Guardian::new);
-        //enemies.put(NpcID.RAIDS_STONEGUARDIANS_RIGHT, Guardian::new);
+        enemies.put(NpcID.RAIDS_STONEGUARDIANS_LEFT, Guardian::new);
+        enemies.put(NpcID.RAIDS_STONEGUARDIANS_RIGHT, Guardian::new);
 
         enemies.put(NpcID.RAIDS_DOGODILE_SUBMERGED, GreatMuttadile::new);
         enemies.put(NpcID.RAIDS_DOGODILE, GreatMuttadile::new);
         enemies.put(NpcID.RAIDS_DOGODILE_JUNIOR, SmallMuttadile::new);
     }
 
-    protected CoxEnemy(NPC npc, boolean isCm, int partySize, int maxCombat, int maxHp, int baseHealth, int melee, int def, int offAtt, int offStr, int defStab, int defSlash, int defCrush) {
+    protected CoxEnemy(NPC npc, boolean isCm, int partySize,
+            int maxCombat, int maxHp, long raidTick,
+            int baseHealth, int melee, int def, int offAtt, int offStr,
+            int defStab, int defSlash, int defCrush) {
+
         super(npc, baseHealth, melee, melee, def, offAtt, offStr, defStab, defSlash, defCrush);
         assert (attack == str);
         this.isCm = isCm;
         this.partySize = partySize;
         this.maxHp = maxHp;
+        this.stalled = false;
+        this.raidTick = raidTick;
 
         this.scaledHealth = this.getScaledHealth(baseHealth, maxCombat, partySize);
         this.currentHealth = scaledHealth;
@@ -85,6 +100,28 @@ public class CoxEnemy extends Enemy {
     private static final int HP_CLAMP_LO = 50, HP_CLAMP_HI = 30_000;
     private static final int OFFENCE_CLAMP_LO = 50, OFFENCE_CLAMP_HI = 5_000;
     private static final int DEFENCE_CLAMP_LO = 50, DEFENCE_CLAMP_HI = 20_000;
+
+    /**
+     * Increments the current raid tick for an NPC, handles regen cycles and
+     * stalls.
+     */
+    public void incrementRaidTick() {
+        if (isStalled()) {
+            // If NPC is stalled we shouldn't do anything, NPC queues are
+            // paused for the duration of a stall.
+            return;
+        }
+
+        if (regenCycle > 0 && (raidTick % regenCycle) == 0) {
+            heal(1);
+        }
+
+        if (raidTick == Long.MAX_VALUE) {
+            raidTick = 0;
+        } else {
+            raidTick++;
+        }
+    }
 
     private static int clampPartySize(int partySize) {
         return Math.max(1, Math.min(100, partySize));

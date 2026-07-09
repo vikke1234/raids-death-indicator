@@ -9,8 +9,8 @@ import net.runelite.api.NPC;
  * beyond the inherited 50% highlight flag.
  */
 public class GreatMuttadile extends Muttadile {
-    public GreatMuttadile(NPC npc, boolean isCm, int partySize, int maxCombat, int maxHp) {
-        super(npc, isCm, partySize, maxCombat, maxHp,
+    public GreatMuttadile(NPC npc, boolean isCm, int partySize, int maxCombat, int maxHp, long raidTick) {
+        super(npc, isCm, partySize, maxCombat, maxHp, raidTick,
                 250, 250, 220, 88, 55, -5, 82, 60);
     }
 }

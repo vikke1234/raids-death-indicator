@@ -1,6 +1,8 @@
 package com.example.raids;
 
 import net.runelite.api.gameval.*;
+import net.runelite.api.gameval.NpcID;
+
 import com.example.AkkhaPredictorConfig;
 import com.example.enemydata.*;
 import com.example.enemydata.cox.CoxEnemy;
@@ -41,9 +43,11 @@ public class Cox {
     int maxHp;
 
     /**
-     * Ticks since raid started, used for accounting for regen.
+     * Ticks since raid started, used to account for regen.
      */
     long raidTick;
+
+    boolean npcStall;
 
     @Inject
     public void initialize() {
@@ -53,6 +57,7 @@ public class Cox {
         groupSize = 0;
         maxCombat = 0;
         maxHp = 0;
+        npcStall = false;
     }
 
     public static boolean isInCox(Client client) {
@@ -66,10 +71,14 @@ public class Cox {
 
     @Subscribe
     public void onGameTick(GameTick ev) {
+        if (!isInCox()) {
+            return;
+        }
+
         for (Enemy e : damageHandler.getActiveEnemies().values()) {
-            int rc = e.getRegenCycle();
-            if (rc > 0 && (raidTick % rc) == 0) {
-                e.heal(1);
+            if (e instanceof CoxEnemy) {
+                CoxEnemy coxEnemy = (CoxEnemy) e;
+                coxEnemy.incrementRaidTick();
             }
         }
 
@@ -133,7 +142,31 @@ public class Cox {
         if (!isInCox()) {
             return;
         }
-        trackIfTrackable(ev.getNpc());
+        NPC npc = ev.getNpc();
+        trackIfTrackable(npc);
+
+        var activeEnemies = damageHandler.getActiveEnemies();
+        CoxEnemy enemy;
+
+        switch (npc.getId()) {
+            case NpcID.RAIDS_STONEGUARDIANS_RIGHT_DEAD:
+            case NpcID.RAIDS_STONEGUARDIANS_LEFT_DEAD:
+                activeEnemies.remove(npc.getIndex());
+                break;
+
+            case NpcID.RAIDS_VANGUARD_WALKING:
+                enemy = (CoxEnemy) activeEnemies.get(npc.getIndex());
+                enemy.heal(1);
+                enemy.setStalled(true);
+                break;
+
+            case NpcID.RAIDS_VANGUARD_RANGED:
+            case NpcID.RAIDS_VANGUARD_MAGIC:
+            case NpcID.RAIDS_VANGUARD_MELEE:
+                enemy = (CoxEnemy) activeEnemies.get(npc.getIndex());
+                enemy.setStalled(false);
+                break;
+        }
     }
 
     private void trackIfTrackable(NPC npc) {
@@ -144,11 +177,19 @@ public class Cox {
             // existing Enemy keeps the live npc reference.
             return;
         }
+
         var enemyConstructor = CoxEnemy.enemies.getOrDefault(npc.getId(), null);
         if (enemyConstructor == null) {
             return;
         }
-        Enemy enemy = enemyConstructor.apply(npc, isCm, groupSize, maxCombat, maxHp);
+
+        // TODO: Add support for guardians in non-solo
+        if ((npc.getId() == NpcID.RAIDS_STONEGUARDIANS_RIGHT ||
+                npc.getId() == NpcID.RAIDS_STONEGUARDIANS_LEFT) && groupSize != 1) {
+            return;
+        }
+
+        Enemy enemy = enemyConstructor.apply(npc, isCm, groupSize, maxCombat, maxHp, raidTick);
         activeEnemies.put(npc.getIndex(), enemy);
     }
 }

@@ -11,11 +11,11 @@ import net.runelite.api.NPC;
 public abstract class Muttadile extends CoxEnemy {
     private boolean halfHpFlagged = false;
 
-    protected Muttadile(NPC npc, boolean isCm, int partySize, int maxCombat, int maxHp,
+    protected Muttadile(NPC npc, boolean isCm, int partySize, int maxCombat, int maxHp, long raidTick,
             int baseHp, int melee, int def,
             int offAtt, int offStr,
             int defStab, int defSlash, int defCrush) {
-        super(npc, isCm, partySize, maxCombat, maxHp,
+        super(npc, isCm, partySize, maxCombat, maxHp, raidTick,
                 baseHp, melee, def, offAtt, offStr, defStab, defSlash, defCrush);
         regenCycle = 15;
     }

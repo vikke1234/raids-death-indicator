@@ -14,10 +14,10 @@ import net.runelite.api.gameval.NpcID;
  */
 @Slf4j
 public class Vanguard extends CoxEnemy {
-    public Vanguard(NPC npc, boolean isCm, int partySize, int maxCombat, int maxHp) {
+    public Vanguard(NPC npc, boolean isCm, int partySize, int maxCombat, int maxHp, long raidTick) {
         // hp=180, melee=150 (atk and str both 150), def=160, off bonuses
         // overridden per-style in getModifier(), defStab/Slash/Crush=160.
-        super(npc, isCm, partySize, maxCombat, maxHp,
+        super(npc, isCm, partySize, maxCombat, maxHp, raidTick,
                 180, 150, 160, 0, 0, 160, 160, 160);
     }
 
@@ -26,18 +26,6 @@ public class Vanguard extends CoxEnemy {
         shouldDraw = super.queueDamage(damage);
         log.debug("vanguard hp: {} queued: {} draw: {}", currentHealth, queuedDamage, shouldDraw);
         return shouldDraw;
-    }
-
-    @Override
-    public synchronized int heal(int amount) {
-        // Vanguards group-heal back to full regardless of the hitsplat value.
-        // The displayed heal amount only reflects the gap to the group's
-        // pre-heal max, so use scaledHealth directly as the truth. Also clear
-        // queued damage since the heal mechanic absorbs in-flight hits.
-        currentHealth = scaledHealth;
-        queuedDamage = 0;
-        shouldDraw = false;
-        return currentHealth;
     }
 
     @Override

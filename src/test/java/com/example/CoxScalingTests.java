@@ -5,7 +5,7 @@ import com.example.enemydata.cox.CoxEnemy;
 import com.example.enemydata.cox.LizardmanShaman;
 import com.example.enemydata.cox.SkeletalMystic;
 import com.example.enemydata.toa.ToaEnemy;
-import com.example.utils.PentFunction;
+import com.example.utils.HexFunction;
 import com.example.utils.QuadFunction;
 import net.runelite.api.NPC;
 import net.runelite.api.gameval.NpcID;
@@ -24,14 +24,14 @@ public class CoxScalingTests {
     @Test
     public void testMysticScaling() {
         TestNPC npc = new TestNPC(NpcID.RAIDS_SKELETONMYSTIC_A);
-        SkeletalMystic mystic = new SkeletalMystic(npc, true, 3, 126, 99);
+        SkeletalMystic mystic = new SkeletalMystic(npc, true, 3, 126, 99, 0);
         assertEquals(480, mystic.scaledHealth);
     }
 
     @Test
     public void testMystic100Scaling() {
         TestNPC npc = new TestNPC(NpcID.RAIDS_SKELETONMYSTIC_A);
-        SkeletalMystic mystic = new SkeletalMystic(npc, false, 100, 126, 99);
+        SkeletalMystic mystic = new SkeletalMystic(npc, false, 100, 126, 99, 0);
         assertEquals(8160, mystic.scaledHealth);
         // Verify the scaled levels + unscaled offensive bonuses match the
         // DPS calc's expected Mystic 100-scale values. Magic isn't tracked
@@ -66,14 +66,14 @@ public class CoxScalingTests {
     @Test
     public void testShaman2plus50Scaling() {
         TestNPC npc = new TestNPC(NpcID.LIZARDMAN_CAVE_SHAMAN_1);
-        LizardmanShaman shaman = new LizardmanShaman(npc, false, 52, 126, 99);
+        LizardmanShaman shaman = new LizardmanShaman(npc, false, 52, 126, 99, 0);
         assertEquals(5130, shaman.scaledHealth);
     }
 
     @Test
     public void testShaman100Scaling() {
         TestNPC npc = new TestNPC(NpcID.LIZARDMAN_CAVE_SHAMAN_1);
-        LizardmanShaman shaman = new LizardmanShaman(npc, false, 100, 126, 99);
+        LizardmanShaman shaman = new LizardmanShaman(npc, false, 100, 126, 99, 0);
         assertEquals(9690, shaman.scaledHealth);
         // Verify scaled levels + unscaled bonuses match the DPS calc's
         // expected Shaman 100-scale values.
@@ -90,10 +90,10 @@ public class CoxScalingTests {
     @Test
     public void testVanguardSoloHp() {
         TestNPC npc = new TestNPC(NpcID.RAIDS_VANGUARD_MELEE);
-        com.example.enemydata.cox.Vanguard regular = new com.example.enemydata.cox.Vanguard(npc, false, 1, 126, 99);
+        com.example.enemydata.cox.Vanguard regular = new com.example.enemydata.cox.Vanguard(npc, false, 1, 126, 99, 0);
         assertEquals(180, regular.scaledHealth);
 
-        com.example.enemydata.cox.Vanguard cm = new com.example.enemydata.cox.Vanguard(npc, true, 1, 126, 99);
+        com.example.enemydata.cox.Vanguard cm = new com.example.enemydata.cox.Vanguard(npc, true, 1, 126, 99, 0);
         assertEquals(270, cm.scaledHealth);
     }
 
@@ -127,7 +127,7 @@ public class CoxScalingTests {
         }
 
         // COX: isCm true/false, partySize 1..8, maxCombat 100/110/126, maxHp 70/85/99.
-        for (Map.Entry<Integer, PentFunction<NPC, Boolean, Integer, Integer, Integer, CoxEnemy>> e : CoxEnemy.enemies.entrySet()) {
+        for (Map.Entry<Integer, HexFunction<NPC, Boolean, Integer, Integer, Integer, Long, CoxEnemy>> e : CoxEnemy.enemies.entrySet()) {
             int id = e.getKey();
             TestNPC npc = new TestNPC(id);
             String name = "cox#" + id;
@@ -136,7 +136,7 @@ public class CoxScalingTests {
                     for (int maxCombat : new int[] { 100, 110, 126 }) {
                         for (int maxHp : new int[] { 70, 85, 99 }) {
                             try {
-                                CoxEnemy enemy = e.getValue().apply(npc, cm, party, maxCombat, maxHp);
+                                CoxEnemy enemy = e.getValue().apply(npc, cm, party, maxCombat, maxHp, 0L);
                                 record(bucket, enemy.getModifier(),
                                         name + " cm=" + cm + " p=" + party + " cb=" + maxCombat + " hp=" + maxHp);
                             } catch (Throwable t) {
@@ -174,7 +174,7 @@ public class CoxScalingTests {
     @Test
     public void simulateVasaCmSolo() {
         TestNPC npc = new TestNPC(NpcID.RAIDS_VASANISTIRIO_DORMANT);
-        com.example.enemydata.cox.VasaNistirio vasa = new com.example.enemydata.cox.VasaNistirio(npc, true, 1, 126, 99);
+        com.example.enemydata.cox.VasaNistirio vasa = new com.example.enemydata.cox.VasaNistirio(npc, true, 1, 126, 99, 0);
         double scaling = vasa.getModifier();
         com.example.utils.Predictor.Properties props = new com.example.utils.Predictor.Properties(net.runelite.api.Skill.HITPOINTS, false, false, scaling);
         com.example.utils.Predictor predictor = new com.example.utils.Predictor();

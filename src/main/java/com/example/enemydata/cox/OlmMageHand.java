@@ -3,8 +3,8 @@ package com.example.enemydata.cox;
 import net.runelite.api.NPC;
 
 public class OlmMageHand extends CoxEnemy {
-    public OlmMageHand(NPC npc, boolean isCm, int partySize, int maxCombat, int maxHp) {
-        super(npc, isCm, partySize, maxCombat, maxHp, 600, 250, 175, 0, 0, 200, 200, 200);
+    public OlmMageHand(NPC npc, boolean isCm, int partySize, int maxCombat, int maxHp, long raidTick) {
+        super(npc, isCm, partySize, maxCombat, maxHp, raidTick, 600, 250, 175, 0, 0, 200, 200, 200);
     }
 
     @Override

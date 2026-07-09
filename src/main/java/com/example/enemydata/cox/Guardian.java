@@ -8,8 +8,8 @@ import net.runelite.api.NPC;
  * defensive bonuses stab 80, slash 180, crush -10.
  */
 public class Guardian extends CoxEnemy {
-    public Guardian(NPC npc, boolean isCm, int partySize, int maxCombat, int maxHp) {
-        super(npc, isCm, partySize, maxCombat, maxHp,
+    public Guardian(NPC npc, boolean isCm, int partySize, int maxCombat, int maxHp, long raidTick) {
+        super(npc, isCm, partySize, maxCombat, maxHp, raidTick,
                 250, 140, 100, 0, 20, 80, 180, -10);
         regenCycle = 8;
     }
