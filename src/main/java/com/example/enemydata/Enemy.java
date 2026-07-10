@@ -144,7 +144,6 @@ public abstract class Enemy implements IEnemy {
         // on hitsplats (e.g. Vanguards' group-heal mechanic), but the game
         // itself never exceeds max HP. Without this clamp, a Vanguard at 104
         // hp receiving a HEAL 114 ends up at 218 (max is 180).
-        System.out.println("healing " + amount + " current health " + currentHealth + " scaled " + scaledHealth);
         currentHealth = Math.min(currentHealth + amount, scaledHealth);
         // Heals (including phase-transition heals like Akkha's) invalidate any
         // standing prediction.
