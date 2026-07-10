@@ -47,8 +47,6 @@ public class Cox {
      */
     long raidTick;
 
-    boolean npcStall;
-
     @Inject
     public void initialize() {
         cachedInCox = new AtomicBoolean();
@@ -57,7 +55,6 @@ public class Cox {
         groupSize = 0;
         maxCombat = 0;
         maxHp = 0;
-        npcStall = false;
     }
 
     public static boolean isInCox(Client client) {
