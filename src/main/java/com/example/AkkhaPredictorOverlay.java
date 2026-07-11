@@ -49,9 +49,24 @@ public class AkkhaPredictorOverlay extends Overlay {
             // type, so we widen to Throwable to catch all flavours.
             try {
                 if (enemy.shouldHighlight()) {
-                    renderPoly(graphics, null, 0, config.highlightColor(), npc.getConvexHull());
+                    Color fill = enemy.isRegenUncertain()
+                            ? config.highlightRegenWarnColor()
+                            : config.highlightColor();
+                    renderPoly(graphics, null, 0, fill, npc.getConvexHull());
                 }
                 if (config.enableHpOverlay()) {
+                    // Regen timer line above HP
+                    if (enemy.getRegenCycle() > 0) {
+                        int remaining = enemy.regenTicksRemaining();
+                        String regenText = "R:" + remaining;
+                        Point anchor = npc.getCanvasTextLocation(graphics, regenText, npc.getLogicalHeight());
+                        if (anchor != null) {
+                            graphics.setFont(FontManager.getRunescapeBoldFont().deriveFont((float) config.hpOverlayFontSize()));
+                            int y = anchor.getY() - config.hpOverlayHeightOffset() - config.hpOverlayFontSize() - 4;
+                            OverlayUtil.renderTextLocation(graphics, new Point(anchor.getX(), y), regenText, config.textColor());
+                        }
+                    }
+
                     int hp = enemy.getCurrentHealth();
                     int queued = enemy.getQueuedDamage();
                     String full = formatHp(config.hpOverlayFormat(), hp, queued);

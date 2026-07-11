@@ -13,6 +13,7 @@ import com.example.utils.DamageHandler;
 import lombok.extern.slf4j.Slf4j;
 import net.runelite.api.Client;
 import net.runelite.api.NPC;
+import net.runelite.api.events.GameTick;
 import net.runelite.api.events.NpcDespawned;
 import net.runelite.api.events.NpcSpawned;
 import net.runelite.api.gameval.NpcID;
@@ -113,5 +114,15 @@ public class Misc {
         NPC npc = event.getNpc();
         // Remove value if it exists
         damageHandler.getActiveEnemies().remove(npc.getIndex());
+    }
+
+    @Subscribe
+    public void onGameTick(GameTick ev) {
+        for (Enemy e : damageHandler.getActiveEnemies().values()) {
+            // Cox enemies handle their own regen via CoxEnemy.incrementRaidTick()
+            if (!(e instanceof com.example.enemydata.cox.CoxEnemy)) {
+                e.tickRegen();
+            }
+        }
     }
 }

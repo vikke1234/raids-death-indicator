@@ -54,6 +54,16 @@ public abstract class Enemy implements IEnemy {
     @Getter
     protected int regenCycle;
 
+    /**
+     * Ticks elapsed since the last regen (or spawn). Tracks position in the regen
+     * cycle for overlay display and uncertain-death detection.
+     */
+    @Getter(onMethod_ = { @Synchronized })
+    protected int regenTick;
+
+    /** Ticks that hitsplats typically lag behind XP drops. */
+    private static final int HIT_DELAY = 3;
+
     @Getter
     @Setter
     NPC npc;
@@ -121,6 +131,7 @@ public abstract class Enemy implements IEnemy {
         this.queuedDamage = -1;
         this.damageMultiplier = 1;
         this.regenCycle = 0;
+        this.regenTick = 0;
     }
 
     public synchronized void setCurrentHealth(int hp) {
@@ -173,6 +184,44 @@ public abstract class Enemy implements IEnemy {
 
     public synchronized boolean shouldHighlight() {
         return shouldDraw;
+    }
+
+    /**
+     * Advance the regen tick counter. If the cycle completes, heal 1 and reset.
+     */
+    public synchronized void tickRegen() {
+        if (regenCycle <= 0) {
+            return;
+        }
+        regenTick++;
+        if (regenTick >= regenCycle) {
+            regenTick = 0;
+            heal(1);
+        }
+    }
+
+    /**
+     * Ticks remaining until the next regen heal.
+     */
+    public synchronized int regenTicksRemaining() {
+        if (regenCycle <= 0) {
+            return 0;
+        }
+        return regenCycle - regenTick;
+    }
+
+    /**
+     * Whether the current death prediction is uncertain because a regen tick
+     * could land before the hitsplat and save the enemy.
+     *
+     * <p>Uncertain when: the kill margin is zero (exact match), a regen cycle
+     * is active, and the next regen falls within the typical hit delay.
+     */
+    public synchronized boolean isRegenUncertain() {
+        return shouldDraw
+                && regenCycle > 0
+                && regenTicksRemaining() <= HIT_DELAY
+                && queuedDamage == currentHealth;
     }
 
     public double getModifier() {

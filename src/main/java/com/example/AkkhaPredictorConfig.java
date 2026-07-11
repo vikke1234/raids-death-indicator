@@ -123,6 +123,16 @@ public interface AkkhaPredictorConfig extends Config {
         return "%ch%[ (%qd)]";
     }
 
+    @Alpha
+    @ConfigItem(
+            keyName = "highlightRegenWarnColor",
+            name = "Uncertain-death highlight",
+            description = "Color when a kill prediction may be wrong because regen could heal the enemy before the hit lands."
+    )
+    default Color highlightRegenWarnColor() {
+        return new Color(255, 170, 0, 96);
+    }
+
     // ---------------- Advanced section ----------------
 
     @ConfigItem(

@@ -116,6 +116,11 @@ public class CoxEnemy extends Enemy {
             heal(1);
         }
 
+        // Sync the generic regen tick so the overlay and isRegenUncertain() work
+        if (regenCycle > 0) {
+            regenTick = (int) (raidTick % regenCycle);
+        }
+
         if (raidTick == Long.MAX_VALUE) {
             raidTick = 0;
         } else {
