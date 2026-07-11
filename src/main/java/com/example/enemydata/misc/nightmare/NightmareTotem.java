@@ -40,32 +40,8 @@ public class NightmareTotem extends Enemy {
 
     public NightmareTotem(NPC npc, Client client) {
         super(npc, totemHp(npc, client), 1, 1, 1, 0, 0, 0, 0, 0);
-        this.currentHealth = 0;
+        // TODO: only magic is 2x
         this.damageMultiplier = 2;
-    }
-
-    /**
-     * Nightmare totems need a custom queue damage handler, as they are
-     * "charged", rather than killed.
-     */
-    @Override
-    public synchronized boolean queueDamage(int damage) {
-        queuedDamage += damage;
-        shouldDraw = (currentHealth + queuedDamage) >= baseHealth;
-        return shouldDraw;
-    }
-
-    @Override
-    public synchronized int hit(int damage) {
-        queuedDamage = Math.max(0, queuedDamage - damage);
-        currentHealth += damage;
-        if (queuedDamage == 0) {
-            // Queued prediction has been fully consumed by landed hitsplats.
-            // shouldDraw was set when the prediction was made; clear it now that
-            // the predicted event has resolved.
-            shouldDraw = false;
-        }
-        return currentHealth;
     }
 
     private static int totemHp(NPC npc, Client client) {

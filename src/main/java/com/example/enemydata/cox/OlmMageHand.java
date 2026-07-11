@@ -23,12 +23,6 @@ public class OlmMageHand extends CoxEnemy {
     }
 
     @Override
-    public synchronized boolean queueDamage(int damage) {
-        shouldDraw = super.queueDamage(damage);
-        return shouldDraw;
-    }
-
-    @Override
     public double getModifier() {
         return 1.0d;
     }

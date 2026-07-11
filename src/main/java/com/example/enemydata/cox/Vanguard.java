@@ -21,12 +21,6 @@ public class Vanguard extends CoxEnemy {
                 180, 150, 160, 0, 0, 160, 160, 160);
     }
 
-    @Override
-    public synchronized boolean queueDamage(int damage) {
-        shouldDraw = super.queueDamage(damage);
-        log.debug("vanguard hp: {} queued: {} draw: {}", currentHealth, queuedDamage, shouldDraw);
-        return shouldDraw;
-    }
 
     @Override
     public double getModifier() {

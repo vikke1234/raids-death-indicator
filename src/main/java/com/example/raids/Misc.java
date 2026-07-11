@@ -83,7 +83,7 @@ public class Misc {
             activeEnemies.putIfAbsent(idx, new NightmareTotem(npc, client));
             Enemy enemy = activeEnemies.get(idx);
             // On phase changes, we need to reset health
-            enemy.setCurrentHealth(0);
+            enemy.setCurrentHealth(enemy.getScaledHealth());
         }
     }
 

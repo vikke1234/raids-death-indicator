@@ -105,6 +105,8 @@ public abstract class Enemy implements IEnemy {
         this.npc = npc;
 
         this.baseHealth = baseHealth;
+        // Set sane default for scaled health
+        this.scaledHealth = baseHealth;
         this.currentHealth = baseHealth;
         this.attack = attack;
         this.str = str;
@@ -165,7 +167,8 @@ public abstract class Enemy implements IEnemy {
      */
     public synchronized boolean queueDamage(int damage) {
         queuedDamage += damage;
-        return queuedDamage >= currentHealth;
+        shouldDraw = queuedDamage >= currentHealth;
+        return shouldDraw;
     }
 
     public synchronized boolean shouldHighlight() {

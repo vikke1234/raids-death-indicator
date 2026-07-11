@@ -31,9 +31,4 @@ public class AkkhaShadow extends ToaEnemy {
         }
     }
 
-    @Override
-    public synchronized boolean queueDamage(int damage) {
-        shouldDraw = super.queueDamage(damage);
-        return shouldDraw;
-    }
 }

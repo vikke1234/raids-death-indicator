@@ -10,12 +10,6 @@ public class Portal extends CoxEnemy {
         regenCycle = 45;
     }
 
-    @Override
-    public synchronized boolean queueDamage(int damage) {
-        shouldDraw = super.queueDamage(damage);
-        log.debug("current hp: {} queued damage: {} should draw: {}", currentHealth, queuedDamage, shouldDraw);
-        return shouldDraw;
-    }
 
     @Override
     public double getModifier() {
