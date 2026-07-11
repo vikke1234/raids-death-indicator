@@ -28,6 +28,9 @@ public final class Trace {
     /** Akkha phase highlight decisions. */
     public static final boolean AKKHA = Boolean.getBoolean("trace.akkha");
 
+    /** Generic traces */
+    private static final boolean TRACES = Boolean.getBoolean("trace.trace");
+
     private static final Logger LOG = LoggerFactory.getLogger("com.example.trace");
 
     public static void predictor(String format, Object... args) {
@@ -42,6 +45,11 @@ public final class Trace {
 
     public static void akkha(String format, Object... args) {
         if (AKKHA)
+            LOG.info(format, args);
+    }
+
+    public static void trace(String format, Object... args) {
+        if (TRACES)
             LOG.info(format, args);
     }
 
