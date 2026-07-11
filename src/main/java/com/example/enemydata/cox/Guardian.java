@@ -11,7 +11,7 @@ public class Guardian extends CoxEnemy {
     public Guardian(NPC npc, boolean isCm, int partySize, int maxCombat, int maxHp, long raidTick) {
         super(npc, isCm, partySize, maxCombat, maxHp, raidTick,
                 250, 140, 100, 0, 20, 80, 180, -10);
-        regenCycle = 8;
+        //regenCycle = 8;
     }
 
     @Override

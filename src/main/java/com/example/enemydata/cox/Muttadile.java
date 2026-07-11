@@ -17,7 +17,7 @@ public abstract class Muttadile extends CoxEnemy {
             int defStab, int defSlash, int defCrush) {
         super(npc, isCm, partySize, maxCombat, maxHp, raidTick,
                 baseHp, melee, def, offAtt, offStr, defStab, defSlash, defCrush);
-        regenCycle = 15;
+        //regenCycle = 15;
     }
 
     @Override
