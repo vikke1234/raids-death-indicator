@@ -35,18 +35,11 @@ public class Misc {
     @Inject
     private DamageHandler damageHandler;
 
-    private void addIfValid(NPC npc) {
-        if (npc == null) {
-            return;
-        }
-
+    @Subscribe
+    protected void onNpcSpawned(NpcSpawned event) {
+        NPC npc = event.getNpc();
         var activeEnemies = damageHandler.getActiveEnemies();
         int idx = npc.getIndex();
-
-        if (activeEnemies.containsKey(idx)) {
-            // Already tracked
-            return;
-        }
 
         if (NightmareTotem.NPC_IDS.contains(npc.getId())) {
             activeEnemies.put(idx, new NightmareTotem(npc, client));
@@ -80,15 +73,18 @@ public class Misc {
     }
 
     @Subscribe
-    protected void onNpcSpawned(NpcSpawned event) {
-        NPC npc = event.getNpc();
-        addIfValid(npc);
-    }
-
-    @Subscribe
     protected void onNpcChanged(NpcChanged event) {
+        var activeEnemies = damageHandler.getActiveEnemies();
         NPC npc = event.getNpc();
-        addIfValid(npc);
+        int idx = npc.getIndex();
+        int id = npc.getId();
+
+        if (NightmareTotem.NPC_IDS.contains(id)) {
+            activeEnemies.putIfAbsent(idx, new NightmareTotem(npc, client));
+            Enemy enemy = activeEnemies.get(idx);
+            // On phase changes, we need to reset health
+            enemy.setCurrentHealth(0);
+        }
     }
 
     @Subscribe
