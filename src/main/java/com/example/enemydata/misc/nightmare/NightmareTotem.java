@@ -24,8 +24,8 @@ import java.util.Set;
  * </ul>
  */
 public class NightmareTotem extends Enemy {
-    /** Player-search radius around the totem (tiles). Arena fits in ~10×10. */
-    private static final int NEARBY_RADIUS = 15;
+    /** Player-search radius around the totem (tiles). Arena fits in ~20×20. */
+    private static final int NEARBY_RADIUS = 30;
 
     public static final Set<Integer> NPC_IDS = Set.of(
             NpcID.NIGHTMARE_TOTEM_1_DORMANT, // 9435
