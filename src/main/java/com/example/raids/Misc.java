@@ -5,6 +5,7 @@ import com.example.enemydata.misc.nightmare.NightmareHuskRanged;
 import com.example.enemydata.misc.nightmare.NightmareParasite;
 import com.example.enemydata.misc.nightmare.NightmareParasiteEnraged;
 import com.example.enemydata.misc.nightmare.NightmareHuskMage;
+import com.example.enemydata.misc.AbyssalSire;
 import com.example.enemydata.misc.nightmare.NightmareTotem;
 import com.example.enemydata.misc.nightmare.PhosaniParasite;
 import com.example.enemydata.misc.nightmare.PhosaniParasiteEnraged;
@@ -68,6 +69,13 @@ public class Misc {
                         activeEnemies.put(idx, new NightmareParasiteEnraged(npc));
                     }
                     break;
+
+                // Abyssal Sire — phase 1 (spawn, sleeping / awake / stunned)
+                case NpcID.ABYSSALSIRE_SIRE_STASIS_SLEEPING:
+                case NpcID.ABYSSALSIRE_SIRE_STASIS_AWAKE:
+                case NpcID.ABYSSALSIRE_SIRE_STASIS_STUNNED:
+                    activeEnemies.putIfAbsent(idx, new AbyssalSire(npc));
+                    break;
             }
         }
     }
@@ -84,6 +92,19 @@ public class Misc {
             Enemy enemy = activeEnemies.get(idx);
             // On phase changes, we need to reset health
             enemy.setCurrentHealth(enemy.getScaledHealth());
+        }
+
+        // Abyssal Sire — phase transitions
+        switch (id) {
+            // Phase 2: throne (puppet / wandering)
+            case NpcID.ABYSSALSIRE_SIRE_PUPPET:
+            case NpcID.ABYSSALSIRE_SIRE_WANDERING:
+            case NpcID.ABYSSALSIRE_SIRE_PANICKING:
+                // Phase 3 stage 1: off the throne (panicking)
+            case NpcID.ABYSSALSIRE_SIRE_APOCALYPSE:
+                // Phase 3 stage 2: enrage (apocalypse)
+                activeEnemies.putIfAbsent(idx, new AbyssalSire(npc));
+                break;
         }
     }
 
