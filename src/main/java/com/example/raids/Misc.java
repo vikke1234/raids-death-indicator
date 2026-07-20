@@ -88,10 +88,7 @@ public class Misc {
         int id = npc.getId();
 
         if (NightmareTotem.NPC_IDS.contains(id)) {
-            activeEnemies.putIfAbsent(idx, new NightmareTotem(npc, client));
-            Enemy enemy = activeEnemies.get(idx);
-            // On phase changes, we need to reset health
-            enemy.setCurrentHealth(enemy.getScaledHealth());
+            activeEnemies.replace(idx, new NightmareTotem(npc, client));
         }
 
         // Abyssal Sire — phase transitions
