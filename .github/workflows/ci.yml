@@ -114,11 +114,11 @@ jobs:
           git commit -m "Update raids-death-indicator to ${NEW_HASH}" -m "${COMMIT_TITLES}" || exit 0
           git push --force
 
-      # Step 3: Create GitHub Release on Target Repo & Attach the JAR
-      - name: Create Release on Target Repo
+      # Publish jar
+      - name: Create Release on Source Repo
         if: github.ref_type == 'tag' || (github.event_name == 'workflow_dispatch' && inputs.create_release)
         env:
-          GH_TOKEN: ${{ secrets.RDI }}
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }} # Use default token for self-repo release
         run: |
           # Use tag name if triggered by git tag, otherwise use input
           TAG_NAME="${{ github.ref_name }}"
@@ -127,6 +127,5 @@ jobs:
           fi
 
           gh release create "${TAG_NAME}" build/libs/*-all.jar \
-            --repo vikke1234/plugin-hub \
             --title "Release ${TAG_NAME}" \
             --notes "Automated release build for raids-death-indicator version ${TAG_NAME}"
