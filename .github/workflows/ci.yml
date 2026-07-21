@@ -4,8 +4,19 @@ on:
   push:
     branches:
       - master
+    tags:
+      - 'v*' # Triggers automatically when pushing a version tag (e.g. v1.0.0)
   pull_request:
   workflow_dispatch:
+    inputs:
+      create_release:
+        description: 'Update target repo & create release?'
+        type: boolean
+        required: true
+        default: true
+      version_tag:
+        description: 'Tag / Release Version (e.g., v1.0.0)'
+        required: false
 
 concurrency:
   group: build-${{ github.ref }}
@@ -13,6 +24,7 @@ concurrency:
 
 permissions:
   checks: write
+  contents: write
 
 jobs:
   gradle:
@@ -22,6 +34,9 @@ jobs:
     runs-on: ${{ matrix.os }}
     steps:
       - uses: actions/checkout@a5ac7e51b41094c92402da3b24376905380afc29 # v4.1.6
+        with:
+          fetch-depth: 0 # Fetch full history to generate commit range logs
+
       - uses: actions/setup-java@99b8673ff64fbf99d8d325f52d9a5bdedb8483e9 # v4.2.1
         with:
           distribution: temurin
@@ -47,3 +62,71 @@ jobs:
         with:
           name: raids-death-indicator-shadow
           path: build/libs/*-all.jar
+
+      # Checkout plugin-hub fork
+      - name: Checkout Target Repository
+        if: github.ref_type == 'tag' || (github.event_name == 'workflow_dispatch' && inputs.create_release)
+        uses: actions/checkout@a5ac7e51b41094c92402da3b24376905380afc29
+        with:
+          repository: 'vikke1234/plugin-hub'
+          token: ${{ secrets.RDI }}
+          path: 'target-repo'
+
+      # Force-sync fork with runelite/plugin-hub upstream, update manifest, and push
+      - name: Sync with Upstream, Update Plugin Manifest, and Push
+        if: github.ref_type == 'tag' || (github.event_name == 'workflow_dispatch' && inputs.create_release)
+        run: |
+          NEW_HASH="${{ github.sha }}"
+          SOURCE_DIR="$(pwd)"
+
+          cd target-repo
+
+          # Git Identity Configuration
+          git config user.name "Viktor Horsmanheimo"
+          git config user.email "viktor.horsmanheimo@gmail.com"
+
+          # Fetch official runelite/plugin-hub upstream and force reset local branch to match upstream master
+          git remote add upstream https://github.com/runelite/plugin-hub.git
+          git fetch upstream
+          git reset --hard upstream/master
+
+          # Read the previous commit hash from the plugin manifest file before modifying it
+          OLD_HASH=$(grep -E '^commit=' plugins/raids-death-indicator | cut -d'=' -f2 | tr -d '\r\n')
+          echo "Previous plugin-hub commit hash: ${OLD_HASH}"
+          echo "New plugin commit hash: ${NEW_HASH}"
+
+          # Extract commit titles from source repo between OLD_HASH and HEAD
+          cd "$SOURCE_DIR"
+          if [ -n "$OLD_HASH" ] && git cat-file -e "$OLD_HASH^{commit}" 2>/dev/null; then
+            COMMIT_TITLES=$(git log ${OLD_HASH}..${NEW_HASH} --oneline)
+          else
+            # Fallback if OLD_HASH isn't found in current history
+            COMMIT_TITLES=$(git log -1 --format="%s")
+          fi
+
+          cd target-repo
+
+          # Update the commit= line in the raids-death-indicator plugin file
+          sed -i "s/^commit=.*/commit=${NEW_HASH}/" plugins/raids-death-indicator
+
+          # Stage, commit, and force-push changes to your fork with commit titles in the body
+          git add plugins/raids-death-indicator
+          git commit -m "Update raids-death-indicator to ${NEW_HASH}" -m "${COMMIT_TITLES}" || exit 0
+          git push --force
+
+      # Step 3: Create GitHub Release on Target Repo & Attach the JAR
+      - name: Create Release on Target Repo
+        if: github.ref_type == 'tag' || (github.event_name == 'workflow_dispatch' && inputs.create_release)
+        env:
+          GH_TOKEN: ${{ secrets.RDI }}
+        run: |
+          # Use tag name if triggered by git tag, otherwise use input
+          TAG_NAME="${{ github.ref_name }}"
+          if [ "${{ github.event_name }}" = "workflow_dispatch" ]; then
+            TAG_NAME="${{ inputs.version_tag }}"
+          fi
+
+          gh release create "${TAG_NAME}" build/libs/*-all.jar \
+            --repo vikke1234/plugin-hub \
+            --title "Release ${TAG_NAME}" \
+            --notes "Automated release build for raids-death-indicator version ${TAG_NAME}"
