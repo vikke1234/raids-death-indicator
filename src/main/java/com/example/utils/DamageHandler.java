@@ -349,18 +349,23 @@ public class DamageHandler {
             boolean mine = hitsplat.isMine();
             boolean others = hitsplat.isOthers();
 
-            if (type == HitsplatID.HEAL || type == HitsplatID.CYAN_UP) {
-                enemy.heal(amount);
-                Trace.damage("HEAL {} on {}(idx={} id={}) tick={} type={} mine={} others={} fade={} (hp now {})",
-                        amount, npc.getName(), npc.getIndex(), npc.getId(),
-                        tick, type, mine, others, disappearsOn,
-                        enemy.getCurrentHealth());
-            } else {
-                enemy.hit(amount);
-                Trace.damage("HIT  {} on {}(idx={} id={}) tick={} type={} mine={} others={} fade={} (hp now {}, queued now {})",
-                        amount, npc.getName(), npc.getIndex(), npc.getId(),
-                        tick, type, mine, others, disappearsOn,
-                        enemy.getCurrentHealth(), enemy.getQueuedDamage());
+            switch (type) {
+                case HitsplatID.HEAL:
+                case HitsplatID.CYAN_UP:
+                    // Seems that nightmare totems use this when healed
+                case HitsplatID.DAMAGE_OTHER_WHITE:
+                    enemy.heal(amount);
+                    Trace.damage("HEAL {} on {}(idx={} id={}) tick={} type={} mine={} others={} fade={} (hp now {})",
+                            amount, npc.getName(), npc.getIndex(), npc.getId(),
+                            tick, type, mine, others, disappearsOn,
+                            enemy.getCurrentHealth());
+                    break;
+                default:
+                    enemy.hit(amount);
+                    Trace.damage("HIT  {} on {}(idx={} id={}) tick={} type={} mine={} others={} fade={} (hp now {}, queued now {})",
+                            amount, npc.getName(), npc.getIndex(), npc.getId(),
+                            tick, type, mine, others, disappearsOn,
+                            enemy.getCurrentHealth(), enemy.getQueuedDamage());
             }
         }
     }
