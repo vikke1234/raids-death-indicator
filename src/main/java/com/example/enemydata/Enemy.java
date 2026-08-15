@@ -97,6 +97,7 @@ public abstract class Enemy implements IEnemy {
         bosses.add(NpcID.RAIDS_VANGUARD_RANGED);
         bosses.add(NpcID.RAIDS_VANGUARD_MAGIC);
         bosses.add(NpcID.RAIDS_VANGUARD_MELEE);
+        bosses.add(NpcID.OLM_HAND_RIGHT);
     }
 
     protected Enemy(NPC npc, int baseHealth, int attack, int str, int def,
