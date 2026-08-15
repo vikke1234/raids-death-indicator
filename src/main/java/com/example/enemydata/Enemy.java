@@ -118,7 +118,7 @@ public abstract class Enemy implements IEnemy {
         this.defCrush = defCrush;
         this.shouldDraw = false;
         this.hideOnDeath = false;
-        this.queuedDamage = -1;
+        this.queuedDamage = 0;
         this.damageMultiplier = 1;
         this.regenCycle = 0;
     }
