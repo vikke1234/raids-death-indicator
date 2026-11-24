@@ -3,6 +3,7 @@ package com.example;
 import com.example.events.EntityDamaged;
 import com.example.raids.Cox;
 import com.example.raids.Misc;
+import com.example.raids.Tfa;
 import com.example.raids.Toa;
 import com.example.utils.DamageHandler;
 import com.google.inject.Provides;
@@ -41,6 +42,9 @@ public class AkkhaPredictor extends Plugin {
 	private Cox cox;
 
 	@Inject
+	private Tfa tfa;
+
+	@Inject
 	private Misc misc;
 
 	@Inject
@@ -55,6 +59,7 @@ public class AkkhaPredictor extends Plugin {
 		eventBus.register(damageHandler);
 		eventBus.register(toa);
 		eventBus.register(cox);
+		eventBus.register(tfa);
 		eventBus.register(misc);
 		clientThread.invoke(damageHandler::initXpMap);
 		overlayManager.add(overlay);
@@ -67,6 +72,7 @@ public class AkkhaPredictor extends Plugin {
 		eventBus.unregister(damageHandler);
 		eventBus.unregister(toa);
 		eventBus.unregister(cox);
+		eventBus.unregister(tfa);
 		eventBus.unregister(misc);
 		wsClient.unregisterMessage(EntityDamaged.class);
 		damageHandler.getPredictor().reset();
