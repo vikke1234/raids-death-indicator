@@ -25,8 +25,8 @@ dependencies {
 
 // Annotation processor that reads @Tracked enemy declarations and generates the
 // config menu plus the NPC-id registry.
-def generatedConfigDir = layout.buildDirectory.dir('generated/sources/enemy-config/java/main')
 def processorClassesDir = layout.buildDirectory.dir('classes/java/processor')
+def trackedGeneratedDir = file('src/main/java/com/example/generated')
 
 tasks.register('compileEnemyConfigProcessor', JavaCompile) {
 	source = fileTree('src/processor/java')
@@ -36,10 +36,26 @@ tasks.register('compileEnemyConfigProcessor', JavaCompile) {
 	options.release = 11
 }
 
-tasks.named('compileJava') {
+tasks.register('generateEnemySources', JavaCompile) {
 	dependsOn 'compileEnemyConfigProcessor'
-	options.annotationProcessorPath = files(processorClassesDir, file('src/processor/resources')) + configurations.annotationProcessor
-	options.generatedSourceOutputDirectory.set(generatedConfigDir)
+	source = fileTree('src/main/java') {
+		exclude 'com/example/generated/**'
+	}
+	classpath = sourceSets.main.compileClasspath
+	destinationDirectory.set(layout.buildDirectory.dir('tmp/generate-enemy-sources'))
+	options.annotationProcessorPath = files(processorClassesDir, file('src/processor/resources')) \
+			+ configurations.annotationProcessor
+	options.generatedSourceOutputDirectory.set(file('src/main/java'))
+	options.compilerArgs.add('-proc:only')
+	options.release = 11
+	doFirst {
+		delete trackedGeneratedDir
+	}
+	doLast {
+		fileTree(trackedGeneratedDir).matching { include '**/*.java' }.each { generated ->
+			generated.text = generated.text.replace('\r\n', '\n')
+		}
+	}
 }
 
 group = 'com.example'
@@ -48,7 +64,6 @@ version = '1.0-SNAPSHOT'
 java {
 	toolchain {
 		languageVersion = JavaLanguageVersion.of(11)
-		vendor = JvmVendorSpec.JETBRAINS
 	}
 }
 
