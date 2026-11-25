@@ -1,6 +1,6 @@
 package com.example.utils;
 
-import com.example.AkkhaPredictorConfig;
+import com.example.generated.GeneratedEnemyConfig;
 import com.example.enemydata.Enemy;
 import com.example.events.EntityDamaged;
 import lombok.Getter;
@@ -45,7 +45,10 @@ public class DamageHandler {
     private PartyService party;
 
     @Inject
-    private AkkhaPredictorConfig config;
+    private GeneratedEnemyConfig config;
+
+    @Inject
+    private EnemyTrackingConfig enemyTrackingConfig;
     /**
      * Map of current XP amounts in each skill
      */
@@ -295,14 +298,13 @@ public class DamageHandler {
         Enemy enemy = activeEnemies.getOrDefault(npcIndex, null);
         if (enemy != null) {
             boolean died = enemy.queueDamage(entityDamaged.getDamage());
-            if (died && enemy.isHideOnDeath()) {
+            NPC liveNpc = enemy.getNpc();
+            if (died && enemy.isHideOnDeath() && liveNpc != null
+                    && enemyTrackingConfig.shouldHide(liveNpc.getId())) {
                 // npc.setDead is a RuneLite NPC API that requires the client thread.
                 // onEntityDamaged can come from the party/WebSocket thread, so post
                 // the side effect onto the client thread.
-                NPC liveNpc = enemy.getNpc();
-                if (liveNpc != null) {
-                    clientThread.invoke(() -> liveNpc.setDead(true));
-                }
+                clientThread.invoke(() -> liveNpc.setDead(true));
             }
         }
     }

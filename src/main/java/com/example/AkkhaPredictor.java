@@ -1,6 +1,7 @@
 package com.example;
 
 import com.example.events.EntityDamaged;
+import com.example.generated.GeneratedEnemyConfig;
 import com.example.raids.Cox;
 import com.example.raids.Misc;
 import com.example.raids.Tfa;
@@ -79,8 +80,8 @@ public class AkkhaPredictor extends Plugin {
 	}
 
 	@Provides
-	AkkhaPredictorConfig provideConfig(ConfigManager configManager)
+	GeneratedEnemyConfig provideConfig(ConfigManager configManager)
 	{
-		return configManager.getConfig(AkkhaPredictorConfig.class);
+		return configManager.getConfig(GeneratedEnemyConfig.class);
 	}
 }

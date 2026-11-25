@@ -1,5 +1,10 @@
 package com.example.enemydata.misc.nightmare;
 
+import com.example.enemydata.Tracked;
+import com.example.enemydata.Raid;
+import com.example.enemydata.TrackingMode;
+import net.runelite.api.gameval.NpcID;
+
 import com.example.enemydata.Enemy;
 import net.runelite.api.Client;
 import net.runelite.api.NPC;
@@ -23,6 +28,12 @@ import java.util.Set;
  * (so 6 players = 330, 7 = 360, etc.).</li>
  * </ul>
  */
+@Tracked(
+        name = "Nightmare Totem",
+        npcIds = { NpcID.NIGHTMARE_TOTEM_1_DORMANT, NpcID.NIGHTMARE_TOTEM_2_DORMANT, NpcID.NIGHTMARE_TOTEM_3_DORMANT, NpcID.NIGHTMARE_TOTEM_4_DORMANT, NpcID.NIGHTMARE_TOTEM_1_READY, NpcID.NIGHTMARE_TOTEM_2_READY, NpcID.NIGHTMARE_TOTEM_3_READY, NpcID.NIGHTMARE_TOTEM_4_READY },
+        raid = Raid.MISC,
+        defaultMode = TrackingMode.HIGHLIGHT
+)
 public class NightmareTotem extends Enemy {
     /** Player-search radius around the totem (tiles). Arena fits in ~20×20. */
     private static final int NEARBY_RADIUS = 30;

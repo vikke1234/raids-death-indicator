@@ -1,8 +1,12 @@
 package com.example.enemydata.tfa;
 
+import com.example.enemydata.Tracked;
+import com.example.enemydata.Raid;
+import com.example.enemydata.TrackingMode;
+import net.runelite.api.gameval.NpcID;
+
 import net.runelite.api.Client;
 import net.runelite.api.NPC;
-import net.runelite.api.gameval.NpcID;
 import net.runelite.api.gameval.VarbitID;
 
 /**
@@ -16,6 +20,12 @@ import net.runelite.api.gameval.VarbitID;
  * while grounded. The boss changes id rather than despawning between states,
  * so all of that state lives on one Enemy instance.</p>
  */
+@Tracked(
+        name = "Archive Guardian",
+        npcIds = { NpcID.TFA_GUARDIAN_START, NpcID.TFA_GUARDIAN, NpcID.TFA_GUARDIAN_UNSHIELDED },
+        raid = Raid.TFA,
+        defaultMode = TrackingMode.HIGHLIGHT
+)
 public class ArchiveGuardian extends TfaEnemy {
     private static final int SHIELD_DAMAGE_PERCENT = 40;
     private static final int TRUE_DAMAGE_PERCENT = 15;

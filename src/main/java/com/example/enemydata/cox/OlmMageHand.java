@@ -1,7 +1,18 @@
 package com.example.enemydata.cox;
 
+import com.example.enemydata.Tracked;
+import com.example.enemydata.Raid;
+import com.example.enemydata.TrackingMode;
+import net.runelite.api.gameval.NpcID;
+
 import net.runelite.api.NPC;
 
+@Tracked(
+        name = "Olm Mage Hand",
+        npcIds = { NpcID.OLM_HAND_RIGHT_SPAWNING, NpcID.OLM_HAND_RIGHT },
+        raid = Raid.COX,
+        defaultMode = TrackingMode.HIGHLIGHT
+)
 public class OlmMageHand extends CoxEnemy {
     public OlmMageHand(NPC npc, boolean isCm, int partySize, int maxCombat, int maxHp, long raidTick) {
         super(npc, isCm, partySize, maxCombat, maxHp, raidTick, 600, 250, 175, 0, 0, 200, 200, 200);

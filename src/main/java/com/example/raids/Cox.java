@@ -3,10 +3,11 @@ package com.example.raids;
 import net.runelite.api.gameval.*;
 import net.runelite.api.gameval.NpcID;
 
-import com.example.AkkhaPredictorConfig;
+import com.example.generated.GeneratedEnemyConfig;
 import com.example.enemydata.*;
 import com.example.enemydata.cox.CoxEnemy;
 import com.example.utils.DamageHandler;
+import com.example.utils.EnemyTrackingConfig;
 import lombok.Getter;
 import net.runelite.api.*;
 import net.runelite.api.events.*;
@@ -23,13 +24,16 @@ public class Cox {
     private DamageHandler damageHandler;
 
     @Inject
+    private EnemyTrackingConfig enemyTrackingConfig;
+
+    @Inject
     private Client client;
 
     @Inject
     private HiscoreClient hiscoreClient;
 
     @Inject
-    private AkkhaPredictorConfig config;
+    private GeneratedEnemyConfig config;
 
     @Getter
     AtomicBoolean cachedInCox;
@@ -153,15 +157,19 @@ public class Cox {
 
             case NpcID.RAIDS_VANGUARD_WALKING:
                 enemy = (CoxEnemy) activeEnemies.get(npc.getIndex());
-                enemy.heal(1);
-                enemy.setStalled(true);
+                if (enemy != null) {
+                    enemy.heal(1);
+                    enemy.setStalled(true);
+                }
                 break;
 
             case NpcID.RAIDS_VANGUARD_RANGED:
             case NpcID.RAIDS_VANGUARD_MAGIC:
             case NpcID.RAIDS_VANGUARD_MELEE:
                 enemy = (CoxEnemy) activeEnemies.get(npc.getIndex());
-                enemy.setStalled(false);
+                if (enemy != null) {
+                    enemy.setStalled(false);
+                }
                 break;
         }
     }
@@ -176,7 +184,7 @@ public class Cox {
         }
 
         var enemyConstructor = CoxEnemy.enemies.getOrDefault(npc.getId(), null);
-        if (enemyConstructor == null) {
+        if (enemyConstructor == null || !enemyTrackingConfig.isTracked(npc.getId())) {
             return;
         }
 

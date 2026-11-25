@@ -23,6 +23,25 @@ dependencies {
 	testImplementation group: 'net.runelite', name:'jshell', version: runeLiteVersion
 }
 
+// Annotation processor that reads @Tracked enemy declarations and generates the
+// config menu plus the NPC-id registry.
+def generatedConfigDir = layout.buildDirectory.dir('generated/sources/enemy-config/java/main')
+def processorClassesDir = layout.buildDirectory.dir('classes/java/processor')
+
+tasks.register('compileEnemyConfigProcessor', JavaCompile) {
+	source = fileTree('src/processor/java')
+	classpath = files()
+	destinationDirectory.set(processorClassesDir)
+	options.encoding = 'UTF-8'
+	options.release = 11
+}
+
+tasks.named('compileJava') {
+	dependsOn 'compileEnemyConfigProcessor'
+	options.annotationProcessorPath = files(processorClassesDir, file('src/processor/resources')) + configurations.annotationProcessor
+	options.generatedSourceOutputDirectory.set(generatedConfigDir)
+}
+
 group = 'com.example'
 version = '1.0-SNAPSHOT'
 

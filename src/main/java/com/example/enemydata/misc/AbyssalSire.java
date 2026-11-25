@@ -1,5 +1,10 @@
 package com.example.enemydata.misc;
 
+import com.example.enemydata.Tracked;
+import com.example.enemydata.Raid;
+import com.example.enemydata.TrackingMode;
+import net.runelite.api.gameval.NpcID;
+
 import com.example.enemydata.Enemy;
 import net.runelite.api.NPC;
 
@@ -40,6 +45,12 @@ import net.runelite.api.NPC;
  * seems not to be accounted for in the xp modifier.
  * </p>
  */
+@Tracked(
+        name = "Abyssal Sire",
+        npcIds = { NpcID.ABYSSALSIRE_SIRE_STASIS_SLEEPING, NpcID.ABYSSALSIRE_SIRE_STASIS_AWAKE, NpcID.ABYSSALSIRE_SIRE_STASIS_STUNNED, NpcID.ABYSSALSIRE_SIRE_PUPPET, NpcID.ABYSSALSIRE_SIRE_WANDERING, NpcID.ABYSSALSIRE_SIRE_PANICKING, NpcID.ABYSSALSIRE_SIRE_APOCALYPSE },
+        raid = Raid.MISC,
+        defaultMode = TrackingMode.HIGHLIGHT
+)
 public class AbyssalSire extends Enemy {
     public AbyssalSire(NPC npc) {
         super(npc,

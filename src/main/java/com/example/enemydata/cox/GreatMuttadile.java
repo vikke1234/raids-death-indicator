@@ -1,5 +1,10 @@
 package com.example.enemydata.cox;
 
+import com.example.enemydata.Tracked;
+import com.example.enemydata.Raid;
+import com.example.enemydata.TrackingMode;
+import net.runelite.api.gameval.NpcID;
+
 import net.runelite.api.NPC;
 
 /**
@@ -8,6 +13,12 @@ import net.runelite.api.NPC;
  * stab -5, slash +82, crush +60. Heal-at-meat-tree mechanic isn't modeled
  * beyond the inherited 50% highlight flag.
  */
+@Tracked(
+        name = "Great Muttadile",
+        npcIds = { NpcID.RAIDS_DOGODILE_SUBMERGED, NpcID.RAIDS_DOGODILE },
+        raid = Raid.COX,
+        defaultMode = TrackingMode.HIGHLIGHT
+)
 public class GreatMuttadile extends Muttadile {
     public GreatMuttadile(NPC npc, boolean isCm, int partySize, int maxCombat, int maxHp, long raidTick) {
         super(npc, isCm, partySize, maxCombat, maxHp, raidTick,

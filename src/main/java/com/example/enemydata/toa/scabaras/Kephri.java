@@ -1,9 +1,20 @@
 package com.example.enemydata.toa.scabaras;
 
+import com.example.enemydata.Tracked;
+import com.example.enemydata.Raid;
+import com.example.enemydata.TrackingMode;
+import net.runelite.api.gameval.NpcID;
+
 import com.example.enemydata.Enemy;
 import com.example.enemydata.toa.ToaEnemy;
 import net.runelite.api.NPC;
 
+@Tracked(
+        name = "Kephri",
+        npcIds = { NpcID.TOA_KEPHRI_BOSS_SHIELDED },
+        raid = Raid.TOA,
+        defaultMode = TrackingMode.HIGHLIGHT
+)
 public class Kephri extends ToaEnemy {
     // TODO: might need extra handling due to shield? Probably just to ignore the damage queueing
     public Kephri(NPC npc, int invocation, int partySize, int pathLevel) {

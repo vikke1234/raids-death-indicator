@@ -10,6 +10,7 @@ import com.example.enemydata.misc.nightmare.NightmareTotem;
 import com.example.enemydata.misc.nightmare.PhosaniParasite;
 import com.example.enemydata.misc.nightmare.PhosaniParasiteEnraged;
 import com.example.utils.DamageHandler;
+import com.example.utils.EnemyTrackingConfig;
 import lombok.extern.slf4j.Slf4j;
 import net.runelite.api.Client;
 import net.runelite.api.NPC;
@@ -36,9 +37,15 @@ public class Misc {
     @Inject
     private DamageHandler damageHandler;
 
+    @Inject
+    private EnemyTrackingConfig enemyTrackingConfig;
+
     @Subscribe
     protected void onNpcSpawned(NpcSpawned event) {
         NPC npc = event.getNpc();
+        if (!enemyTrackingConfig.isTracked(npc.getId())) {
+            return;
+        }
         var activeEnemies = damageHandler.getActiveEnemies();
         int idx = npc.getIndex();
 
@@ -86,6 +93,9 @@ public class Misc {
         NPC npc = event.getNpc();
         int idx = npc.getIndex();
         int id = npc.getId();
+        if (!enemyTrackingConfig.isTracked(id)) {
+            return;
+        }
 
         if (NightmareTotem.NPC_IDS.contains(id)) {
             activeEnemies.replace(idx, new NightmareTotem(npc, client));

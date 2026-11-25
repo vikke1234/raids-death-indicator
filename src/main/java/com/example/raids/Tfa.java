@@ -5,6 +5,7 @@ import com.example.enemydata.tfa.ArchiveGuardian;
 import com.example.enemydata.tfa.InertGuardian;
 import com.example.enemydata.tfa.TfaEnemy;
 import com.example.utils.DamageHandler;
+import com.example.utils.EnemyTrackingConfig;
 import net.runelite.api.Client;
 import net.runelite.api.NPC;
 import net.runelite.api.events.NpcChanged;
@@ -24,6 +25,9 @@ public class Tfa {
 
     @Inject
     private DamageHandler damageHandler;
+
+    @Inject
+    private EnemyTrackingConfig enemyTrackingConfig;
 
     private static final int[] TFA_REGIONS = {
             16471,
@@ -61,7 +65,7 @@ public class Tfa {
         }
 
         Function<NPC, Enemy> constructor = TfaEnemy.enemies.get(npc.getId());
-        if (constructor == null) {
+        if (constructor == null || !enemyTrackingConfig.isTracked(npc.getId())) {
             return;
         }
 

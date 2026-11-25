@@ -1,5 +1,10 @@
 package com.example.enemydata.cox;
 
+import com.example.enemydata.Tracked;
+import com.example.enemydata.Raid;
+import com.example.enemydata.TrackingMode;
+import net.runelite.api.gameval.NpcID;
+
 import net.runelite.api.NPC;
 
 /**
@@ -7,6 +12,12 @@ import net.runelite.api.NPC;
  * Stats per OSRS wiki: hp 250, atk/str 140, def 100, off +0 att / +20 str,
  * defensive bonuses stab 80, slash 180, crush -10.
  */
+@Tracked(
+        name = "Stone Guardian",
+        npcIds = { NpcID.RAIDS_STONEGUARDIANS_LEFT, NpcID.RAIDS_STONEGUARDIANS_RIGHT },
+        raid = Raid.COX,
+        defaultMode = TrackingMode.HIGHLIGHT
+)
 public class Guardian extends CoxEnemy {
     public Guardian(NPC npc, boolean isCm, int partySize, int maxCombat, int maxHp, long raidTick) {
         super(npc, isCm, partySize, maxCombat, maxHp, raidTick,

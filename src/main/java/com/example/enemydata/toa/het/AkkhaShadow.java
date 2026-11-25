@@ -1,9 +1,20 @@
 package com.example.enemydata.toa.het;
 
+import com.example.enemydata.Tracked;
+import com.example.enemydata.Raid;
+import com.example.enemydata.TrackingMode;
+import net.runelite.api.gameval.NpcID;
+
 import com.example.enemydata.Enemy;
 import com.example.enemydata.toa.ToaEnemy;
 import net.runelite.api.NPC;
 
+@Tracked(
+        name = "Akkha Shadow",
+        npcIds = { NpcID.AKKHA_SHADOW },
+        raid = Raid.TOA,
+        defaultMode = TrackingMode.HIGHLIGHT
+)
 public class AkkhaShadow extends ToaEnemy {
     public AkkhaShadow(NPC npc, int invocation, int partySize, int pathLevel) {
         super(npc, invocation, partySize, pathLevel,

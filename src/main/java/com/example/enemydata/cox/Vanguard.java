@@ -1,5 +1,10 @@
 package com.example.enemydata.cox;
 
+import com.example.enemydata.Tracked;
+import com.example.enemydata.Raid;
+import com.example.enemydata.TrackingMode;
+import net.runelite.api.gameval.NpcID;
+
 import lombok.extern.slf4j.Slf4j;
 import net.runelite.api.NPC;
 import net.runelite.api.gameval.NpcID;
@@ -13,6 +18,12 @@ import net.runelite.api.gameval.NpcID;
  * dynamically from the live NPC id rather than baked in at construction.
  */
 @Slf4j
+@Tracked(
+        name = "Vanguard",
+        npcIds = { NpcID.RAIDS_VANGUARD_DORMANT, NpcID.RAIDS_VANGUARD_WALKING, NpcID.RAIDS_VANGUARD_MELEE, NpcID.RAIDS_VANGUARD_RANGED, NpcID.RAIDS_VANGUARD_MAGIC },
+        raid = Raid.COX,
+        defaultMode = TrackingMode.HIGHLIGHT
+)
 public class Vanguard extends CoxEnemy {
     public Vanguard(NPC npc, boolean isCm, int partySize, int maxCombat, int maxHp, long raidTick) {
         // hp=180, melee=150 (atk and str both 150), def=160, off bonuses

@@ -1,5 +1,10 @@
 package com.example.enemydata.toa.ampken;
 
+import com.example.enemydata.Tracked;
+import com.example.enemydata.Raid;
+import com.example.enemydata.TrackingMode;
+import net.runelite.api.gameval.NpcID;
+
 import com.example.enemydata.Enemy;
 import com.example.enemydata.toa.ToaEnemy;
 import net.runelite.api.NPC;
@@ -7,6 +12,12 @@ import net.runelite.api.NPC;
 import java.util.HashMap;
 import java.util.Map;
 
+@Tracked(
+        name = "Boulder",
+        npcIds = { NpcID.TOA_BABA_BOULDER, NpcID.TOA_BABA_BOULDER_WEAK },
+        raid = Raid.TOA,
+        defaultMode = TrackingMode.HIGHLIGHT_AND_HIDE
+)
 public class Boulder extends ToaEnemy {
     // team size -> path level -> hp
     private static final int [][] hpMap = {

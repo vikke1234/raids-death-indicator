@@ -1,5 +1,10 @@
 package com.example.enemydata.toa.het;
 
+import com.example.enemydata.Tracked;
+import com.example.enemydata.Raid;
+import com.example.enemydata.TrackingMode;
+import net.runelite.api.gameval.NpcID;
+
 import com.example.enemydata.toa.ToaEnemy;
 import com.example.utils.Trace;
 import lombok.Getter;
@@ -13,6 +18,12 @@ import net.runelite.api.gameval.NpcID;
 @Getter
 @Setter
 @Accessors(fluent = true)
+@Tracked(
+        name = "Akkha",
+        npcIds = { NpcID.AKKHA_SPAWN, NpcID.AKKHA_MELEE, NpcID.AKKHA_RANGE, NpcID.AKKHA_MAGE, NpcID.AKKHA_ENRAGE_SPAWN, NpcID.AKKHA_ENRAGE_INITIAL, NpcID.AKKHA_ENRAGE, NpcID.AKKHA_ENRAGE_DUMMY },
+        raid = Raid.TOA,
+        defaultMode = TrackingMode.HIGHLIGHT
+)
 public class Akkha extends ToaEnemy {
     private boolean canPhase;
 

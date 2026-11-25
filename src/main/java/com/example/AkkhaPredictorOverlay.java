@@ -1,8 +1,10 @@
 package com.example;
 
 import com.example.enemydata.Enemy;
+import com.example.generated.GeneratedEnemyConfig;
 import com.example.raids.Toa;
 import com.example.utils.DamageHandler;
+import com.example.utils.EnemyTrackingConfig;
 import com.example.utils.Predictor;
 import lombok.extern.slf4j.Slf4j;
 import net.runelite.api.Client;
@@ -20,13 +22,16 @@ import java.awt.*;
 @Slf4j
 public class AkkhaPredictorOverlay extends Overlay {
     @Inject
-    private AkkhaPredictorConfig config;
+    private GeneratedEnemyConfig config;
 
     @Inject
     private Client client;
 
     @Inject
     private DamageHandler damageHandler;
+
+    @Inject
+    private EnemyTrackingConfig enemyTrackingConfig;
 
     @Inject
     public void initialize() {
@@ -48,7 +53,7 @@ public class AkkhaPredictorOverlay extends Overlay {
             // the overlay. RuneLite wraps the root NPE in its own exception
             // type, so we widen to Throwable to catch all flavours.
             try {
-                if (enemy.shouldHighlight()) {
+                if (enemy.shouldHighlight() && enemyTrackingConfig.shouldHighlight(npc.getId())) {
                     renderPoly(graphics, null, 0, config.highlightColor(), npc.getConvexHull());
                 }
                 if (config.enableHpOverlay()) {

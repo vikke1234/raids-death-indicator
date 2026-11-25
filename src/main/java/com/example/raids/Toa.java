@@ -5,6 +5,7 @@ import com.example.enemydata.toa.ToaEnemy;
 import com.example.enemydata.toa.het.Akkha;
 import com.example.enemydata.toa.het.AkkhaShadow;
 import com.example.utils.DamageHandler;
+import com.example.utils.EnemyTrackingConfig;
 import com.example.utils.QuadFunction;
 import lombok.extern.slf4j.Slf4j;
 import net.runelite.api.Client;
@@ -28,6 +29,9 @@ public class Toa {
 
     @Inject
     private DamageHandler damageHandler;
+
+    @Inject
+    private EnemyTrackingConfig enemyTrackingConfig;
 
     public static boolean isAtToa(Client client) {
         final int[] TOA_REGIONS = {
@@ -173,7 +177,7 @@ public class Toa {
         }
 
         QuadFunction<NPC, Integer, Integer, Integer, Enemy> constructor = ToaEnemy.enemies.getOrDefault(npc.getId(), null);
-        if (constructor == null) {
+        if (constructor == null || !enemyTrackingConfig.isTracked(npc.getId())) {
             return;
         }
 
