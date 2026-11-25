@@ -5,6 +5,7 @@ import net.runelite.client.config.Config;
 import net.runelite.client.config.ConfigGroup;
 import net.runelite.client.config.ConfigItem;
 import net.runelite.client.config.ConfigSection;
+import net.runelite.client.config.Range;
 
 import java.awt.*;
 
@@ -18,6 +19,14 @@ public interface AkkhaPredictorConfig extends Config {
             closedByDefault = true
     )
     String hpOverlaySection = "hpOverlaySection";
+
+    @ConfigSection(
+            name = "Font",
+            description = "Font family, style and size for the HP overlay text.",
+            position = 150,
+            closedByDefault = true
+    )
+    String fontSection = "fontSection";
 
     @ConfigSection(
             name = "Advanced",
@@ -98,10 +107,31 @@ public interface AkkhaPredictorConfig extends Config {
     }
 
     @ConfigItem(
+            keyName = "hpOverlayFont",
+            name = "HP overlay font",
+            description = "Font family used by the HP overlay text.",
+            section = fontSection
+    )
+    default HpOverlayFont hpOverlayFont() {
+        return HpOverlayFont.RUNESCAPE_BOLD;
+    }
+
+    @ConfigItem(
+            keyName = "hpOverlayFontStyle",
+            name = "HP overlay font style",
+            description = "Style applied to the HP overlay font.",
+            section = fontSection
+    )
+    default HpOverlayFontStyle hpOverlayFontStyle() {
+        return HpOverlayFontStyle.BOLD;
+    }
+
+    @Range(min = 6, max = 48)
+    @ConfigItem(
             keyName = "hpOverlayFontSize",
             name = "HP overlay font size",
             description = "Point size of the HP overlay text.",
-            section = hpOverlaySection
+            section = fontSection
     )
     default int hpOverlayFontSize() {
         return 14;

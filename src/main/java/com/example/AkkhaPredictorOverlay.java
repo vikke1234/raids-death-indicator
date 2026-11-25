@@ -11,7 +11,6 @@ import net.runelite.api.Client;
 import net.runelite.api.NPC;
 import net.runelite.api.Point;
 import net.runelite.api.Skill;
-import net.runelite.client.ui.FontManager;
 import net.runelite.client.ui.overlay.Overlay;
 import net.runelite.client.ui.overlay.OverlayPosition;
 import net.runelite.client.ui.overlay.OverlayUtil;
@@ -176,7 +175,7 @@ public class AkkhaPredictorOverlay extends Overlay {
         if (npc == null) {
             return;
         }
-        graphics.setFont(FontManager.getRunescapeBoldFont().deriveFont((float) config.hpOverlayFontSize()));
+        graphics.setFont(config.hpOverlayFont().create(config.hpOverlayFontSize(), config.hpOverlayFontStyle()));
         // Tile-based anchor — projected from the NPC's LocalPoint + logical
         // height. Stays still through animation, and the anchorText (= the
         // user's format with all %[...] blocks stripped) keeps the always-on
