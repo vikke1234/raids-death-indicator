@@ -3,11 +3,12 @@ package com.example.raids;
 import net.runelite.api.gameval.*;
 import net.runelite.api.gameval.NpcID;
 
+import com.example.generated.EnemySpawnContext;
 import com.example.generated.GeneratedEnemyConfig;
+import com.example.generated.TrackedEnemy;
 import com.example.enemydata.*;
 import com.example.enemydata.cox.CoxEnemy;
 import com.example.utils.DamageHandler;
-import com.example.utils.EnemyTrackingConfig;
 import lombok.Getter;
 import net.runelite.api.*;
 import net.runelite.api.events.*;
@@ -22,9 +23,6 @@ import java.util.concurrent.atomic.AtomicBoolean;
 public class Cox {
     @Inject
     private DamageHandler damageHandler;
-
-    @Inject
-    private EnemyTrackingConfig enemyTrackingConfig;
 
     @Inject
     private Client client;
@@ -183,18 +181,18 @@ public class Cox {
             return;
         }
 
-        var enemyConstructor = CoxEnemy.enemies.getOrDefault(npc.getId(), null);
-        if (enemyConstructor == null || !enemyTrackingConfig.isTracked(npc.getId())) {
-            return;
-        }
-
         // TODO: Add support for guardians in non-solo
         if ((npc.getId() == NpcID.RAIDS_STONEGUARDIANS_RIGHT ||
                 npc.getId() == NpcID.RAIDS_STONEGUARDIANS_LEFT) && groupSize != 1) {
             return;
         }
 
-        Enemy enemy = enemyConstructor.apply(npc, isCm, groupSize, maxCombat, maxHp, raidTick);
+        Enemy enemy = TrackedEnemy.forNpcId(npc.getId())
+                .map(e -> e.create(npc, EnemySpawnContext.cox(isCm, groupSize, maxCombat, maxHp, raidTick)))
+                .orElse(null);
+        if (enemy == null) {
+            return;
+        }
         activeEnemies.put(npc.getIndex(), enemy);
     }
 }

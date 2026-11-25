@@ -1,12 +1,12 @@
 package com.example.raids;
 
 import com.example.enemydata.Enemy;
+import com.example.generated.EnemySpawnContext;
+import com.example.generated.TrackedEnemy;
 import com.example.enemydata.toa.ToaEnemy;
 import com.example.enemydata.toa.het.Akkha;
 import com.example.enemydata.toa.het.AkkhaShadow;
 import com.example.utils.DamageHandler;
-import com.example.utils.EnemyTrackingConfig;
-import com.example.utils.QuadFunction;
 import lombok.extern.slf4j.Slf4j;
 import net.runelite.api.Client;
 import net.runelite.api.NPC;
@@ -29,9 +29,6 @@ public class Toa {
 
     @Inject
     private DamageHandler damageHandler;
-
-    @Inject
-    private EnemyTrackingConfig enemyTrackingConfig;
 
     public static boolean isAtToa(Client client) {
         final int[] TOA_REGIONS = {
@@ -176,12 +173,12 @@ public class Toa {
             return;
         }
 
-        QuadFunction<NPC, Integer, Integer, Integer, Enemy> constructor = ToaEnemy.enemies.getOrDefault(npc.getId(), null);
-        if (constructor == null || !enemyTrackingConfig.isTracked(npc.getId())) {
+        Enemy enemy = TrackedEnemy.forNpcId(npc.getId())
+                .map(e -> e.create(npc, EnemySpawnContext.toa(getInvocation(), getPartySize(), getPathLevel())))
+                .orElse(null);
+        if (enemy == null) {
             return;
         }
-
-        Enemy enemy = constructor.apply(npc, getInvocation(), getPartySize(), getPathLevel());
         enemy.setClient(client);
 
         activeEnemies.put(npc.getIndex(), enemy);

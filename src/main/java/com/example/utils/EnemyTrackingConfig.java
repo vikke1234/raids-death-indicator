@@ -6,24 +6,16 @@ import com.example.enemydata.TrackingMode;
 
 import javax.inject.Inject;
 import javax.inject.Singleton;
-import java.util.Optional;
 
 /**
  * Adapter between the generated per-enemy config menu and the rest of the
- * plugin. Enemies without an annotation are left alone.
+ * plugin. OFF still tracks the enemy; it only disables highlight and hide.
+ * Enemies without an annotation keep the legacy behaviour.
  */
 @Singleton
 public class EnemyTrackingConfig {
     @Inject
     private GeneratedEnemyConfig config;
-
-    public Optional<TrackedEnemy> forNpcId(int npcId) {
-        return TrackedEnemy.forNpcId(npcId);
-    }
-
-    public boolean isTracked(int npcId) {
-        return mode(npcId) != TrackingMode.OFF;
-    }
 
     public boolean shouldHighlight(int npcId) {
         return mode(npcId).highlights();
@@ -31,6 +23,12 @@ public class EnemyTrackingConfig {
 
     public boolean shouldHide(int npcId) {
         return mode(npcId).hides();
+    }
+
+    public boolean isBoss(int npcId) {
+        return TrackedEnemy.forNpcId(npcId)
+                .map(TrackedEnemy::isBoss)
+                .orElse(false);
     }
 
     private TrackingMode mode(int npcId) {

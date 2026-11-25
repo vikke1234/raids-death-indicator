@@ -1,12 +1,11 @@
 package com.example;
 
 import com.example.enemydata.Enemy;
-import com.example.enemydata.cox.CoxEnemy;
+import com.example.enemydata.Raid;
 import com.example.enemydata.cox.LizardmanShaman;
 import com.example.enemydata.cox.SkeletalMystic;
-import com.example.enemydata.toa.ToaEnemy;
-import com.example.utils.HexFunction;
-import com.example.utils.QuadFunction;
+import com.example.generated.EnemySpawnContext;
+import com.example.generated.TrackedEnemy;
 import net.runelite.api.NPC;
 import net.runelite.api.gameval.NpcID;
 import org.junit.Test;
@@ -107,19 +106,23 @@ public class CoxScalingTests {
         Map<Double, Set<String>> bucket = new TreeMap<>();
 
         // TOA: invo 0..600 step 50, partySize 1..8, pathLevel 0..6.
-        for (Map.Entry<Integer, QuadFunction<NPC, Integer, Integer, Integer, Enemy>> e : ToaEnemy.enemies.entrySet()) {
-            int id = e.getKey();
-            TestNPC npc = new TestNPC(id);
-            String name = "toa#" + id;
-            for (int invo = 0; invo <= 600; invo += 50) {
-                for (int party = 1; party <= 8; party++) {
-                    for (int path = 0; path <= 6; path++) {
-                        try {
-                            Enemy enemy = e.getValue().apply(npc, invo, party, path);
-                            record(bucket, enemy.getModifier(),
-                                    name + " invo=" + invo + " p=" + party + " path=" + path);
-                        } catch (Throwable t) {
-                            // Skip configs the constructor rejects (e.g. assertion mismatches).
+        for (TrackedEnemy tracked : TrackedEnemy.values()) {
+            if (tracked.raid() != Raid.TOA) {
+                continue;
+            }
+            for (int id : tracked.npcIds()) {
+                TestNPC npc = new TestNPC(id);
+                String name = "toa#" + id;
+                for (int invo = 0; invo <= 600; invo += 50) {
+                    for (int party = 1; party <= 8; party++) {
+                        for (int path = 0; path <= 6; path++) {
+                            try {
+                                Enemy enemy = tracked.create(npc, EnemySpawnContext.toa(invo, party, path));
+                                record(bucket, enemy.getModifier(),
+                                        name + " invo=" + invo + " p=" + party + " path=" + path);
+                            } catch (Throwable t) {
+                                // Skip configs the constructor rejects (e.g. assertion mismatches).
+                            }
                         }
                     }
                 }
@@ -127,20 +130,25 @@ public class CoxScalingTests {
         }
 
         // COX: isCm true/false, partySize 1..8, maxCombat 100/110/126, maxHp 70/85/99.
-        for (Map.Entry<Integer, HexFunction<NPC, Boolean, Integer, Integer, Integer, Long, CoxEnemy>> e : CoxEnemy.enemies.entrySet()) {
-            int id = e.getKey();
-            TestNPC npc = new TestNPC(id);
-            String name = "cox#" + id;
-            for (boolean cm : new boolean[] { false, true }) {
-                for (int party = 1; party <= 8; party++) {
-                    for (int maxCombat : new int[] { 100, 110, 126 }) {
-                        for (int maxHp : new int[] { 70, 85, 99 }) {
-                            try {
-                                CoxEnemy enemy = e.getValue().apply(npc, cm, party, maxCombat, maxHp, 0L);
-                                record(bucket, enemy.getModifier(),
-                                        name + " cm=" + cm + " p=" + party + " cb=" + maxCombat + " hp=" + maxHp);
-                            } catch (Throwable t) {
-                                // skip
+        for (TrackedEnemy tracked : TrackedEnemy.values()) {
+            if (tracked.raid() != Raid.COX) {
+                continue;
+            }
+            for (int id : tracked.npcIds()) {
+                TestNPC npc = new TestNPC(id);
+                String name = "cox#" + id;
+                for (boolean cm : new boolean[] { false, true }) {
+                    for (int party = 1; party <= 8; party++) {
+                        for (int maxCombat : new int[] { 100, 110, 126 }) {
+                            for (int maxHp : new int[] { 70, 85, 99 }) {
+                                try {
+                                    Enemy enemy = tracked.create(npc,
+                                            EnemySpawnContext.cox(cm, party, maxCombat, maxHp, 0L));
+                                    record(bucket, enemy.getModifier(),
+                                            name + " cm=" + cm + " p=" + party + " cb=" + maxCombat + " hp=" + maxHp);
+                                } catch (Throwable t) {
+                                    // skip
+                                }
                             }
                         }
                     }

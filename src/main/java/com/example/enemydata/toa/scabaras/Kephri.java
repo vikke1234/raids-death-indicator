@@ -13,7 +13,8 @@ import net.runelite.api.NPC;
         name = "Kephri",
         npcIds = { NpcID.TOA_KEPHRI_BOSS_SHIELDED },
         raid = Raid.TOA,
-        defaultMode = TrackingMode.HIGHLIGHT
+        defaultMode = TrackingMode.HIGHLIGHT,
+        boss = true
 )
 public class Kephri extends ToaEnemy {
     // TODO: might need extra handling due to shield? Probably just to ignore the damage queueing

@@ -12,7 +12,8 @@ import net.runelite.api.NPC;
         name = "Zebak",
         npcIds = { NpcID.TOA_ZEBAK, NpcID.TOA_ZEBAK_ENRAGED },
         raid = Raid.TOA,
-        defaultMode = TrackingMode.HIGHLIGHT
+        defaultMode = TrackingMode.HIGHLIGHT,
+        boss = true
 )
 public class Zebak extends ToaEnemy {
     public Zebak(NPC npc, int invocation, int partySize, int pathLevel) {

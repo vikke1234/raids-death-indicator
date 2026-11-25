@@ -22,6 +22,9 @@ public @interface Tracked {
 
     TrackingMode defaultMode() default TrackingMode.HIGHLIGHT_AND_HIDE;
 
+    /** Whether this NPC uses the client's boss health-bar varbit. */
+    boolean boss() default false;
+
     /** Config key suffix. Defaults to a snake_case version of the class name. */
     String key() default "";
 }

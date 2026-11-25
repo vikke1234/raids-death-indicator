@@ -13,7 +13,8 @@ import net.runelite.api.NPC;
         name = "Baba",
         npcIds = { NpcID.TOA_BABA, NpcID.TOA_BABA_COFFIN, NpcID.TOA_BABA_DIGGING },
         raid = Raid.TOA,
-        defaultMode = TrackingMode.HIGHLIGHT_AND_HIDE
+        defaultMode = TrackingMode.HIGHLIGHT_AND_HIDE,
+        boss = true
 )
 public class Baba extends ToaEnemy {
     public Baba(NPC npc, int invocation, int partySize, int pathLevel) {

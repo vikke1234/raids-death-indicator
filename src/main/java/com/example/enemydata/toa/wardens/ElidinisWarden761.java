@@ -13,7 +13,8 @@ import net.runelite.api.NPC;
         name = "Elidini's Warden (Phase 3)",
         npcIds = { NpcID.TOA_WARDEN_ELIDINIS_PHASE3 },
         raid = Raid.TOA,
-        defaultMode = TrackingMode.HIGHLIGHT_AND_HIDE
+        defaultMode = TrackingMode.HIGHLIGHT_AND_HIDE,
+        boss = true
 )
 public class ElidinisWarden761 extends ToaEnemy {
     public ElidinisWarden761(NPC npc, int invocation, int partySize, int pathLevel) {

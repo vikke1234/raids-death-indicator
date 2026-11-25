@@ -22,7 +22,8 @@ import net.runelite.api.gameval.NpcID;
         name = "Akkha",
         npcIds = { NpcID.AKKHA_SPAWN, NpcID.AKKHA_MELEE, NpcID.AKKHA_RANGE, NpcID.AKKHA_MAGE, NpcID.AKKHA_ENRAGE_SPAWN, NpcID.AKKHA_ENRAGE_INITIAL, NpcID.AKKHA_ENRAGE, NpcID.AKKHA_ENRAGE_DUMMY },
         raid = Raid.TOA,
-        defaultMode = TrackingMode.HIGHLIGHT
+        defaultMode = TrackingMode.HIGHLIGHT,
+        boss = true
 )
 public class Akkha extends ToaEnemy {
     private boolean canPhase;

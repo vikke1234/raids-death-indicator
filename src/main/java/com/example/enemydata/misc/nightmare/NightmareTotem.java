@@ -3,8 +3,6 @@ package com.example.enemydata.misc.nightmare;
 import com.example.enemydata.Tracked;
 import com.example.enemydata.Raid;
 import com.example.enemydata.TrackingMode;
-import net.runelite.api.gameval.NpcID;
-
 import com.example.enemydata.Enemy;
 import net.runelite.api.Client;
 import net.runelite.api.NPC;
@@ -12,8 +10,6 @@ import net.runelite.api.Player;
 import net.runelite.api.coords.WorldPoint;
 import net.runelite.api.gameval.NpcID;
 import net.runelite.api.gameval.VarbitID;
-
-import java.util.Set;
 
 /**
  * The four totems / pillars in the Nightmare of Ashihama fight.
@@ -37,17 +33,6 @@ import java.util.Set;
 public class NightmareTotem extends Enemy {
     /** Player-search radius around the totem (tiles). Arena fits in ~20×20. */
     private static final int NEARBY_RADIUS = 30;
-
-    public static final Set<Integer> NPC_IDS = Set.of(
-            NpcID.NIGHTMARE_TOTEM_1_DORMANT, // 9435
-            NpcID.NIGHTMARE_TOTEM_2_DORMANT, // 9438
-            NpcID.NIGHTMARE_TOTEM_3_DORMANT, // 9440
-            NpcID.NIGHTMARE_TOTEM_4_DORMANT, // 9444
-            NpcID.NIGHTMARE_TOTEM_1_READY, // 9435
-            NpcID.NIGHTMARE_TOTEM_2_READY, // 9438
-            NpcID.NIGHTMARE_TOTEM_3_READY, // 9440
-            NpcID.NIGHTMARE_TOTEM_4_READY // 9444
-    );
 
     public NightmareTotem(NPC npc, Client client) {
         super(npc, totemHp(npc, client), 1, 1, 1, 0, 0, 0, 0, 0);

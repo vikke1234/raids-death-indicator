@@ -13,7 +13,8 @@ import net.runelite.api.NPC;
         name = "Obelisk",
         npcIds = { NpcID.TOA_WARDENS_P1_OBELISK_NPC },
         raid = Raid.TOA,
-        defaultMode = TrackingMode.HIGHLIGHT_AND_HIDE
+        defaultMode = TrackingMode.HIGHLIGHT_AND_HIDE,
+        boss = true
 )
 public class Obelisk extends ToaEnemy {
     public Obelisk(NPC npc, int invocation, int partySize, int pathLevel) {

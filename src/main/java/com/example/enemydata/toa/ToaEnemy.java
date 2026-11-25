@@ -1,22 +1,12 @@
 package com.example.enemydata.toa;
 
 import com.example.enemydata.Enemy;
-import com.example.enemydata.toa.ampken.*;
-import com.example.enemydata.toa.crondis.Crocodile;
-import com.example.enemydata.toa.crondis.Zebak;
-import com.example.enemydata.toa.het.Akkha;
-import com.example.enemydata.toa.het.AkkhaShadow;
-import com.example.enemydata.toa.scabaras.*;
-import com.example.enemydata.toa.wardens.*;
-import com.example.utils.QuadFunction;
 import net.runelite.api.NPC;
-import net.runelite.api.gameval.NpcID;
 
 import java.util.HashMap;
 import java.util.Map;
 
 public class ToaEnemy extends Enemy {
-    public static final Map<Integer, QuadFunction<NPC, Integer, Integer, Integer, Enemy>> enemies;
     private static final Map<Integer, Double> teamScaling;
     private static final Map<Integer, Double> pathScaling;
 
@@ -44,61 +34,6 @@ public class ToaEnemy extends Enemy {
         pathScaling.put(4, 1.23);
         pathScaling.put(5, 1.28);
         pathScaling.put(6, 1.33);
-
-        enemies = new HashMap<>();
-        enemies.put(NpcID.AKKHA_SPAWN, Akkha::new);
-        enemies.put(NpcID.AKKHA_MELEE, Akkha::new);
-        enemies.put(NpcID.AKKHA_RANGE, Akkha::new);
-        enemies.put(NpcID.AKKHA_MAGE, Akkha::new);
-        enemies.put(NpcID.AKKHA_ENRAGE_SPAWN, Akkha::new);
-        enemies.put(NpcID.AKKHA_ENRAGE_INITIAL, Akkha::new);
-        enemies.put(NpcID.AKKHA_ENRAGE, Akkha::new);
-        enemies.put(NpcID.AKKHA_ENRAGE_DUMMY, Akkha::new);
-
-        enemies.put(NpcID.AKKHA_SHADOW, AkkhaShadow::new);
-
-        enemies.put(NpcID.TOA_BABA, Baba::new);
-        enemies.put(NpcID.TOA_BABA_COFFIN, Baba::new);
-        enemies.put(NpcID.TOA_BABA_DIGGING, Baba::new);
-        enemies.put(NpcID.TOA_BABA_BABOON, Baboon::new);
-        enemies.put(NpcID.TOA_BABA_BOULDER, Boulder::new);
-        enemies.put(NpcID.TOA_BABA_BOULDER_WEAK, Boulder::new);
-
-        enemies.put(NpcID.TOA_KEPHRI_BOSS_SHIELDED, Kephri::new);
-        enemies.put(NpcID.TOA_KEPHRI_BOSS_ENRAGE, Kephri721::new);
-        enemies.put(NpcID.TOA_KEPHRI_SCARAB_RANGEKITE, AgileScarab::new);
-        enemies.put(NpcID.TOA_KEPHRI_GUARDIAN_MAGE, Arcane::new);
-        enemies.put(NpcID.TOA_SCABARAS_SCARAB, Scarab::new);
-        enemies.put(NpcID.TOA_KEPHRI_GUARDIAN_MELEE, Soldier::new);
-        enemies.put(NpcID.TOA_KEPHRI_GUARDIAN_RANGED, Spitter::new);
-        // enemies.put(NpcID.TOA_KEPHRI_SCARAB_SWARM, Swarm::new);
-
-        enemies.put(NpcID.TOA_ZEBAK, Zebak::new);
-        enemies.put(NpcID.TOA_ZEBAK_ENRAGED, Zebak::new);
-        enemies.put(NpcID.TOA_CRONDIS_CROCODILE, Crocodile::new);
-        // enemies.put(NpcID.TOA_ZEBAK_JUG, Jug::new);
-        // enemies.put(NpcID.TOA_ZEBAK_JUG_ROLLING, Jug::new);
-
-        enemies.put(NpcID.TOA_PATH_APMEKEN_BABOON_MELEE_1, Brawler::new);
-        enemies.put(NpcID.TOA_PATH_APMEKEN_BABOON_MELEE_2, Brawler::new);
-        enemies.put(NpcID.TOA_PATH_APMEKEN_BABOON_RANGED_1, Thrower::new);
-        enemies.put(NpcID.TOA_PATH_APMEKEN_BABOON_RANGED_2, Thrower::new);
-        enemies.put(NpcID.TOA_PATH_APMEKEN_BABOON_MAGIC_1, Mage::new);
-        enemies.put(NpcID.TOA_PATH_APMEKEN_BABOON_MAGIC_2, Mage::new);
-        enemies.put(NpcID.TOA_PATH_APMEKEN_BABOON_THRALL, Thrall::new);
-        enemies.put(NpcID.TOA_PATH_APMEKEN_BABOON_SHAMAN, Shaman::new);
-        enemies.put(NpcID.TOA_PATH_APMEKEN_BABOON_CURSED, Cursed::new);
-        enemies.put(NpcID.TOA_PATH_APMEKEN_BABOON_ZOMBIE, Volatile::new);
-
-        enemies.put(NpcID.TOA_WARDENS_P1_OBELISK_NPC, Obelisk::new);
-        // different overheads -> different ID
-        enemies.put(NpcID.TOA_WARDEN_ELIDINIS_PHASE2_MAGE, ElidinisWarden::new);
-        enemies.put(NpcID.TOA_WARDEN_ELIDINIS_PHASE2_RANGE, ElidinisWarden::new);
-        enemies.put(NpcID.TOA_WARDEN_ELIDINIS_PHASE3, ElidinisWarden761::new);
-        // different overheads -> different ID
-        enemies.put(NpcID.TOA_WARDEN_TUMEKEN_PHASE2_MAGE, TumekensWarden::new);
-        enemies.put(NpcID.TOA_WARDEN_TUMEKEN_PHASE2_RANGE, TumekensWarden::new);
-        enemies.put(NpcID.TOA_WARDEN_TUMEKEN_PHASE3, TumekensWarden762::new);
     }
 
     public ToaEnemy(NPC npc, int invocation, int partySize, int pathLevel,

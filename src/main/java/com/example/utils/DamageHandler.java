@@ -166,7 +166,7 @@ public class DamageHandler {
         }
 
         int bossHealth = client.getVarbitValue(VarbitID.HPBAR_HUD_HP);
-        if (bossHealth > 0 && Enemy.bosses.contains(npc.getId())) {
+        if (bossHealth > 0 && enemyTrackingConfig.isBoss(npc.getId())) {
             Trace.damage("boss-health varbit re-sync: {} tick={} {} -> {}",
                     npc.getName(), client.getTickCount(), enemy.getCurrentHealth(), bossHealth);
             enemy.setCurrentHealth(bossHealth); // re-synchronize the health

@@ -13,7 +13,8 @@ import net.runelite.api.NPC;
         name = "Tumeken's Warden",
         npcIds = { NpcID.TOA_WARDEN_TUMEKEN_PHASE2_MAGE, NpcID.TOA_WARDEN_TUMEKEN_PHASE2_RANGE },
         raid = Raid.TOA,
-        defaultMode = TrackingMode.HIGHLIGHT_AND_HIDE
+        defaultMode = TrackingMode.HIGHLIGHT_AND_HIDE,
+        boss = true
 )
 public class TumekensWarden extends ToaEnemy {
     public TumekensWarden(NPC npc, int invocation, int partySize, int pathLevel) {

@@ -1,6 +1,7 @@
 package com.example.enemydata;
 
 public enum TrackingMode {
+    /** Track normally for XP and HP, but never highlight or hide the NPC. */
     OFF,
     HIGHLIGHT,
     HIDE,

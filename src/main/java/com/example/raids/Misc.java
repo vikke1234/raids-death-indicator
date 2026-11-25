@@ -5,12 +5,12 @@ import com.example.enemydata.misc.nightmare.NightmareHuskRanged;
 import com.example.enemydata.misc.nightmare.NightmareParasite;
 import com.example.enemydata.misc.nightmare.NightmareParasiteEnraged;
 import com.example.enemydata.misc.nightmare.NightmareHuskMage;
+import com.example.generated.TrackedEnemy;
 import com.example.enemydata.misc.AbyssalSire;
 import com.example.enemydata.misc.nightmare.NightmareTotem;
 import com.example.enemydata.misc.nightmare.PhosaniParasite;
 import com.example.enemydata.misc.nightmare.PhosaniParasiteEnraged;
 import com.example.utils.DamageHandler;
-import com.example.utils.EnemyTrackingConfig;
 import lombok.extern.slf4j.Slf4j;
 import net.runelite.api.Client;
 import net.runelite.api.NPC;
@@ -37,19 +37,13 @@ public class Misc {
     @Inject
     private DamageHandler damageHandler;
 
-    @Inject
-    private EnemyTrackingConfig enemyTrackingConfig;
-
     @Subscribe
     protected void onNpcSpawned(NpcSpawned event) {
         NPC npc = event.getNpc();
-        if (!enemyTrackingConfig.isTracked(npc.getId())) {
-            return;
-        }
         var activeEnemies = damageHandler.getActiveEnemies();
         int idx = npc.getIndex();
 
-        if (NightmareTotem.NPC_IDS.contains(npc.getId())) {
+        if (isTotem(npc.getId())) {
             activeEnemies.put(idx, new NightmareTotem(npc, client));
         } else {
             switch (npc.getId()) {
@@ -93,11 +87,8 @@ public class Misc {
         NPC npc = event.getNpc();
         int idx = npc.getIndex();
         int id = npc.getId();
-        if (!enemyTrackingConfig.isTracked(id)) {
-            return;
-        }
 
-        if (NightmareTotem.NPC_IDS.contains(id)) {
+        if (isTotem(id)) {
             activeEnemies.replace(idx, new NightmareTotem(npc, client));
         }
 
@@ -113,6 +104,12 @@ public class Misc {
                 activeEnemies.putIfAbsent(idx, new AbyssalSire(npc));
                 break;
         }
+    }
+
+    private static boolean isTotem(int id) {
+        return TrackedEnemy.forNpcId(id)
+                .filter(enemy -> enemy == TrackedEnemy.NIGHTMARE_TOTEM)
+                .isPresent();
     }
 
     @Subscribe

@@ -13,7 +13,8 @@ import net.runelite.api.NPC;
         name = "Vespera Portal",
         npcIds = { NpcID.RAIDS_VESPULA_PORTAL },
         raid = Raid.COX,
-        defaultMode = TrackingMode.HIGHLIGHT
+        defaultMode = TrackingMode.HIGHLIGHT,
+        boss = true
 )
 public class Portal extends CoxEnemy {
     public Portal(NPC npc, boolean isCm, int partySize, int maxCombat, int maxHp, long raidTick) {

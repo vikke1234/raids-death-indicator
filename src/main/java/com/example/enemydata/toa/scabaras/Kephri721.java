@@ -13,7 +13,8 @@ import net.runelite.api.NPC;
         name = "Kephri (Enrage)",
         npcIds = { NpcID.TOA_KEPHRI_BOSS_ENRAGE },
         raid = Raid.TOA,
-        defaultMode = TrackingMode.HIGHLIGHT_AND_HIDE
+        defaultMode = TrackingMode.HIGHLIGHT_AND_HIDE,
+        boss = true
 )
 public class Kephri721 extends ToaEnemy {
     public Kephri721(NPC npc, int invocation, int partySize, int pathLevel) {

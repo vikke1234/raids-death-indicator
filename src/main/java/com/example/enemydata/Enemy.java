@@ -8,13 +8,11 @@ import net.runelite.api.Client;
 import net.runelite.api.NPC;
 import net.runelite.api.gameval.NpcID;
 
-import java.util.HashSet;
 import java.util.Set;
 
 @Slf4j
 public abstract class Enemy implements IEnemy {
     public static final Set<Integer> blacklist = Set.of(NpcID.TOA_KEPHRI_SHIELD_SCARAB, NpcID.TOA_ZEBAK_JUG, NpcID.TOA_ZEBAK_JUG_ROLLING);
-    public static final Set<Integer> bosses;
 
     @Getter(onMethod_ = { @Synchronized })
     @Setter(onMethod_ = { @Synchronized })
@@ -61,44 +59,6 @@ public abstract class Enemy implements IEnemy {
     @Setter
     @Getter
     Client client;
-
-    static {
-        bosses = new HashSet<>();
-        // Add the NpcID values to the Set
-        bosses.add(NpcID.AKKHA_SPAWN);
-        bosses.add(NpcID.AKKHA_MELEE);
-        bosses.add(NpcID.AKKHA_RANGE);
-        bosses.add(NpcID.AKKHA_MAGE);
-        bosses.add(NpcID.AKKHA_ENRAGE_SPAWN);
-        bosses.add(NpcID.AKKHA_ENRAGE_INITIAL);
-        bosses.add(NpcID.AKKHA_ENRAGE);
-        bosses.add(NpcID.AKKHA_ENRAGE_DUMMY);
-
-        bosses.add(NpcID.TOA_BABA);
-        bosses.add(NpcID.TOA_BABA_COFFIN);
-        bosses.add(NpcID.TOA_BABA_DIGGING);
-
-        bosses.add(NpcID.TOA_KEPHRI_BOSS_SHIELDED);
-        bosses.add(NpcID.TOA_KEPHRI_BOSS_ENRAGE);
-
-        bosses.add(NpcID.TOA_ZEBAK);
-        bosses.add(NpcID.TOA_ZEBAK_ENRAGED);
-
-        bosses.add(NpcID.TOA_WARDENS_P1_OBELISK_NPC);
-        bosses.add(NpcID.TOA_WARDEN_ELIDINIS_PHASE2_MAGE);
-        bosses.add(NpcID.TOA_WARDEN_ELIDINIS_PHASE2_RANGE);
-        bosses.add(NpcID.TOA_WARDEN_ELIDINIS_PHASE3);
-        bosses.add(NpcID.TOA_WARDEN_TUMEKEN_PHASE2_MAGE);
-        bosses.add(NpcID.TOA_WARDEN_TUMEKEN_PHASE2_RANGE);
-        bosses.add(NpcID.TOA_WARDEN_TUMEKEN_PHASE3);
-
-        bosses.add(NpcID.RAIDS_VESPULA_PORTAL);
-        bosses.add(NpcID.RAIDS_VASANISTIRIO_WALKING);
-        bosses.add(NpcID.RAIDS_VANGUARD_RANGED);
-        bosses.add(NpcID.RAIDS_VANGUARD_MAGIC);
-        bosses.add(NpcID.RAIDS_VANGUARD_MELEE);
-        bosses.add(NpcID.OLM_HAND_RIGHT);
-    }
 
     protected Enemy(NPC npc, int baseHealth, int attack, int str, int def,
             int offAtt, int offStr,

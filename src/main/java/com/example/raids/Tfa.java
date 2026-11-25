@@ -1,11 +1,11 @@
 package com.example.raids;
 
 import com.example.enemydata.Enemy;
+import com.example.generated.EnemySpawnContext;
+import com.example.generated.TrackedEnemy;
 import com.example.enemydata.tfa.ArchiveGuardian;
 import com.example.enemydata.tfa.InertGuardian;
-import com.example.enemydata.tfa.TfaEnemy;
 import com.example.utils.DamageHandler;
-import com.example.utils.EnemyTrackingConfig;
 import net.runelite.api.Client;
 import net.runelite.api.NPC;
 import net.runelite.api.events.NpcChanged;
@@ -16,7 +16,6 @@ import net.runelite.client.eventbus.Subscribe;
 import javax.inject.Inject;
 import javax.inject.Singleton;
 import java.util.Arrays;
-import java.util.function.Function;
 
 @Singleton
 public class Tfa {
@@ -25,9 +24,6 @@ public class Tfa {
 
     @Inject
     private DamageHandler damageHandler;
-
-    @Inject
-    private EnemyTrackingConfig enemyTrackingConfig;
 
     private static final int[] TFA_REGIONS = {
             16471,
@@ -64,12 +60,12 @@ public class Tfa {
             return;
         }
 
-        Function<NPC, Enemy> constructor = TfaEnemy.enemies.get(npc.getId());
-        if (constructor == null || !enemyTrackingConfig.isTracked(npc.getId())) {
+        Enemy enemy = TrackedEnemy.forNpcId(npc.getId())
+                .map(e -> e.create(npc, EnemySpawnContext.tfa(client)))
+                .orElse(null);
+        if (enemy == null) {
             return;
         }
-
-        Enemy enemy = constructor.apply(npc);
         if (enemy instanceof ArchiveGuardian) {
             ((ArchiveGuardian) enemy).syncFromClient(client);
         }

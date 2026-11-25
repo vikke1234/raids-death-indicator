@@ -9,6 +9,7 @@ import javax.lang.model.SourceVersion;
 import javax.lang.model.element.AnnotationMirror;
 import javax.lang.model.element.AnnotationValue;
 import javax.lang.model.element.Element;
+import javax.lang.model.util.ElementFilter;
 import javax.lang.model.element.ExecutableElement;
 import javax.lang.model.element.TypeElement;
 import javax.lang.model.element.VariableElement;
@@ -18,16 +19,16 @@ import java.io.IOException;
 import java.io.PrintWriter;
 import java.util.ArrayList;
 import java.util.Comparator;
-import java.util.HashSet;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
+import java.util.TreeSet;
 
 /**
- * Generates the RuneLite config menu and NPC-id registry from @Tracked enemy
- * declarations. Kept in a separate source set so it can run before main
- * compilation without depending on main classes.
+ * Generates the RuneLite config menu, NPC registry and enemy factories from
+ * @Tracked declarations. Kept in a separate source set so it can run before
+ * main compilation without depending on main classes.
  */
 @SupportedAnnotationTypes("com.example.enemydata.Tracked")
 @SupportedSourceVersion(SourceVersion.RELEASE_11)
@@ -36,12 +37,13 @@ public final class EnemyConfigProcessor extends AbstractProcessor {
     private static final String GEN_PACKAGE = "com.example.generated";
     private static final String CONFIG = "GeneratedEnemyConfig";
     private static final String ENUM = "TrackedEnemy";
+    private static final String CONTEXT = "EnemySpawnContext";
 
     private final Map<String, EnemyDef> enemies = new LinkedHashMap<>();
     private boolean generated;
 
     private static final class EnemyDef {
-        final String className;
+        final String qualifiedName;
         final String key;
         final String constant;
         final String method;
@@ -49,9 +51,12 @@ public final class EnemyConfigProcessor extends AbstractProcessor {
         final List<Integer> ids;
         final String raid;
         final String mode;
+        final boolean boss;
+        final String constructorArgs;
 
-        EnemyDef(String className, String key, String name, List<Integer> ids, String raid, String mode) {
-            this.className = className;
+        EnemyDef(String qualifiedName, String key, String name, List<Integer> ids,
+                String raid, String mode, boolean boss, String constructorArgs) {
+            this.qualifiedName = qualifiedName;
             this.key = key;
             this.constant = enumConstant(key);
             this.method = "enemy" + camel(key, true) + "Mode";
@@ -59,6 +64,8 @@ public final class EnemyConfigProcessor extends AbstractProcessor {
             this.ids = ids;
             this.raid = raid;
             this.mode = mode;
+            this.boss = boss;
+            this.constructorArgs = constructorArgs;
         }
     }
 
@@ -82,6 +89,7 @@ public final class EnemyConfigProcessor extends AbstractProcessor {
                 defs.sort(Comparator.comparing(e -> e.name));
                 generateConfig(defs);
                 generateEnum(defs);
+                generateContext();
             } catch (IOException e) {
                 processingEnv.getMessager().printMessage(Diagnostic.Kind.ERROR,
                         "Failed to generate enemy config: " + e.getMessage());
@@ -139,12 +147,50 @@ public final class EnemyConfigProcessor extends AbstractProcessor {
         }
 
         enemies.put(key, new EnemyDef(
-                className,
+                type.getQualifiedName().toString(),
                 key,
                 name,
                 ids,
                 enumName(values.get("raid"), "MISC"),
-                enumName(values.get("defaultMode"), "HIGHLIGHT_AND_HIDE")));
+                enumName(values.get("defaultMode"), "HIGHLIGHT_AND_HIDE"),
+                booleanValue(values.get("boss")),
+                constructorArgs(type)));
+    }
+
+    private String constructorArgs(TypeElement type) {
+        for (ExecutableElement constructor : ElementFilter.constructorsIn(type.getEnclosedElements())) {
+            List<? extends VariableElement> params = constructor.getParameters();
+            if (params.isEmpty() || !params.get(0).asType().toString().endsWith("NPC")) {
+                continue;
+            }
+            StringBuilder args = new StringBuilder("npc");
+            for (int i = 1; i < params.size(); i++) {
+                args.append(", ").append(contextArg(params.get(i)));
+            }
+            return args.toString();
+        }
+        processingEnv.getMessager().printMessage(Diagnostic.Kind.ERROR,
+                "@Tracked class must have an NPC constructor", type);
+        return "npc";
+    }
+
+    private String contextArg(VariableElement param) {
+        String name = param.getSimpleName().toString();
+        switch (name) {
+            case "isCm":
+            case "invocation":
+            case "partySize":
+            case "maxCombat":
+            case "maxHp":
+            case "pathLevel":
+            case "raidTick":
+            case "client":
+                return "ctx." + name;
+            default:
+                processingEnv.getMessager().printMessage(Diagnostic.Kind.ERROR,
+                        "Unsupported @Tracked constructor parameter '" + name + "'", param);
+                return "null";
+        }
     }
 
     private void generateConfig(List<EnemyDef> defs) throws IOException {
@@ -163,21 +209,17 @@ public final class EnemyConfigProcessor extends AbstractProcessor {
             out.println("@ConfigGroup(\"raid-death-indicator\")");
             out.println("public interface " + CONFIG + " extends AkkhaPredictorConfig {");
 
-            Set<String> raids = new java.util.TreeSet<>();
+            Set<String> raids = new TreeSet<>();
             for (EnemyDef def : defs) {
                 raids.add(def.raid);
             }
             int position = 300;
             for (String raid : raids) {
                 String section = "enemySection" + camel(raid, true);
-                String label = raid.equals("TOA") ? "Tombs of Amascut"
-                        : raid.equals("COX") ? "Chambers of Xeric"
-                        : raid.equals("TFA") ? "The Fractured Archive"
-                        : "Miscellaneous";
                 out.println();
                 out.println("    @ConfigSection(");
-                out.println("            name = \"" + label + "\",");
-                out.println("            description = \"Per-enemy tracking for " + label + "\",");
+                out.println("            name = \"" + raidLabel(raid) + "\",");
+                out.println("            description = \"Per-enemy tracking for " + raidLabel(raid) + "\",");
                 out.println("            position = " + position + ",");
                 out.println("            closedByDefault = true");
                 out.println("    )");
@@ -207,8 +249,10 @@ public final class EnemyConfigProcessor extends AbstractProcessor {
         try (PrintWriter out = new PrintWriter(file.openWriter())) {
             out.println("package " + GEN_PACKAGE + ";");
             out.println();
+            out.println("import com.example.enemydata.Enemy;");
             out.println("import com.example.enemydata.Raid;");
             out.println("import com.example.enemydata.TrackingMode;");
+            out.println("import net.runelite.api.NPC;");
             out.println("import java.util.Optional;");
             out.println();
             out.println("/** Generated by EnemyConfigProcessor — do not edit. */");
@@ -217,7 +261,7 @@ public final class EnemyConfigProcessor extends AbstractProcessor {
             for (int i = 0; i < defs.size(); i++) {
                 EnemyDef def = defs.get(i);
                 out.print("    " + def.constant + "(\"" + def.key + "\", \"" + escape(def.name) + "\", Raid." + def.raid
-                        + ", TrackingMode." + def.mode + ", new int[]{");
+                        + ", TrackingMode." + def.mode + ", " + def.boss + ", new int[]{");
                 for (int j = 0; j < def.ids.size(); j++) {
                     if (j > 0) {
                         out.print(", ");
@@ -235,13 +279,15 @@ public final class EnemyConfigProcessor extends AbstractProcessor {
             out.println("    private final String name;");
             out.println("    private final Raid raid;");
             out.println("    private final TrackingMode defaultMode;");
+            out.println("    private final boolean boss;");
             out.println("    private final int[] npcIds;");
             out.println();
-            out.println("    " + ENUM + "(String key, String name, Raid raid, TrackingMode defaultMode, int[] npcIds) {");
+            out.println("    " + ENUM + "(String key, String name, Raid raid, TrackingMode defaultMode, boolean boss, int[] npcIds) {");
             out.println("        this.key = key;");
             out.println("        this.name = name;");
             out.println("        this.raid = raid;");
             out.println("        this.defaultMode = defaultMode;");
+            out.println("        this.boss = boss;");
             out.println("        this.npcIds = npcIds;");
             out.println("    }");
             out.println();
@@ -249,6 +295,7 @@ public final class EnemyConfigProcessor extends AbstractProcessor {
             out.println("    public String displayName() { return name; }");
             out.println("    public Raid raid() { return raid; }");
             out.println("    public TrackingMode defaultMode() { return defaultMode; }");
+            out.println("    public boolean isBoss() { return boss; }");
             out.println("    public int[] npcIds() { return npcIds.clone(); }");
             out.println();
             out.println("    public TrackingMode mode(" + CONFIG + " config) {");
@@ -257,6 +304,15 @@ public final class EnemyConfigProcessor extends AbstractProcessor {
                 out.println("            case " + def.constant + ": return config." + def.method + "();");
             }
             out.println("            default: return defaultMode;");
+            out.println("        }");
+            out.println("    }");
+            out.println();
+            out.println("    public Enemy create(NPC npc, " + CONTEXT + " ctx) {");
+            out.println("        switch (this) {");
+            for (EnemyDef def : defs) {
+                out.println("            case " + def.constant + ": return new " + def.qualifiedName + "(" + def.constructorArgs + ");");
+            }
+            out.println("            default: return null;");
             out.println("        }");
             out.println("    }");
             out.println();
@@ -274,8 +330,70 @@ public final class EnemyConfigProcessor extends AbstractProcessor {
         }
     }
 
+    private void generateContext() throws IOException {
+        JavaFileObject file = processingEnv.getFiler().createSourceFile(GEN_PACKAGE + "." + CONTEXT);
+        try (PrintWriter out = new PrintWriter(file.openWriter())) {
+            out.println("package " + GEN_PACKAGE + ";");
+            out.println();
+            out.println("import net.runelite.api.Client;");
+            out.println();
+            out.println("/** Generated by EnemyConfigProcessor — do not edit. */");
+            out.println("public final class " + CONTEXT + " {");
+            out.println("    public final boolean isCm;");
+            out.println("    public final int invocation;");
+            out.println("    public final int partySize;");
+            out.println("    public final int maxCombat;");
+            out.println("    public final int maxHp;");
+            out.println("    public final int pathLevel;");
+            out.println("    public final long raidTick;");
+            out.println("    public final Client client;");
+            out.println();
+            out.println("    private " + CONTEXT + "(boolean isCm, int invocation, int partySize, int maxCombat,");
+            out.println("            int maxHp, int pathLevel, long raidTick, Client client) {");
+            out.println("        this.isCm = isCm;");
+            out.println("        this.invocation = invocation;");
+            out.println("        this.partySize = partySize;");
+            out.println("        this.maxCombat = maxCombat;");
+            out.println("        this.maxHp = maxHp;");
+            out.println("        this.pathLevel = pathLevel;");
+            out.println("        this.raidTick = raidTick;");
+            out.println("        this.client = client;");
+            out.println("    }");
+            out.println();
+            out.println("    public static " + CONTEXT + " cox(boolean isCm, int partySize, int maxCombat, int maxHp, long raidTick) {");
+            out.println("        return new " + CONTEXT + "(isCm, 0, partySize, maxCombat, maxHp, 0, raidTick, null);");
+            out.println("    }");
+            out.println();
+            out.println("    public static " + CONTEXT + " toa(int invocation, int partySize, int pathLevel) {");
+            out.println("        return new " + CONTEXT + "(false, invocation, partySize, 0, 0, pathLevel, 0, null);");
+            out.println("    }");
+            out.println();
+            out.println("    public static " + CONTEXT + " tfa(Client client) {");
+            out.println("        return new " + CONTEXT + "(false, 0, 0, 0, 0, 0, 0, client);");
+            out.println("    }");
+            out.println();
+            out.println("    public static " + CONTEXT + " misc(Client client) {");
+            out.println("        return new " + CONTEXT + "(false, 0, 0, 0, 0, 0, 0, client);");
+            out.println("    }");
+            out.println("}");
+        }
+    }
+
+    private static String raidLabel(String raid) {
+        switch (raid) {
+            case "TOA": return "Tombs of Amascut";
+            case "COX": return "Chambers of Xeric";
+            case "TFA": return "The Fractured Archive";
+            default: return "Miscellaneous";
+        }
+    }
+
     private static String text(AnnotationValue value) {
         return value == null || value.getValue() == null ? "" : value.getValue().toString();
+    }
+
+    private static boolean booleanValue(AnnotationValue value) {
+        return value != null && Boolean.parseBoolean(text(value));
     }
 
     private static String enumName(AnnotationValue value, String fallback) {

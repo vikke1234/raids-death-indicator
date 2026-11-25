@@ -11,9 +11,10 @@ import net.runelite.api.NPC;
 @Slf4j
 @Tracked(
         name = "Vasa Nistirio",
-        npcIds = { NpcID.RAIDS_VASANISTIRIO_DORMANT },
+        npcIds = { NpcID.RAIDS_VASANISTIRIO_DORMANT, NpcID.RAIDS_VASANISTIRIO_WALKING },
         raid = Raid.COX,
-        defaultMode = TrackingMode.HIGHLIGHT
+        defaultMode = TrackingMode.HIGHLIGHT,
+        boss = true
 )
 public class VasaNistirio extends CoxEnemy {
     public VasaNistirio(NPC npc, boolean isCm, int partySize, int maxCombat, int maxHp, long raidTick) {

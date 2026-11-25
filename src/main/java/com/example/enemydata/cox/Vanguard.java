@@ -22,7 +22,8 @@ import net.runelite.api.gameval.NpcID;
         name = "Vanguard",
         npcIds = { NpcID.RAIDS_VANGUARD_DORMANT, NpcID.RAIDS_VANGUARD_WALKING, NpcID.RAIDS_VANGUARD_MELEE, NpcID.RAIDS_VANGUARD_RANGED, NpcID.RAIDS_VANGUARD_MAGIC },
         raid = Raid.COX,
-        defaultMode = TrackingMode.HIGHLIGHT
+        defaultMode = TrackingMode.HIGHLIGHT,
+        boss = true
 )
 public class Vanguard extends CoxEnemy {
     public Vanguard(NPC npc, boolean isCm, int partySize, int maxCombat, int maxHp, long raidTick) {

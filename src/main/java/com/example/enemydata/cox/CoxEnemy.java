@@ -1,21 +1,13 @@
 package com.example.enemydata.cox;
 
 import com.example.enemydata.Enemy;
-import com.example.utils.HexFunction;
 
 import lombok.Getter;
 import lombok.Setter;
 import lombok.Synchronized;
 import net.runelite.api.NPC;
-import net.runelite.api.gameval.NpcID;
-
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.Map;
-import java.util.Set;
 
 public class CoxEnemy extends Enemy {
-    public static final Map<Integer, HexFunction<NPC, Boolean, Integer, Integer, Integer, Long, CoxEnemy>> enemies;
     boolean isCm;
     int partySize;
     int maxHp;
@@ -27,36 +19,6 @@ public class CoxEnemy extends Enemy {
     @Getter(onMethod_ = { @Synchronized })
     @Setter(onMethod_ = { @Synchronized })
     long raidTick;
-
-    static {
-        enemies = new HashMap<>();
-
-        enemies.put(NpcID.RAIDS_VESPULA_PORTAL, Portal::new);
-        enemies.put(NpcID.RAIDS_SKELETONMYSTIC_A, SkeletalMystic::new);
-        enemies.put(NpcID.RAIDS_SKELETONMYSTIC_B, SkeletalMystic::new);
-        enemies.put(NpcID.RAIDS_SKELETONMYSTIC_C, SkeletalMystic::new);
-        enemies.put(NpcID.RAIDS_LIZARDSHAMAN_A, LizardmanShaman::new);
-        enemies.put(NpcID.RAIDS_LIZARDSHAMAN_B, LizardmanShaman::new);
-        enemies.put(NpcID.RAIDS_VASANISTIRIO_DORMANT, VasaNistirio::new);
-        enemies.put(NpcID.OLM_HAND_RIGHT_SPAWNING, OlmMageHand::new);
-        enemies.put(NpcID.OLM_HAND_RIGHT, OlmMageHand::new);
-        enemies.put(NpcID.RAIDS_VANGUARD_DORMANT, Vanguard::new);
-        enemies.put(NpcID.RAIDS_VANGUARD_WALKING, Vanguard::new);
-        enemies.put(NpcID.RAIDS_VANGUARD_MELEE, Vanguard::new);
-        enemies.put(NpcID.RAIDS_VANGUARD_RANGED, Vanguard::new);
-        enemies.put(NpcID.RAIDS_VANGUARD_MAGIC, Vanguard::new);
-
-        // Disabled for now, until a way to calculate the average mining level
-        // for a raid is figured out. Guardians will also likely never work
-        // properly unless everyone is in party. That or some other cursed
-        // shenanigans.
-        enemies.put(NpcID.RAIDS_STONEGUARDIANS_LEFT, Guardian::new);
-        enemies.put(NpcID.RAIDS_STONEGUARDIANS_RIGHT, Guardian::new);
-
-        enemies.put(NpcID.RAIDS_DOGODILE_SUBMERGED, GreatMuttadile::new);
-        enemies.put(NpcID.RAIDS_DOGODILE, GreatMuttadile::new);
-        enemies.put(NpcID.RAIDS_DOGODILE_JUNIOR, SmallMuttadile::new);
-    }
 
     protected CoxEnemy(NPC npc, boolean isCm, int partySize,
             int maxCombat, int maxHp, long raidTick,
