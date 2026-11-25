@@ -19,6 +19,7 @@ import java.io.IOException;
 import java.io.PrintWriter;
 import java.util.ArrayList;
 import java.util.Comparator;
+import java.util.HashMap;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
@@ -40,6 +41,7 @@ public final class EnemyConfigProcessor extends AbstractProcessor {
     private static final String CONTEXT = "EnemySpawnContext";
 
     private final Map<String, EnemyDef> enemies = new LinkedHashMap<>();
+    private final Map<Integer, String> seenIds = new HashMap<>();
     private boolean generated;
 
     private static final class EnemyDef {
@@ -144,6 +146,14 @@ public final class EnemyConfigProcessor extends AbstractProcessor {
             processingEnv.getMessager().printMessage(Diagnostic.Kind.ERROR,
                     "@Tracked must declare at least one npc id", type);
             return;
+        }
+        for (int id : ids) {
+            String previous = seenIds.putIfAbsent(id, key);
+            if (previous != null) {
+                processingEnv.getMessager().printMessage(Diagnostic.Kind.ERROR,
+                        "NPC id " + id + " is declared by both '" + previous + "' and '" + key + "'", type);
+                return;
+            }
         }
 
         enemies.put(key, new EnemyDef(
@@ -260,15 +270,10 @@ public final class EnemyConfigProcessor extends AbstractProcessor {
 
             for (int i = 0; i < defs.size(); i++) {
                 EnemyDef def = defs.get(i);
-                out.print("    " + def.constant + "(\"" + def.key + "\", \"" + escape(def.name) + "\", Raid." + def.raid
-                        + ", TrackingMode." + def.mode + ", " + def.boss + ", new int[]{");
-                for (int j = 0; j < def.ids.size(); j++) {
-                    if (j > 0) {
-                        out.print(", ");
-                    }
-                    out.print(def.ids.get(j));
-                }
-                out.println("})" + (i == defs.size() - 1 ? ";" : ","));
+                out.println("    " + def.constant + "(\"" + def.key + "\", \"" + escape(def.name) + "\", Raid." + def.raid
+                        + ", TrackingMode." + def.mode + ", " + def.boss
+                        + ", " + intsLiteral(def.ids) + ")"
+                        + (i == defs.size() - 1 ? ";" : ","));
             }
             if (defs.isEmpty()) {
                 out.println("    ;");
@@ -394,6 +399,17 @@ public final class EnemyConfigProcessor extends AbstractProcessor {
 
     private static boolean booleanValue(AnnotationValue value) {
         return value != null && Boolean.parseBoolean(text(value));
+    }
+
+    private static String intsLiteral(List<Integer> values) {
+        StringBuilder sb = new StringBuilder("new int[]{");
+        for (int i = 0; i < values.size(); i++) {
+            if (i > 0) {
+                sb.append(", ");
+            }
+            sb.append(values.get(i));
+        }
+        return sb.append('}').toString();
     }
 
     private static String enumName(AnnotationValue value, String fallback) {
