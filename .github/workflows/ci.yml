@@ -75,6 +75,8 @@ jobs:
       # Force-sync fork with runelite/plugin-hub upstream, update manifest, and push
       - name: Sync with Upstream, Update Plugin Manifest, and Push
         if: github.ref_type == 'tag' || (github.event_name == 'workflow_dispatch' && inputs.create_release)
+        env:
+          GH_TOKEN: ${{ secrets.RDI }}
         run: |
           NEW_HASH="${{ github.sha }}"
           SOURCE_DIR="$(pwd)"
@@ -113,6 +115,15 @@ jobs:
           git add plugins/raids-death-indicator
           git commit -m "Update raids-death-indicator to ${NEW_HASH}" -m "${COMMIT_TITLES}" || exit 0
           git push --force
+
+          # Keep the upstream PR title/body in sync with the pushed fork commit.
+          PR_NUMBER=$(gh pr list --repo runelite/plugin-hub --state open \
+            --head "vikke1234:master" --json number --jq '.[0].number' 2>/dev/null || true)
+          if [ -n "${PR_NUMBER}" ]; then
+            gh pr edit "${PR_NUMBER}" --repo runelite/plugin-hub \
+              --title "Update raids-death-indicator to ${NEW_HASH}" \
+              --body "${COMMIT_TITLES}" || true
+          fi
 
       # Publish jar
       - name: Create Release on Source Repo
