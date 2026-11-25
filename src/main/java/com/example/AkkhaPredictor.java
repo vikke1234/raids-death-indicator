@@ -54,9 +54,17 @@ public class AkkhaPredictor extends Plugin {
 	@Inject
 	private EventBus eventBus;
 
+	@Inject
+	private ConfigManager configManager;
+
 	@Override
 	protected void startUp() throws Exception
 	{
+		// The generated config interface extends AkkhaPredictorConfig, so RuneLite's
+		// automatic default registration only sees the generated methods. Register
+		// the inherited ones too; enum config items crash the panel when unset.
+		configManager.setDefaultConfiguration(configManager.getConfig(AkkhaPredictorConfig.class), false);
+
 		eventBus.register(damageHandler);
 		eventBus.register(toa);
 		eventBus.register(cox);
