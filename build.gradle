@@ -102,6 +102,8 @@ task runClient(type: JavaExec) {
 	jvmArgs "-javaagent:${rootProject.file('tools/hotswap-agent.jar')}"
 	// Let HotSwapAgent's JdkPlugin flush the java.beans cache after a reload (silences module-access errors).
 	jvmArgs '--add-opens', 'java.desktop/com.sun.beans.introspect=ALL-UNNAMED'
+	// HotSwapAgent's ProxyPlugin reflects into jdk.internal.loader on reload.
+	jvmArgs '--add-opens', 'java.base/jdk.internal.loader=ALL-UNNAMED'
 	// Enable all Trace categories for local dev (com.example.utils.Trace reads
 	// these system properties at class load via Boolean.getBoolean).
 	jvmArgs '-Dtrace.predictor=true', '-Dtrace.damage=true', '-Dtrace.akkha=true', '-Dtrace.trace=true'
