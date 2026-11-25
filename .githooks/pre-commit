@@ -1,0 +1,15 @@
+#!/usr/bin/env bash
+
+# Reject staged text files containing CR bytes. .gitattributes normalizes
+# checkouts/adds to LF, but this keeps accidental CRLF out even if attributes
+# are bypassed.
+while IFS= read -r -d '' file; do
+    case "$file" in
+        *.bat|*.cmd) continue ;;
+    esac
+
+    if git cat-file blob ":$file" | LC_ALL=C grep -q $'\r'; then
+        echo "pre-commit: CR byte found in staged file: $file" >&2
+        exit 1
+    fi
+done < <(git diff --cached --name-only --diff-filter=ACM -z)
