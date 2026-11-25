@@ -106,5 +106,17 @@ task runClient(type: JavaExec) {
 	// these system properties at class load via Boolean.getBoolean).
 	jvmArgs '-Dtrace.predictor=true', '-Dtrace.damage=true', '-Dtrace.akkha=true', '-Dtrace.trace=true'
 	args '--developer-mode'
-	javaLauncher = javaToolchains.launcherFor(java.toolchain)
+
+	// Use the bundled DCEVM when available (needed by -XX:+AllowEnhancedClassRedefinition),
+	// otherwise fall back to the configured toolchain.
+	def dcevmDir = rootProject.file('build/trava-jdk-11')
+	def dcevmJava = dcevmDir.exists()
+			? dcevmDir.listFiles().collectMany { dir -> ['java', 'java.exe'].collect { name -> new File(dir, "bin/${name}") } }
+					.find { it.isFile() }
+			: null
+	if (dcevmJava != null) {
+		executable = dcevmJava.absolutePath
+	} else {
+		javaLauncher = javaToolchains.launcherFor(java.toolchain)
+	}
 }
