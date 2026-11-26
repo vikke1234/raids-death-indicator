@@ -39,6 +39,8 @@ public class ArchiveGuardian extends TfaEnemy {
     private boolean shieldBreakPending;
     private int shieldMax;
     private int trueMaxHealth;
+    private int shieldHealth;
+    private int trueHealth;
 
     public ArchiveGuardian(NPC npc) {
         super(npc,
@@ -56,6 +58,8 @@ public class ArchiveGuardian extends TfaEnemy {
         shielded = !inactive && npc.getId() != NpcID.TFA_GUARDIAN_UNSHIELDED;
         shieldMax = baseHealth;
         trueMaxHealth = inactive || shielded ? baseHealth * 2 : baseHealth;
+        shieldHealth = shieldMax;
+        trueHealth = trueMaxHealth;
         resetHealthState();
     }
 
@@ -71,8 +75,22 @@ public class ArchiveGuardian extends TfaEnemy {
 
     public void syncFromClient(Client client) {
         loadMaxHealth(client);
+        shieldHealth = shieldMax;
+        trueHealth = trueMaxHealth;
         resetHealthState();
         shieldBreakPending = false;
+    }
+
+    public int getShieldHealth() {
+        return shieldHealth;
+    }
+
+    public int getTrueHealth() {
+        return trueHealth;
+    }
+
+    public boolean isShielded() {
+        return shielded;
     }
 
     /**
@@ -84,6 +102,8 @@ public class ArchiveGuardian extends TfaEnemy {
             loadMaxHealth(client);
             shielded = false;
             phase2 = false;
+            shieldHealth = 0;
+            trueHealth = trueMaxHealth;
             clearPrediction();
             resetHealthState();
             return;
@@ -105,9 +125,10 @@ public class ArchiveGuardian extends TfaEnemy {
             phase2 = true;
             clearPrediction();
             int hp = client.getVarbitValue(VarbitID.HPBAR_HUD_HP);
+            shieldHealth = 0;
+            trueHealth = hp > 0 ? hp : trueHealth;
             shielded = false;
-            scaledHealth = trueMaxHealth;
-            currentHealth = hp > 0 ? hp : trueMaxHealth;
+            resetHealthState();
         }
     }
 
@@ -124,7 +145,7 @@ public class ArchiveGuardian extends TfaEnemy {
     @Override
     public synchronized boolean queueDamage(int damage) {
         boolean lethal = super.queueDamage(damage);
-        if (shielded && currentHealth > 0 && queuedDamage >= currentHealth) {
+        if (shielded && shieldHealth > 0 && queuedDamage >= shieldHealth) {
             shieldBreakPending = true;
         }
         // A shield break is not a death, so never hide the boss for it.
@@ -133,11 +154,49 @@ public class ArchiveGuardian extends TfaEnemy {
 
     @Override
     public synchronized int hit(int damage) {
-        int hp = super.hit(damage);
-        if (shielded && currentHealth <= 0) {
+        queuedDamage = Math.max(0, queuedDamage - damage);
+
+        if (shielded) {
+            int absorbed = Math.min(shieldHealth, damage);
+            shieldHealth -= absorbed;
+            trueHealth -= damage - absorbed;
+        } else {
+            trueHealth -= damage;
+        }
+
+        if (shielded && shieldHealth <= 0) {
             shieldBreakPending = true;
         }
-        return hp;
+        if (queuedDamage == 0) {
+            shouldDraw = false;
+        }
+        resetHealthState();
+        return currentHealth;
+    }
+
+    @Override
+    public synchronized int heal(int amount) {
+        if (shielded) {
+            shieldHealth = Math.min(shieldHealth + amount, shieldMax);
+        } else {
+            trueHealth = Math.min(trueHealth + amount, trueMaxHealth);
+        }
+        shouldDraw = false;
+        resetHealthState();
+        return currentHealth;
+    }
+
+    @Override
+    public synchronized void setCurrentHealth(int hp) {
+        if (hp < 0) {
+            return;
+        }
+        if (shielded) {
+            shieldHealth = hp;
+        } else {
+            trueHealth = hp;
+        }
+        resetHealthState();
     }
 
     /**
@@ -153,7 +212,7 @@ public class ArchiveGuardian extends TfaEnemy {
         if (!shielded) {
             damage = phase2 ? trueDamageCap : 0;
         } else {
-            int remainingShield = Math.max(0, currentHealth);
+            int remainingShield = Math.max(0, shieldHealth);
             int absorbed = Math.min(remainingShield, shieldDamage);
             damage = absorbed;
             if (phase2) {
@@ -184,13 +243,14 @@ public class ArchiveGuardian extends TfaEnemy {
 
     private void enterFlying() {
         shielded = true;
+        shieldHealth = shieldMax;
         clearPrediction();
         resetHealthState();
     }
 
     private void resetHealthState() {
         scaledHealth = shielded ? shieldMax : trueMaxHealth;
-        currentHealth = scaledHealth;
+        currentHealth = shielded ? shieldHealth : trueHealth;
     }
 
     private void clearPrediction() {
