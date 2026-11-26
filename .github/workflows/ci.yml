@@ -72,7 +72,7 @@ jobs:
           token: ${{ secrets.RDI }}
           path: 'target-repo'
 
-      # Force-sync fork with runelite/plugin-hub upstream, update manifest, and push
+      # Merge upstream into the fork, update manifest, and push normally
       - name: Sync with Upstream, Update Plugin Manifest, and Push
         if: github.ref_type == 'tag' || (github.event_name == 'workflow_dispatch' && inputs.create_release)
         env:
@@ -87,12 +87,22 @@ jobs:
           git config user.name "Viktor Horsmanheimo"
           git config user.email "viktor.horsmanheimo@gmail.com"
 
-          # Fetch official runelite/plugin-hub upstream and force reset local branch to match upstream master
-          git remote add upstream https://github.com/runelite/plugin-hub.git
+          # Fetch official runelite/plugin-hub upstream and merge it into the fork.
+          # Keeping the fork history avoids force-pushing the PR branch.
+          if git remote get-url upstream >/dev/null 2>&1; then
+            git remote set-url upstream https://github.com/runelite/plugin-hub.git
+          else
+            git remote add upstream https://github.com/runelite/plugin-hub.git
+          fi
           git fetch upstream
-          git reset --hard upstream/master
+          if ! git merge --no-edit upstream/master; then
+            git checkout upstream/master -- plugins/raids-death-indicator
+            git add plugins/raids-death-indicator
+            git commit --no-edit || exit 1
+          fi
 
-          # Read the previous commit hash from the plugin manifest file before modifying it
+          # Always base the descriptor on upstream's version, not an older fork edit.
+          git show upstream/master:plugins/raids-death-indicator > plugins/raids-death-indicator
           OLD_HASH=$(grep -E '^commit=' plugins/raids-death-indicator | cut -d'=' -f2 | tr -d '\r\n')
           echo "Previous plugin-hub commit hash: ${OLD_HASH}"
           echo "New plugin commit hash: ${NEW_HASH}"
@@ -111,10 +121,10 @@ jobs:
           # Update the commit= line in the raids-death-indicator plugin file
           sed -i "s/^commit=.*/commit=${NEW_HASH}/" plugins/raids-death-indicator
 
-          # Stage, commit, and force-push changes to your fork with commit titles in the body
+          # Stage, commit, and push changes to your fork with commit titles in the body
           git add plugins/raids-death-indicator
           git commit -m "Update raids-death-indicator to ${NEW_HASH}" -m "${COMMIT_TITLES}" || exit 0
-          git push --force
+          git push origin master
 
           # Keep the upstream PR title/body in sync with the pushed fork commit.
           PR_NUMBER=$(gh pr list --repo runelite/plugin-hub --state open \
