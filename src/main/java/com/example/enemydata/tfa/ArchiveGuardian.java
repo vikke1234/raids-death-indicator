@@ -30,6 +30,10 @@ public class ArchiveGuardian extends TfaEnemy {
     private static final int SHIELD_DAMAGE_PERCENT = 40;
     private static final int TRUE_DAMAGE_PERCENT = 15;
 
+    // OSRS wiki: Archive Guardian HP by team size.
+    private static final int[] FLYING_HP = { 550, 550, 800, 1030, 1260, 1490, 1720, 1950 };
+    private static final int[] GROUNDED_HP = { 1100, 1100, 1600, 2060, 2520, 2980, 3440, 3910 };
+
     private boolean shielded;
     private boolean phase2;
     private boolean shieldBreakPending;
@@ -78,7 +82,6 @@ public class ArchiveGuardian extends TfaEnemy {
     public synchronized void onNpcChanged(int oldId, int newId, Client client) {
         if (isInactive(newId)) {
             loadMaxHealth(client);
-            shieldMax = Math.max(shieldMax, baseHealth / 2);
             shielded = false;
             phase2 = false;
             clearPrediction();
@@ -164,15 +167,22 @@ public class ArchiveGuardian extends TfaEnemy {
     }
 
     private void loadMaxHealth(Client client) {
-        int maxHp = client.getVarbitValue(VarbitID.HPBAR_HUD_BASEHP);
-        if (maxHp > 0) {
-            trueMaxHealth = maxHp;
-            shieldMax = maxHp / 2;
+        int partySize = getPartySize(client);
+        shieldMax = FLYING_HP[partySize - 1];
+        trueMaxHealth = GROUNDED_HP[partySize - 1];
+    }
+
+    private static int getPartySize(Client client) {
+        int size = 1;
+        for (int i = 1; i < 8; i++) {
+            if (client.getVarbitValue(VarbitID.TFA_CLIENT_P0 + i) != 0) {
+                size++;
+            }
         }
+        return Math.max(1, Math.min(8, size));
     }
 
     private void enterFlying() {
-        shieldMax = Math.max(shieldMax, trueMaxHealth / 2);
         shielded = true;
         clearPrediction();
         resetHealthState();
