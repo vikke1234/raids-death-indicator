@@ -71,17 +71,34 @@ jobs:
           repository: 'vikke1234/plugin-hub'
           token: ${{ secrets.RDI }}
           path: 'target-repo'
-          # Full history is required to merge upstream without appearing unrelated.
+          # Full history keeps upstream/master available as a branch base.
           fetch-depth: 0
 
-      # Merge upstream into the fork, update manifest, and push normally
-      - name: Sync with Upstream, Update Plugin Manifest, and Push
+      # Create a fresh PR branch from upstream/master for this release
+      - name: Create Plugin Hub Update Branch and PR
         if: github.ref_type == 'tag' || (github.event_name == 'workflow_dispatch' && inputs.create_release)
         env:
           GH_TOKEN: ${{ secrets.RDI }}
         run: |
+          TAG_NAME="${{ github.ref_name }}"
           NEW_HASH="${{ github.sha }}"
           SOURCE_DIR="$(pwd)"
+
+          if [ "${{ github.event_name }}" = "workflow_dispatch" ]; then
+            TAG_NAME="${{ inputs.version_tag }}"
+            if [ -n "${TAG_NAME}" ] && git rev-parse -q --verify "refs/tags/${TAG_NAME}^{commit}" >/dev/null; then
+              NEW_HASH=$(git rev-parse "${TAG_NAME}^{commit}")
+            fi
+          fi
+
+          if [ -z "${TAG_NAME}" ]; then
+            echo "No release tag provided" >&2
+            exit 1
+          fi
+
+          BRANCH="rdi/${TAG_NAME}"
+          echo "Plugin hub branch: ${BRANCH}"
+          echo "Plugin commit hash: ${NEW_HASH}"
 
           cd target-repo
 
@@ -89,52 +106,54 @@ jobs:
           git config user.name "Viktor Horsmanheimo"
           git config user.email "viktor.horsmanheimo@gmail.com"
 
-          # Fetch official runelite/plugin-hub upstream and merge it into the fork.
-          # Keeping the fork history avoids force-pushing the PR branch.
           if git remote get-url upstream >/dev/null 2>&1; then
             git remote set-url upstream https://github.com/runelite/plugin-hub.git
           else
             git remote add upstream https://github.com/runelite/plugin-hub.git
           fi
           git fetch upstream
-          if ! git merge --no-edit upstream/master; then
-            git checkout upstream/master -- plugins/raids-death-indicator
-            git add plugins/raids-death-indicator
-            git commit --no-edit || exit 1
-          fi
 
-          # Always base the descriptor on upstream's version, not an older fork edit.
-          git show upstream/master:plugins/raids-death-indicator > plugins/raids-death-indicator
+          # Build the PR branch directly from upstream/master, without rewriting fork history.
+          git checkout -B "${BRANCH}" upstream/master
           OLD_HASH=$(grep -E '^commit=' plugins/raids-death-indicator | cut -d'=' -f2 | tr -d '\r\n')
           echo "Previous plugin-hub commit hash: ${OLD_HASH}"
-          echo "New plugin commit hash: ${NEW_HASH}"
 
-          # Extract commit titles from source repo between OLD_HASH and HEAD
           cd "$SOURCE_DIR"
           if [ -n "$OLD_HASH" ] && git cat-file -e "$OLD_HASH^{commit}" 2>/dev/null; then
             COMMIT_TITLES=$(git log ${OLD_HASH}..${NEW_HASH} --oneline)
           else
-            # Fallback if OLD_HASH isn't found in current history
             COMMIT_TITLES=$(git log -1 --format="%s")
           fi
 
           cd target-repo
-
-          # Update the commit= line in the raids-death-indicator plugin file
           sed -i "s/^commit=.*/commit=${NEW_HASH}/" plugins/raids-death-indicator
-
-          # Stage, commit, and push changes to your fork with commit titles in the body
           git add plugins/raids-death-indicator
           git commit -m "Update raids-death-indicator to ${NEW_HASH}" -m "${COMMIT_TITLES}" || exit 0
-          git push origin master
 
-          # Keep the upstream PR title/body in sync with the pushed fork commit.
+          # A rerun of the same tag must not rewrite the PR branch.
+          if git ls-remote --exit-code --heads origin "${BRANCH}" >/dev/null; then
+            git fetch origin "${BRANCH}"
+            REMOTE_HASH=$(git show FETCH_HEAD:plugins/raids-death-indicator \
+              | grep -E '^commit=' | cut -d'=' -f2 | tr -d '\r\n')
+            if [ "${REMOTE_HASH}" != "${NEW_HASH}" ]; then
+              echo "Branch ${BRANCH} already exists for a different plugin commit" >&2
+              exit 1
+            fi
+            echo "Branch ${BRANCH} is already up to date"
+          else
+            git push -u origin "${BRANCH}"
+          fi
+
+          PR_TITLE="Update raids-death-indicator to ${NEW_HASH}"
           PR_NUMBER=$(gh pr list --repo runelite/plugin-hub --state open \
-            --head "vikke1234:master" --json number --jq '.[0].number' 2>/dev/null || true)
+            --head "vikke1234:${BRANCH}" --json number --jq '.[0].number' 2>/dev/null || true)
           if [ -n "${PR_NUMBER}" ]; then
             gh pr edit "${PR_NUMBER}" --repo runelite/plugin-hub \
-              --title "Update raids-death-indicator to ${NEW_HASH}" \
-              --body "${COMMIT_TITLES}" || true
+              --title "${PR_TITLE}" --body "${COMMIT_TITLES}" || true
+          else
+            gh pr create --repo runelite/plugin-hub --base master \
+              --head "vikke1234:${BRANCH}" \
+              --title "${PR_TITLE}" --body "${COMMIT_TITLES}" || true
           fi
 
       # Publish jar
