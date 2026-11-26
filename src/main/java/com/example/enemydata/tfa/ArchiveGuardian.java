@@ -234,7 +234,9 @@ public class ArchiveGuardian extends TfaEnemy {
     private static int getPartySize(Client client) {
         int size = 1;
         for (int i = 1; i < 8; i++) {
-            if (client.getVarbitValue(VarbitID.TFA_CLIENT_P0 + i) != 0) {
+            // 1-27 = health, 30 = dead, 31 = not in the room.
+            int value = client.getVarbitValue(VarbitID.TFA_CLIENT_P0 + i);
+            if (value >= 1 && value <= 30) {
                 size++;
             }
         }
