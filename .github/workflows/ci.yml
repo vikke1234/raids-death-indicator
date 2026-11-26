@@ -71,6 +71,8 @@ jobs:
           repository: 'vikke1234/plugin-hub'
           token: ${{ secrets.RDI }}
           path: 'target-repo'
+          # Full history is required to merge upstream without appearing unrelated.
+          fetch-depth: 0
 
       # Merge upstream into the fork, update manifest, and push normally
       - name: Sync with Upstream, Update Plugin Manifest, and Push
