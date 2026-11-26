@@ -110,7 +110,7 @@ public class ArchiveGuardian extends TfaEnemy {
         }
 
         if (isInactive(oldId) && newId == NpcID.TFA_GUARDIAN) {
-            enterFlying();
+            enterFlying(client, true);
             return;
         }
 
@@ -120,7 +120,7 @@ public class ArchiveGuardian extends TfaEnemy {
         }
 
         if (newShielded) {
-            enterFlying();
+            enterFlying(client, false);
         } else {
             phase2 = true;
             clearPrediction();
@@ -243,9 +243,16 @@ public class ArchiveGuardian extends TfaEnemy {
         return Math.max(1, Math.min(8, size));
     }
 
-    private void enterFlying() {
+    private void enterFlying(Client client, boolean freshEncounter) {
+        // Party-size varbits may only be populated once the fight starts.
+        loadMaxHealth(client);
         shielded = true;
         shieldHealth = shieldMax;
+        if (freshEncounter) {
+            trueHealth = trueMaxHealth;
+        } else {
+            trueHealth = Math.min(trueHealth, trueMaxHealth);
+        }
         clearPrediction();
         resetHealthState();
     }
